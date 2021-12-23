@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "D:/OSGCore/Build/osgqt/QGraphicsViewAdapter.h"
+#include "../../QGraphicsViewAdapter.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #include <QtCore/QList>

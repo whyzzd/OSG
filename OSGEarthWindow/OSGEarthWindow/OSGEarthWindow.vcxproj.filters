@@ -55,21 +55,6 @@
     <ClCompile Include="GeneratedFiles\qrc_osgearthwindow.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\OSGCore\Build\osgqt\GraphicsWindowQt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\OSGCore\Build\osgqt\QGraphicsViewAdapter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QGraphicsViewAdapter.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QGraphicsViewAdapter.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\OSGCore\Build\osgqt\QWidgetImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OsgContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,6 +63,21 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_OsgContainer.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsWindowQt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QGraphicsViewAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_QGraphicsViewAdapter.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_QGraphicsViewAdapter.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="QWidgetImage.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,10 +90,10 @@
     <CustomBuild Include="osgearthwindow.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="D:\OSGCore\Build\osgqt\QGraphicsViewAdapter.h">
+    <CustomBuild Include="OsgContainer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="OsgContainer.h">
+    <CustomBuild Include="QGraphicsViewAdapter.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -101,10 +101,10 @@
     <ClInclude Include="GeneratedFiles\ui_osgearthwindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\OSGCore\Build\osgqt\GraphicsWindowQt.h">
+    <ClInclude Include="GraphicsWindowQt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\OSGCore\Build\osgqt\QWidgetImage.h">
+    <ClInclude Include="QWidgetImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
