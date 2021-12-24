@@ -39,12 +39,14 @@ public:
 
 	//¿ØÖÆÌØÐ§
 	void createSnow();
+	//ÐÇ¿Õ
+	void initSky();
 protected:
 	virtual void paintGL();
 
 private:
 	void init3D();
-	void InitSky();
+	
 	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);
 
 private:
@@ -52,6 +54,7 @@ private:
 	osg::ref_ptr<osgViewer::GraphicsWindow >window;
 
 	osg::ref_ptr<osg::Node> m_earthNode;
+	
 };
 
 #endif // OSGCONTAINER_H

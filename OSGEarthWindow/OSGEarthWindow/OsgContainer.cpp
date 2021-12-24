@@ -20,14 +20,15 @@
 #include <osgEarthSymbology/Color>
 #include<ctime>
 #include <osgParticle/PrecipitationEffect>
-
+#include <osgParticle/FireEffect>
+//#include<osgEarthUtil/Ephemeris>
+//#include<osgEarthUtil/Sky>
 OsgContainer::OsgContainer(QWidget *parent) :QOpenGLWidget(parent)
 {
 	init3D();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 }
-
 
 OsgContainer::~OsgContainer()
 {
@@ -190,69 +191,61 @@ void OsgContainer::paintGL() {
 	if (isVisibleTo(QApplication::activeWindow())) {
 		frame();
 	}
+	
 }
 void OsgContainer::init3D() {
 
-	/*osg::Node* */m_earthNode = osgDB::readNodeFile("simple.earth");
-
+	m_earthNode = osgDB::readNodeFile("cow.osg"); 
+	//m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+	
 	if (!m_earthNode)
 	{
 		return;
 	}
-
-	/*osg::Group* */root = new osg::Group();
-	root->addChild(m_earthNode);
 	
-	/*ControlCanvas* cs = new ControlCanvas();
-	root->addChild(cs);*/
-
+	/*osg::Group* */root = new osg::Group();
+	
+	root->addChild(m_earthNode);
+	createSnow();
+	osg::ref_ptr<osgParticle::FireEffect> fe = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
+	root->addChild(fe);
 	setCamera(createCamera(0, 0, width(), height()));
 	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
 	setCameraManipulator(manipulator);
-	/*addEventHandler(new osgViewer::StatsHandler);
-	addEventHandler(new osgViewer::ThreadingHandler());
-	addEventHandler(new osgViewer::HelpHandler);
-	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
-	setThreadingModel(osgViewer::Viewer::SingleThreaded);
-
-	root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
-	root->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);*/
-	createSnow();
+	
 	addEventHandler(new osgViewer::WindowSizeHandler());
 	setSceneData(root);
 	
 	//    setRunFrameScheme(ON_DEMAND);
-	//InitSky();
+	//initSky();
 	startTimer(10);
 	
 }
 
 
-//void OsgContainer::InitSky()
-//{
-//
-//	//获取当前时间 初始化天空
-//	/*time_t now_time = time(0);
-//	tm *t_tm = localtime(&now_time);
-//	osgEarth::DateTime cur_date_time(now_time);*/
-//	osgEarth::Util::SkyNode*m_pSkyNode;
-//	osgEarth::Util::Ephemeris* ephemeris = new osgEarth::Util::Ephemeris;
-//	osg::ref_ptr<osgEarth::MapNode> mapNode;
-//	//设置黑夜明暗程度
-//	osgEarth::Util::SkyOptions skyOptions;
-//	skyOptions.ambient() = 0.3;
-//
-//	m_pSkyNode = osgEarth::Util::SkyNode::create(skyOptions);
-//	m_pSkyNode->setName("SkyNode");
-//	m_pSkyNode->setEphemeris(ephemeris);
-//	//m_pSkyNode->setDateTime(cur_date_time);
-//	setLightingMode(osg::View::SKY_LIGHT);
-//	m_pSkyNode->attach(this, 0);
-//	m_pSkyNode->setLighting(true);
-//
-//	m_pSkyNode->addChild(mapNode);
-//	root->addChild(m_pSkyNode);
-//}
+void OsgContainer::initSky()
+{
+
+	osgEarth::MapNode* mapNode = osgEarth::MapNode::findMapNode(m_earthNode);
+	if (!mapNode)
+	{
+		OE_NOTICE << "Could not find MapNode" << std::endl;
+		return;
+	}
+
+	// 设置时间;
+	osgEarth::DateTime dateTime(2019, 5, 8, 9);
+	osgEarth::Util::Ephemeris* ephemeris = new osgEarth::Util::Ephemeris;
+
+	osgEarth::Util::SkyNode* m_pSkyNode = osgEarth::Util::SkyNode::create(mapNode);
+	m_pSkyNode->setName("SkyNode");
+	m_pSkyNode->setEphemeris(ephemeris);
+	m_pSkyNode->setDateTime(dateTime);
+	m_pSkyNode->attach(this, 0);
+	m_pSkyNode->setLighting(true);
+	m_pSkyNode->addChild(mapNode);
+	root->addChild(m_pSkyNode);
+}
 osg::ref_ptr<osg::Camera> OsgContainer::createCamera(int x, int y, int w, int h) {
 	window = new osgViewer::GraphicsWindowEmbedded(x, y, w, h);
 	//    osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
@@ -278,6 +271,8 @@ osg::ref_ptr<osg::Camera> OsgContainer::createCamera(int x, int y, int w, int h)
 //下雪
 void OsgContainer::createSnow()
 {
+
+
 	osg::ref_ptr<osgParticle::PrecipitationEffect> sn = new osgParticle::PrecipitationEffect;
 	sn->snow(0.5);
 	//设置雪花颜色
@@ -285,6 +280,10 @@ void OsgContainer::createSnow()
 	sn->setUseFarLineSegments(true);
 	//设置雪花方向
 	sn->setWind(osg::Vec3(2, 0, 0));
+
+	// 设置雪花浓度
+	sn->snow(0.1);
+
 	root->addChild(sn);
 	
 	//this->realize();
