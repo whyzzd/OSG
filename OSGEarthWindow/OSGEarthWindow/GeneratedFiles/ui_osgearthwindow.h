@@ -47,10 +47,6 @@ public:
     QCheckBox *checkBox_4;
     QCheckBox *checkBox;
     QSpacerItem *verticalSpacer_2;
-    QSpacerItem *horizontalSpacer_3;
-    QSpacerItem *horizontalSpacer_4;
-    QSpacerItem *horizontalSpacer;
-    QSpacerItem *horizontalSpacer_2;
 
     void setupUi(QMainWindow *OSGEarthWindowClass)
     {
@@ -93,7 +89,7 @@ public:
         gridLayout->addWidget(pushButton_2, 1, 0, 1, 1);
 
 
-        gridLayout_3->addWidget(frame, 3, 1, 2, 2);
+        gridLayout_3->addWidget(frame, 3, 0, 2, 2);
 
         widget = new QWidget(dockWidgetContents);
         widget->setObjectName(QStringLiteral("widget"));
@@ -132,27 +128,11 @@ public:
         gridLayout_2->addWidget(checkBox, 0, 0, 1, 1);
 
 
-        gridLayout_3->addWidget(widget, 1, 1, 1, 2);
+        gridLayout_3->addWidget(widget, 1, 0, 1, 2);
 
         verticalSpacer_2 = new QSpacerItem(20, 54, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout_3->addItem(verticalSpacer_2, 2, 1, 1, 2);
-
-        horizontalSpacer_3 = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout_3->addItem(horizontalSpacer_3, 3, 3, 1, 1);
-
-        horizontalSpacer_4 = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout_3->addItem(horizontalSpacer_4, 3, 0, 1, 1);
-
-        horizontalSpacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout_3->addItem(horizontalSpacer, 1, 0, 1, 1);
-
-        horizontalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout_3->addItem(horizontalSpacer_2, 1, 3, 1, 1);
+        gridLayout_3->addItem(verticalSpacer_2, 2, 0, 1, 2);
 
         dockWidget->setWidget(dockWidgetContents);
         OSGEarthWindowClass->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget);

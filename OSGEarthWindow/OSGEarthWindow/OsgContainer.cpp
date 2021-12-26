@@ -21,11 +21,14 @@
 #include<ctime>
 #include <osgParticle/PrecipitationEffect>
 #include <osgParticle/FireEffect>
+#include<osgParticle/ExplosionEffect>
+#include<osgParticle/ExplosionDebrisEffect>
 //#include<osgEarthUtil/Ephemeris>
 //#include<osgEarthUtil/Sky>
 OsgContainer::OsgContainer(QWidget *parent) :QOpenGLWidget(parent)
 {
-	init3D();
+	//init3D();
+	initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 }
@@ -195,33 +198,63 @@ void OsgContainer::paintGL() {
 }
 void OsgContainer::init3D() {
 
-	m_earthNode = osgDB::readNodeFile("cow.osg"); 
-	//m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+	
+	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
 	
 	if (!m_earthNode)
 	{
 		return;
 	}
-	
-	/*osg::Group* */root = new osg::Group();
-	
+	root = new osg::Group();
 	root->addChild(m_earthNode);
-	createSnow();
-	osg::ref_ptr<osgParticle::FireEffect> fe = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
-	root->addChild(fe);
+	
+	osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
+	
+
 	setCamera(createCamera(0, 0, width(), height()));
+	//设置地球操作器
+	//em = new osgEarth::Util::EarthManipulator;
+	//em->setNode(map);
+	//setCameraManipulator(em);
+	
 	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
 	setCameraManipulator(manipulator);
 	
+
+	createSnow();
+
 	addEventHandler(new osgViewer::WindowSizeHandler());
 	setSceneData(root);
 	
-	//    setRunFrameScheme(ON_DEMAND);
-	//initSky();
+	//setRunFrameScheme(ON_DEMAND);
+	initSky();
 	startTimer(10);
 	
 }
+void OsgContainer::initCowTest()
+{
+	m_earthNode = osgDB::readNodeFile("cow.osg"); 
+	if (!m_earthNode)
+	{
+		return;
+	}
+	root = new osg::Group();
+	root->addChild(m_earthNode);
 
+	
+	setCamera(createCamera(0, 0, width(), height()));
+
+	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
+	setCameraManipulator(manipulator);
+	//createSnow();
+	//createFire();
+	//createExplosion();
+	crateExplosionDebris();
+	addEventHandler(new osgViewer::WindowSizeHandler());
+	setSceneData(root);
+
+	startTimer(10);
+}
 
 void OsgContainer::initSky()
 {
@@ -272,9 +305,8 @@ osg::ref_ptr<osg::Camera> OsgContainer::createCamera(int x, int y, int w, int h)
 void OsgContainer::createSnow()
 {
 
-
 	osg::ref_ptr<osgParticle::PrecipitationEffect> sn = new osgParticle::PrecipitationEffect;
-	sn->snow(0.5);
+
 	//设置雪花颜色
 	sn->setParticleColor(osg::Vec4(1, 1, 1, 1));
 	sn->setUseFarLineSegments(true);
@@ -288,4 +320,20 @@ void OsgContainer::createSnow()
 	
 	//this->realize();
 	//this->run();
+}
+void OsgContainer::createFire()
+{
+	osg::ref_ptr<osgParticle::FireEffect> fe = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
+	root->addChild(fe);
+}
+void OsgContainer::createExplosion()
+{
+	osg::ref_ptr<osgParticle::ExplosionEffect> ee = new osgParticle::ExplosionEffect(osg::Vec3(30, 30, 30), 90);
+	root->addChild(ee);
+}
+void OsgContainer::crateExplosionDebris()
+{
+	osg::ref_ptr<osgParticle::ExplosionDebrisEffect> ede = new osgParticle::ExplosionDebrisEffect(osg::Vec3(30, 30, 30), 9);
+	root->addChild(ede);
+
 }

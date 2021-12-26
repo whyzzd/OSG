@@ -4,7 +4,8 @@
 
 #include<qopenglwidget.h>
 #include<osgViewer/Viewer>
-
+#include<osgEarth/MapNode>
+#include<osgEarthUtil/EarthManipulator>
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
 {
@@ -38,7 +39,11 @@ public:
 	}
 
 	//¿ØÖÆÌØÐ§
-	void createSnow();
+	void createSnow();//Ñ©
+	void createFire();//»ð
+	void createExplosion();//±¬Õ¨
+	void crateExplosionDebris();//±¬Õ¨ËéÆ¬
+
 	//ÐÇ¿Õ
 	void initSky();
 protected:
@@ -46,15 +51,17 @@ protected:
 
 private:
 	void init3D();
-	
+	void initCowTest();
+
 	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);
 
 private:
 	osg::ref_ptr<osg::Group>root;
 	osg::ref_ptr<osgViewer::GraphicsWindow >window;
 
-	osg::ref_ptr<osg::Node> m_earthNode;
+	osg::Node* m_earthNode;
 	
+	osg::ref_ptr<osgEarth::Util::EarthManipulator> em;
 };
 
 #endif // OSGCONTAINER_H
