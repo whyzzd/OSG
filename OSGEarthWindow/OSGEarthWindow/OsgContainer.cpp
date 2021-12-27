@@ -27,6 +27,7 @@
 //#include<osgEarthUtil/Sky>
 
 #include<qdebug.h>
+#include"CPickHandler.h"
 OsgContainer::OsgContainer(QWidget *parent) :QOpenGLWidget(parent)
 {
 	//init3D();
@@ -281,6 +282,7 @@ void OsgContainer::init3D() {
 	createSnow();
 
 	addEventHandler(new osgViewer::WindowSizeHandler());
+	addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
 	setSceneData(root);
 	
@@ -297,7 +299,7 @@ void OsgContainer::initCowTest()
 		return;
 	}
 	root = new osg::Group();
-
+	
 	//平移操作
 	/*osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
 	trans->setMatrix(osg::Matrix::translate(0, 0, 20));
@@ -317,9 +319,9 @@ void OsgContainer::initCowTest()
 	//root->addChild(trans);
 
 	//添加白边(有错误,愿意尚未知)
-	//osg::ref_ptr<osgFX::Scribe>sc = new osgFX::Scribe;
-	////sc->addChild(m_earthNode);
-	//root->addChild(sc);
+	/*osg::ref_ptr<osgFX::Scribe>sc = new osgFX::Scribe;
+	sc->addChild(m_earthNode);
+	root->addChild(sc);*/
 
 	root->addChild(m_earthNode);
 	
@@ -331,10 +333,13 @@ void OsgContainer::initCowTest()
 	//createFire();
 	//createExplosion();
 	//crateExplosionDebris();
-	addEventHandler(new osgViewer::WindowSizeHandler());
 	
+	addEventHandler(new CPickHandler(this));
+	addEventHandler(new osgViewer::WindowSizeHandler());
+	addEventHandler(new osgViewer::StatsHandler);
+	addEventHandler(new osgGA::StateSetManipulator(getCamera()->getOrCreateStateSet()));
 	setSceneData(root);
-
+	
 	startTimer(10);
 }
 

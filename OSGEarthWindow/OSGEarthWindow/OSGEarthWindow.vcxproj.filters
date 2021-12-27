@@ -79,6 +79,9 @@
     <ClCompile Include="QWidgetImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CPickHandler.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="osgearthwindow.h">
