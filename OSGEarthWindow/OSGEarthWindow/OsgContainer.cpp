@@ -9,7 +9,7 @@
 
 #include <Windows.h>
 #include <typeinfo>
-
+#include <osgFX/Scribe>
 #include <osg/Notify>
 #include <osgGA/GUIEventHandler>
 #include <osgViewer/Viewer>
@@ -25,12 +25,15 @@
 #include<osgParticle/ExplosionDebrisEffect>
 //#include<osgEarthUtil/Ephemeris>
 //#include<osgEarthUtil/Sky>
+
+#include<qdebug.h>
 OsgContainer::OsgContainer(QWidget *parent) :QOpenGLWidget(parent)
 {
 	//init3D();
 	initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
+	
 }
 
 OsgContainer::~OsgContainer()
@@ -95,6 +98,14 @@ void OsgContainer::setKeyboardModifiers(QInputEvent *event) {
 void OsgContainer::keyPressEvent(QKeyEvent *event) {
 	setKeyboardModifiers(event);
 	window->getEventQueue()->keyPress(event->key());
+	
+	if (event->key() == Qt::Key_H)
+	{
+
+		qDebug() << "H键";
+		return;
+	}
+	
 	QOpenGLWidget::keyPressEvent(event);
 	update();
 }
@@ -107,9 +118,24 @@ void OsgContainer::keyReleaseEvent(QKeyEvent *event) {
 void OsgContainer::mousePressEvent(QMouseEvent *event) {
 	int button = 0;
 	switch (event->button()) {
-	case Qt::LeftButton: button = 1; break;
+	case Qt::LeftButton:
+		{
+			button = 1; 
+			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(1);
+			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
+			qDebug() << button;*/
+			break; 
+
+		}
 	case Qt::MidButton: button = 2; break;
-	case Qt::RightButton: button = 3; break;
+	case Qt::RightButton:
+		{ 
+			button = 3;
+			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(0); 
+			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
+			qDebug() << button;*/
+			break;
+		}
 	case Qt::NoButton: button = 0; break;
 	default: button = 0; break;
 	}
@@ -196,6 +222,37 @@ void OsgContainer::paintGL() {
 	}
 	
 }
+void OsgContainer::Pick(float x, float y)
+{
+	// 申请一个相交测试的结果集，判断屏幕与场景相交后，得出的结果集放入此中
+	osgUtil::LineSegmentIntersector::Intersections intersections;
+	if (computeIntersections(x, y, intersections)) {
+
+		// 申请一个结果集遍历器，遍历该结果集
+		for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
+
+			// 注意这里取的是 back()
+			if (!hitr->nodePath.empty() && !(hitr->nodePath.back()->getName().empty())) {
+
+				// 得到遍历器中的 nodepath，以此可以判断该 path 中是否有想要的结点
+				const osg::NodePath &np = hitr->nodePath;
+				// 如果结果集中有所需要的结点，则设置隐藏该结点
+				// 其中有一个动态转换，如果可以转换成功则左值不为 NULL，否则为 NULL。
+				for (int i = np.size() - 1; i >= 0; --i) {
+
+					// 添加一个 scribe 结点，该结点下的模型会被加白描线高亮显示
+					osgFX::Scribe *sc = dynamic_cast<osgFX::Scribe *>(np[i]);
+					if (sc != NULL) {
+
+						if (sc->getNodeMask() != 0)
+							sc->setNodeMask(0);
+					}
+				}
+			}
+		}
+	}
+	qDebug() << 12345;
+}
 void OsgContainer::init3D() {
 
 	
@@ -213,21 +270,22 @@ void OsgContainer::init3D() {
 
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
-	//em = new osgEarth::Util::EarthManipulator;
-	//em->setNode(map);
-	//setCameraManipulator(em);
+	em = new osgEarth::Util::EarthManipulator;
+	em->setNode(map);
+	setCameraManipulator(em);
 	
-	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
-	setCameraManipulator(manipulator);
+	//osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
+	//setCameraManipulator(manipulator);
 	
 
 	createSnow();
 
 	addEventHandler(new osgViewer::WindowSizeHandler());
+	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
 	setSceneData(root);
 	
 	//setRunFrameScheme(ON_DEMAND);
-	initSky();
+	//initSky();
 	startTimer(10);
 	
 }
@@ -239,8 +297,31 @@ void OsgContainer::initCowTest()
 		return;
 	}
 	root = new osg::Group();
-	root->addChild(m_earthNode);
 
+	//平移操作
+	/*osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
+	trans->setMatrix(osg::Matrix::translate(0, 0, 20));
+	trans->addChild(m_earthNode);
+	root->addChild(trans);*/
+
+	//缩放操作+平移
+	/*osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
+	trans->setMatrix(osg::Matrix::scale(0.5, 0.5, 0.5)*osg::Matrix::translate(-10, 0, 0));
+	trans->addChild(m_earthNode);
+	root->addChild(trans);*/
+
+	//旋转操作
+	//osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
+	//trans->setMatrix(osg::Matrix::rotate(osg::DegreesToRadians(90.0),1,0,0));//分别代表绕着x,y,z轴旋转,正代表逆时针
+	//trans->addChild(m_earthNode);
+	//root->addChild(trans);
+
+	//添加白边(有错误,愿意尚未知)
+	//osg::ref_ptr<osgFX::Scribe>sc = new osgFX::Scribe;
+	////sc->addChild(m_earthNode);
+	//root->addChild(sc);
+
+	root->addChild(m_earthNode);
 	
 	setCamera(createCamera(0, 0, width(), height()));
 
@@ -249,8 +330,9 @@ void OsgContainer::initCowTest()
 	//createSnow();
 	//createFire();
 	//createExplosion();
-	crateExplosionDebris();
+	//crateExplosionDebris();
 	addEventHandler(new osgViewer::WindowSizeHandler());
+	
 	setSceneData(root);
 
 	startTimer(10);

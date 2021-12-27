@@ -15,7 +15,7 @@ public:
 	~OsgContainer();
 
 	bool event(QEvent *event);
-
+	
 	void setKeyboardModifiers(QInputEvent *event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
@@ -27,7 +27,7 @@ public:
 	void resizeEvent(QResizeEvent *event);
 	void moveEvent(QMoveEvent *event);
 	void timerEvent(QTimerEvent *);
-	
+	void Pick(float x,float y);
 	osgViewer::Viewer *getOSGViewer()
 	{
 		return this;
