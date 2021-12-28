@@ -11,7 +11,7 @@ OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 {
 	ui.setupUi(this);
 	setWindowTitle("µØÇò");
-	resize(800, 400);
+	resize(600, 400);
 	OsgContainer *osgViewer = new OsgContainer(this);
 	this->setCentralWidget(osgViewer);
 	

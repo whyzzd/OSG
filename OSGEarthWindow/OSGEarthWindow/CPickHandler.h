@@ -4,7 +4,7 @@
 #include <osgFX/Scribe>
 #include <osgGA/GUIEventHandler>
 #include <osgUtil/LineSegmentIntersector> // 新增头文件
-
+#include<qdebug.h>
 class CPickHandler : public osgGA::GUIEventHandler {
 
 public:
@@ -29,7 +29,8 @@ public:
 
 protected:
 
-	void Pick(float x, float y) {
+	void Pick(float x, float y) 
+	{
 
 		// 申请一个相交测试的结果集，判断屏幕与场景相交后，得出的结果集放入此中
 		osgUtil::LineSegmentIntersector::Intersections intersections;
@@ -58,6 +59,7 @@ protected:
 				}
 			}
 		}
+		qDebug() << 123;
 	}
 
 	osgViewer::Viewer *mViewer; // mViewer

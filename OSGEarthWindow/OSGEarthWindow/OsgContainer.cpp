@@ -30,8 +30,8 @@
 #include"CPickHandler.h"
 OsgContainer::OsgContainer(QWidget *parent) :QOpenGLWidget(parent)
 {
-	//init3D();
-	initCowTest();
+	init3D();
+	//initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 	
@@ -94,6 +94,7 @@ void OsgContainer::setKeyboardModifiers(QInputEvent *event) {
 	}
 
 	window->getEventQueue()->getCurrentEventState()->setModKeyMask(mask);
+	
 	update();
 }
 void OsgContainer::keyPressEvent(QKeyEvent *event) {
@@ -125,6 +126,7 @@ void OsgContainer::mousePressEvent(QMouseEvent *event) {
 			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(1);
 			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
 			qDebug() << button;*/
+			Pick(event->x(), event->y());
 			break; 
 
 		}
@@ -247,36 +249,82 @@ void OsgContainer::Pick(float x, float y)
 
 						if (sc->getNodeMask() != 0)
 							sc->setNodeMask(0);
+						
 					}
 				}
+				qDebug() << x << y;
 			}
 		}
 	}
-	qDebug() << 12345;
+	
+}
+
+//画线测试(在球面)
+osg::ref_ptr<osg::EllipsoidModel>em = new osg::EllipsoidModel;
+osg::Node* createLine(osg::Vec3d start, osg::Vec3d end)
+{
+	osg::Geode* line_gnode = new osg::Geode;
+	osg::ref_ptr<osg::Vec3Array>vectex = new osg::Vec3Array;
+	osg::ref_ptr<osg::Vec4Array>color = new osg::Vec4Array;
+	osg::ref_ptr<osg::Geometry>gemo = new osg::Geometry;
+
+	//上一个点
+	osg::Vec3d FirstPoint, SecondPoint;
+	//第一个点经纬高转世界坐标  单位度
+	em->convertLatLongHeightToXYZ(osg::DegreesToRadians(start.y()), osg::DegreesToRadians(start.x()), start.z(), FirstPoint.x(), FirstPoint.y(), FirstPoint.z());
+	vectex->push_back(FirstPoint);
+	//第二个点经纬高转世界坐标  单位度
+	em->convertLatLongHeightToXYZ(osg::DegreesToRadians(end.y()), osg::DegreesToRadians(end.x()), end.z(), SecondPoint.x(), SecondPoint.y(), SecondPoint.z());
+	vectex->push_back(SecondPoint);
+
+	//红色
+	color->push_back(osg::Vec4(1.0, 0.0, 0.0, 1.0));
+	color->push_back(osg::Vec4(1.0, 0.0, 0.0, 1.0));
+	//画线
+	gemo->setVertexArray(vectex);
+	gemo->setColorArray(color);
+	//此句影响绘制效率
+	//gemo->setColorBinding(osg::Geometry::BIND_PER_VERTEX);   
+	gemo->setColorBinding(osg::Geometry::BIND_OVERALL);
+	gemo->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP, 0, vectex->size()));
+	//灯光
+	gemo->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.0), osg::StateAttribute::ON);
+	gemo->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	line_gnode->addDrawable(gemo);
+
+	return line_gnode;
 }
 void OsgContainer::init3D() {
 
 	
 	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
 	
 	if (!m_earthNode)
 	{
 		return;
 	}
 	root = new osg::Group();
-	root->addChild(m_earthNode);
 	
+	//root->addChild(m_earthNode);
 	osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
 	
-
+	root->addChild(map);
+	
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
 	em = new osgEarth::Util::EarthManipulator;
 	em->setNode(map);
 	setCameraManipulator(em);
 	
-	//osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
-	//setCameraManipulator(manipulator);
+	//在地球表面画线
+	//osg::Vec3d start(116.1, 40.1, 900);
+	//osg::Vec3d end(116.3, 40.3, 900);
+	//root->addChild(createLine(start, end));
+	//em->setHomeViewpoint(osgEarth::Viewpoint("视点", 116.2, 40.2, 900, 0.0, -90, 7e3));
+
+	/*osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
+	setCameraManipulator(manipulator);*/
 	
 
 	createSnow();
@@ -288,18 +336,21 @@ void OsgContainer::init3D() {
 	
 	//setRunFrameScheme(ON_DEMAND);
 	//initSky();
+	
 	startTimer(10);
 	
 }
 void OsgContainer::initCowTest()
 {
-	m_earthNode = osgDB::readNodeFile("cow.osg"); 
+	m_earthNode = osgDB::readNodeFile("glider.osg"); 
+	//osg::Node*axe = osgDB::readNodeFile("axes.osgt");
+	
 	if (!m_earthNode)
 	{
 		return;
 	}
 	root = new osg::Group();
-	
+	//root->addChild(axe);
 	//平移操作
 	/*osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
 	trans->setMatrix(osg::Matrix::translate(0, 0, 20));
@@ -318,11 +369,11 @@ void OsgContainer::initCowTest()
 	//trans->addChild(m_earthNode);
 	//root->addChild(trans);
 
-	//添加白边(有错误,愿意尚未知)
+	//添加白边
 	/*osg::ref_ptr<osgFX::Scribe>sc = new osgFX::Scribe;
 	sc->addChild(m_earthNode);
 	root->addChild(sc);*/
-
+	
 	root->addChild(m_earthNode);
 	
 	setCamera(createCamera(0, 0, width(), height()));
@@ -334,14 +385,16 @@ void OsgContainer::initCowTest()
 	//createExplosion();
 	//crateExplosionDebris();
 	
-	addEventHandler(new CPickHandler(this));
+	//addEventHandler(new CPickHandler(this));//自定义类操作类
 	addEventHandler(new osgViewer::WindowSizeHandler());
-	addEventHandler(new osgViewer::StatsHandler);
+	this->addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(getCamera()->getOrCreateStateSet()));
 	setSceneData(root);
 	
 	startTimer(10);
 }
+
+
 
 void OsgContainer::initSky()
 {
