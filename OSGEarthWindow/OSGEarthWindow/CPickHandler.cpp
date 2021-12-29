@@ -27,6 +27,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				//自定义类输出世界坐标
 				//std::cout << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
 				osg::Vec3 v1 = myc.WorldToLonLatAlt(vec1);
+				v1.z() = 900;
 				//自定义类输出经纬度
 				std::cout << v1.x() << " " << v1.y() << " " << v1.z() << std::endl;
 				/*first_point = { vec1.x(), vec1.z() };
@@ -40,7 +41,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					
 						vvv[1] = v1;
 						oc->getRoot()->addChild(createLine(vvv[0],vvv[1]));
-						oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 10, 0.0, -90, 7e3));
+						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
+						//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
 				}
 				else
 				{
