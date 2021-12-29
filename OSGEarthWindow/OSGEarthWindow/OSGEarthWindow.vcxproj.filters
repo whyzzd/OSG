@@ -82,6 +82,12 @@
     <ClCompile Include="CPickHandler.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="CPickHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyConvert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="osgearthwindow.h">
@@ -108,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QWidgetImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyConvert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

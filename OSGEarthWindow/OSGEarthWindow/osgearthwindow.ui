@@ -68,31 +68,10 @@
      <item row="1" column="0" colspan="2">
       <widget class="QWidget" name="widget" native="true">
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="5" column="0">
-         <widget class="QCheckBox" name="checkBox_6">
-          <property name="text">
-           <string>CheckBox6</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QCheckBox" name="checkBox_3">
           <property name="text">
            <string>CheckBox3</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_2">
-          <property name="text">
-           <string>CheckBox2</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="checkBox_5">
-          <property name="text">
-           <string>CheckBox5</string>
           </property>
          </widget>
         </item>
@@ -107,6 +86,27 @@
          <widget class="QCheckBox" name="checkBox">
           <property name="text">
            <string>CheckBox1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_2">
+          <property name="text">
+           <string>CheckBox2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="checkBox_6">
+          <property name="text">
+           <string>CheckBox6</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="checkBox_5">
+          <property name="text">
+           <string>CheckBox5</string>
           </property>
          </widget>
         </item>

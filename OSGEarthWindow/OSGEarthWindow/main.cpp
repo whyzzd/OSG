@@ -31,3 +31,20 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+//int main()
+//{
+//	osgViewer::Viewer viewer;
+//	osg::Group *root = new osg::Group();
+//	osg::Node *m_earthNode = osgDB::readNodeFile("glider.osg");
+//	
+//	
+//	/*osgFX::Scribe *sc=new osgFX::Scribe();
+//	sc->addChild(m_earthNode);
+//	root->addChild(sc);*/
+//	
+//	root->addChild(m_earthNode);
+//	viewer.setSceneData(root);
+//	viewer.realize();
+//	
+//	return viewer.run();
+//}

@@ -66,7 +66,7 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -74,6 +74,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CPickHandler.cpp" />
     <ClCompile Include="CPickHandler.h" />
     <ClCompile Include="GeneratedFiles\Debug\moc_OsgContainer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -101,6 +102,7 @@
     </ClCompile>
     <ClCompile Include="GraphicsWindowQt.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyConvert.cpp" />
     <ClCompile Include="OsgContainer.cpp" />
     <ClCompile Include="osgearthwindow.cpp" />
     <ClCompile Include="QGraphicsViewAdapter.cpp" />
@@ -132,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsWindowQt.h" />
+    <ClInclude Include="MyConvert.h" />
     <ClInclude Include="QWidgetImage.h" />
     <CustomBuild Include="QGraphicsViewAdapter.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

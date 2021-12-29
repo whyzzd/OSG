@@ -6,6 +6,10 @@
 #include<osgViewer/Viewer>
 #include<osgEarth/MapNode>
 #include<osgEarthUtil/EarthManipulator>
+
+extern osg::ref_ptr<osg::EllipsoidModel>em ;
+extern osg::Node* createLine(osg::Vec3d start, osg::Vec3d end);
+
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
 {
@@ -36,6 +40,10 @@ public:
 	osg::Group *getRoot()
 	{
 		return root;
+	}
+	osgEarth::Util::EarthManipulator*getEM()
+	{
+		return em;
 	}
 
 	//¿ØÖÆÌØÐ§

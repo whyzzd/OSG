@@ -230,7 +230,7 @@ void OsgContainer::Pick(float x, float y)
 	// 申请一个相交测试的结果集，判断屏幕与场景相交后，得出的结果集放入此中
 	osgUtil::LineSegmentIntersector::Intersections intersections;
 	if (computeIntersections(x, y, intersections)) {
-
+		int n = 1;
 		// 申请一个结果集遍历器，遍历该结果集
 		for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
 
@@ -252,8 +252,10 @@ void OsgContainer::Pick(float x, float y)
 						
 					}
 				}
-				qDebug() << x << y;
+				
 			}
+			//qDebug() << x << y<<n++;;
+			
 		}
 	}
 	
@@ -296,9 +298,8 @@ osg::Node* createLine(osg::Vec3d start, osg::Vec3d end)
 }
 void OsgContainer::init3D() {
 
-	
 	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
-	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
+	osg::Node *cow = osgDB::readNodeFile("cow.osg");
 	
 	if (!m_earthNode)
 	{
@@ -317,18 +318,19 @@ void OsgContainer::init3D() {
 	em->setNode(map);
 	setCameraManipulator(em);
 	
+
 	//在地球表面画线
-	//osg::Vec3d start(116.1, 40.1, 900);
-	//osg::Vec3d end(116.3, 40.3, 900);
-	//root->addChild(createLine(start, end));
-	//em->setHomeViewpoint(osgEarth::Viewpoint("视点", 116.2, 40.2, 900, 0.0, -90, 7e3));
+	/*osg::Vec3d start(116.1, 40.1, 900);
+	osg::Vec3d end(116.3, 40.3, 900);
+	root->addChild(createLine(start, end));
+	em->setHomeViewpoint(osgEarth::Viewpoint("视点", 116.2, 40.2, 900, 0.0, -90, 7e3));*/
 
 	/*osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
 	setCameraManipulator(manipulator);*/
 	
 
 	createSnow();
-
+	addEventHandler(new CPickHandler(this));
 	addEventHandler(new osgViewer::WindowSizeHandler());
 	addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
