@@ -28,7 +28,8 @@
 
 #include<qdebug.h>
 #include"CPickHandler.h"
-OsgContainer::OsgContainer(QWidget *parent) :QOpenGLWidget(parent)
+OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
+	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
 	init3D();
 	//initCowTest();
@@ -299,7 +300,7 @@ osg::Node* createLine(osg::Vec3d start, osg::Vec3d end)
 void OsgContainer::init3D() {
 
 	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
-	osg::Node *cow = osgDB::readNodeFile("cow.osg");
+	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
 	
 	if (!m_earthNode)
 	{
@@ -395,8 +396,6 @@ void OsgContainer::initCowTest()
 	
 	startTimer(10);
 }
-
-
 
 void OsgContainer::initSky()
 {

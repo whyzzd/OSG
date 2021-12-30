@@ -15,7 +15,7 @@ class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
 {
 	Q_OBJECT
 public:
-	OsgContainer(QWidget *parent=0);
+	OsgContainer(/*osg::ArgumentParser argument,*/QWidget *parent = 0);
 	~OsgContainer();
 
 	bool event(QEvent *event);

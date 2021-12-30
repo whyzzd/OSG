@@ -7,13 +7,13 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_osgearthwindow.h"
-
+#include <osgViewer/Viewer>
 class OSGEarthWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    OSGEarthWindow(QWidget *parent = Q_NULLPTR);
+	OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent = Q_NULLPTR);
 
 private:
     Ui::OSGEarthWindowClass ui;

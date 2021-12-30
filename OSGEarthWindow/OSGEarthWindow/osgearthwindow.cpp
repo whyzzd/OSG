@@ -6,13 +6,14 @@
 #include<QListView>
 #include<qpushbutton.h>
 #include"OsgContainer.h"
-OSGEarthWindow::OSGEarthWindow(QWidget *parent)
+OSGEarthWindow::OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	setWindowTitle("µØÇò");
 	resize(600, 400);
-	OsgContainer *osgViewer = new OsgContainer(this);
+	OsgContainer *osgViewer = new OsgContainer(/*argument,*/this);
+	
 	this->setCentralWidget(osgViewer);
 	
 	//QTextEdit *mainText = new QTextEdit(this);

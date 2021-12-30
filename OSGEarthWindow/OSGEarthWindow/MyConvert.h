@@ -3,8 +3,12 @@
 class MyConvert
 {
 public:
+
+	MyConvert();
 	MyConvert(osgViewer::Viewer * viewer);
 	~MyConvert();
+	void setViewer(osgViewer::Viewer * viewer);
+
 	// 屏幕坐标转世界坐标
 	osg::Vec3 ScreenToWorld(const osg::Vec3 screen);
 	// 世界坐标转屏幕坐标

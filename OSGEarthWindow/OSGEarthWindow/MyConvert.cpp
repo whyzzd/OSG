@@ -1,13 +1,17 @@
 #include"MyConvert.h"
 #include <osg/MatrixTransform>
 
+
+MyConvert::MyConvert()
+{}
 MyConvert::MyConvert(osgViewer::Viewer *viewer) :mViewer(viewer)
-{
-
-}
+{}
 MyConvert::~MyConvert()
-{
+{}
 
+void MyConvert::setViewer(osgViewer::Viewer * viewer)
+{
+	mViewer = viewer;
 }
 // 屏幕坐标转世界坐标
 osg::Vec3 MyConvert::ScreenToWorld(const osg::Vec3 screen)

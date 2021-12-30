@@ -15,8 +15,10 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QDockWidget>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
@@ -33,20 +35,19 @@ public:
     QMenuBar *menuBar;
     QDockWidget *dockWidget;
     QWidget *dockWidgetContents;
-    QGridLayout *gridLayout_3;
+    QGridLayout *gridLayout_2;
+    QGroupBox *groupBox;
+    QFormLayout *formLayout_2;
+    QCheckBox *checkBox_2;
+    QCheckBox *checkBox;
+    QCheckBox *checkBox_3;
+    QCheckBox *checkBox_4;
+    QCheckBox *checkBox_5;
+    QSpacerItem *verticalSpacer_2;
     QFrame *frame;
     QGridLayout *gridLayout;
     QPushButton *pushButton;
     QPushButton *pushButton_2;
-    QWidget *widget;
-    QGridLayout *gridLayout_2;
-    QCheckBox *checkBox_3;
-    QCheckBox *checkBox_4;
-    QCheckBox *checkBox;
-    QCheckBox *checkBox_2;
-    QCheckBox *checkBox_6;
-    QCheckBox *checkBox_5;
-    QSpacerItem *verticalSpacer_2;
 
     void setupUi(QMainWindow *OSGEarthWindowClass)
     {
@@ -66,10 +67,48 @@ public:
         dockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
         dockWidgetContents = new QWidget();
         dockWidgetContents->setObjectName(QStringLiteral("dockWidgetContents"));
-        gridLayout_3 = new QGridLayout(dockWidgetContents);
-        gridLayout_3->setSpacing(6);
-        gridLayout_3->setContentsMargins(11, 11, 11, 11);
-        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        gridLayout_2 = new QGridLayout(dockWidgetContents);
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setContentsMargins(11, 11, 11, 11);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        groupBox = new QGroupBox(dockWidgetContents);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        formLayout_2 = new QFormLayout(groupBox);
+        formLayout_2->setSpacing(6);
+        formLayout_2->setContentsMargins(11, 11, 11, 11);
+        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        checkBox_2 = new QCheckBox(groupBox);
+        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, checkBox_2);
+
+        checkBox = new QCheckBox(groupBox);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+
+        formLayout_2->setWidget(1, QFormLayout::LabelRole, checkBox);
+
+        checkBox_3 = new QCheckBox(groupBox);
+        checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
+
+        formLayout_2->setWidget(2, QFormLayout::LabelRole, checkBox_3);
+
+        checkBox_4 = new QCheckBox(groupBox);
+        checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
+
+        formLayout_2->setWidget(3, QFormLayout::LabelRole, checkBox_4);
+
+        checkBox_5 = new QCheckBox(groupBox);
+        checkBox_5->setObjectName(QStringLiteral("checkBox_5"));
+
+        formLayout_2->setWidget(4, QFormLayout::LabelRole, checkBox_5);
+
+
+        gridLayout_2->addWidget(groupBox, 0, 0, 1, 1);
+
+        verticalSpacer_2 = new QSpacerItem(20, 54, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_2->addItem(verticalSpacer_2, 1, 0, 1, 1);
+
         frame = new QFrame(dockWidgetContents);
         frame->setObjectName(QStringLiteral("frame"));
         frame->setFrameShape(QFrame::StyledPanel);
@@ -89,50 +128,7 @@ public:
         gridLayout->addWidget(pushButton_2, 1, 0, 1, 1);
 
 
-        gridLayout_3->addWidget(frame, 3, 0, 2, 2);
-
-        widget = new QWidget(dockWidgetContents);
-        widget->setObjectName(QStringLiteral("widget"));
-        gridLayout_2 = new QGridLayout(widget);
-        gridLayout_2->setSpacing(6);
-        gridLayout_2->setContentsMargins(11, 11, 11, 11);
-        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
-        checkBox_3 = new QCheckBox(widget);
-        checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
-
-        gridLayout_2->addWidget(checkBox_3, 2, 0, 1, 1);
-
-        checkBox_4 = new QCheckBox(widget);
-        checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
-
-        gridLayout_2->addWidget(checkBox_4, 3, 0, 1, 1);
-
-        checkBox = new QCheckBox(widget);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-
-        gridLayout_2->addWidget(checkBox, 0, 0, 1, 1);
-
-        checkBox_2 = new QCheckBox(widget);
-        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
-
-        gridLayout_2->addWidget(checkBox_2, 1, 0, 1, 1);
-
-        checkBox_6 = new QCheckBox(widget);
-        checkBox_6->setObjectName(QStringLiteral("checkBox_6"));
-
-        gridLayout_2->addWidget(checkBox_6, 5, 0, 1, 1);
-
-        checkBox_5 = new QCheckBox(widget);
-        checkBox_5->setObjectName(QStringLiteral("checkBox_5"));
-
-        gridLayout_2->addWidget(checkBox_5, 4, 0, 1, 1);
-
-
-        gridLayout_3->addWidget(widget, 1, 0, 1, 2);
-
-        verticalSpacer_2 = new QSpacerItem(20, 54, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout_3->addItem(verticalSpacer_2, 2, 0, 1, 2);
+        gridLayout_2->addWidget(frame, 2, 0, 1, 1);
 
         dockWidget->setWidget(dockWidgetContents);
         OSGEarthWindowClass->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget);
@@ -146,14 +142,14 @@ public:
     {
         OSGEarthWindowClass->setWindowTitle(QApplication::translate("OSGEarthWindowClass", "OSGEarthWindow", Q_NULLPTR));
         dockWidget->setWindowTitle(QApplication::translate("OSGEarthWindowClass", "\345\212\237\350\203\275", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("OSGEarthWindowClass", "\347\211\271\346\225\210", Q_NULLPTR));
+        checkBox_2->setText(QApplication::translate("OSGEarthWindowClass", "\344\270\213\351\233\252", Q_NULLPTR));
+        checkBox->setText(QApplication::translate("OSGEarthWindowClass", "\344\270\213\351\233\250", Q_NULLPTR));
+        checkBox_3->setText(QApplication::translate("OSGEarthWindowClass", "\351\233\276", Q_NULLPTR));
+        checkBox_4->setText(QApplication::translate("OSGEarthWindowClass", "\347\201\253", Q_NULLPTR));
+        checkBox_5->setText(QApplication::translate("OSGEarthWindowClass", "\347\202\270\345\274\271", Q_NULLPTR));
         pushButton->setText(QApplication::translate("OSGEarthWindowClass", "PushButton", Q_NULLPTR));
         pushButton_2->setText(QApplication::translate("OSGEarthWindowClass", "PushButton", Q_NULLPTR));
-        checkBox_3->setText(QApplication::translate("OSGEarthWindowClass", "CheckBox3", Q_NULLPTR));
-        checkBox_4->setText(QApplication::translate("OSGEarthWindowClass", "CheckBox4", Q_NULLPTR));
-        checkBox->setText(QApplication::translate("OSGEarthWindowClass", "CheckBox1", Q_NULLPTR));
-        checkBox_2->setText(QApplication::translate("OSGEarthWindowClass", "CheckBox2", Q_NULLPTR));
-        checkBox_6->setText(QApplication::translate("OSGEarthWindowClass", "CheckBox6", Q_NULLPTR));
-        checkBox_5->setText(QApplication::translate("OSGEarthWindowClass", "CheckBox5", Q_NULLPTR));
     } // retranslateUi
 
 };

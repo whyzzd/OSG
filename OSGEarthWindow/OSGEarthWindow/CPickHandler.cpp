@@ -1,7 +1,11 @@
 #include"CPickHandler.h"
 #include<iostream>
-#include"MyConvert.h"
+
 #include"OsgContainer.h"
+CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
+{
+	mMyConv.setViewer(viewer);
+}
 bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
 	
@@ -21,15 +25,15 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				/*osg::Vec3 vec2 = screen2World(ea.getX(), ea.getY());
 				std::cout << vec2.x() << " " << vec2.y() << " " << vec2.z() << std::endl;*/
 
-				MyConvert myc(mViewer);
+				/*MyConvert myc(mViewer);
 				osg::Vec3 v(ea.getX(), ea.getY(),0);
-				osg::Vec3 vec1 = myc.ScreenToWorld(v);
+				osg::Vec3 vec1 = myc.ScreenToWorld(v);*/
 				//自定义类输出世界坐标
-				//std::cout << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
-				osg::Vec3 v1 = myc.WorldToLonLatAlt(vec1);
-				v1.z() = 900;
+				//std::cout <<"世界坐标:"<< vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
+				/*osg::Vec3 v1 = myc.WorldToLonLatAlt(vec1);
+				v1.z() = 900;*/
 				//自定义类输出经纬度
-				std::cout << v1.x() << " " << v1.y() << " " << v1.z() << std::endl;
+				//std::cout <<"经纬度:"<< v1.x() << " " << v1.y() << " " << v1.z() << std::endl;
 				/*first_point = { vec1.x(), vec1.z() };
 				originPos = picked->getMatrix();*/
 				static osg::Vec3 vvv[2];
@@ -39,14 +43,14 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					i = 1;
 					OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
 					
-						vvv[1] = v1;
+					vvv[1] = mLonLatAlt;
 						oc->getRoot()->addChild(createLine(vvv[0],vvv[1]));
 						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
 						//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
 				}
 				else
 				{
-					vvv[0] = v1;
+					vvv[0] = mLonLatAlt;
 					i++;
 				}
 			}
@@ -74,6 +78,9 @@ void CPickHandler::pick(float x, float y)
 	{
 		osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin();
 		osg::NodePath getNodePath = hitr->nodePath;
+
+		std::cout<<hitr->matrix.valid();
+
 		for (int i = getNodePath.size() - 1; i >= 0; --i)
 		{
 			osg::MatrixTransform* mt = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
@@ -86,8 +93,15 @@ void CPickHandler::pick(float x, float y)
 				PickObject = true;
 				picked = mt;
 			}
-
 		}
+
+		
+		mWorld = hitr->getWorldIntersectPoint();
+		
+		//std::cout << "世界坐标:" << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
+		mLonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
+		mLonLatAlt.z() = 900;
+		std::cout << "经纬度:" << mLonLatAlt.x() << " " << mLonLatAlt.y() << " " << mLonLatAlt.z() << std::endl;
 	}
 	else
 	{
