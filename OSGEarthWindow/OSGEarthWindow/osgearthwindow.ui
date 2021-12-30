@@ -46,35 +46,38 @@
        </property>
        <layout class="QFormLayout" name="formLayout_2">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_2">
+         <widget class="QCheckBox" name="checkBoxSnow">
           <property name="text">
            <string>下雪</string>
+          </property>
+          <property name="tristate">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="checkBoxRain">
           <property name="text">
            <string>下雨</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QCheckBox" name="checkBox_3">
+         <widget class="QCheckBox" name="checkBoxWu">
           <property name="text">
            <string>雾</string>
           </property>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QCheckBox" name="checkBox_4">
+         <widget class="QCheckBox" name="checkBoxFire">
           <property name="text">
            <string>火</string>
           </property>
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QCheckBox" name="checkBox_5">
+         <widget class="QCheckBox" name="checkBoxBoom">
           <property name="text">
            <string>炸弹</string>
           </property>

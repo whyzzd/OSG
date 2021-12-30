@@ -75,7 +75,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CPickHandler.cpp" />
-    <ClCompile Include="CPickHandler.h" />
+    <ClCompile Include="DrawXXX.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_OsgContainer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -133,6 +133,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CPickHandler.h" />
+    <ClInclude Include="DrawXXX.h" />
     <ClInclude Include="GraphicsWindowQt.h" />
     <ClInclude Include="MyConvert.h" />
     <ClInclude Include="QWidgetImage.h" />

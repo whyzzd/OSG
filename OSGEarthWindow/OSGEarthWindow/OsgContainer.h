@@ -54,6 +54,10 @@ public:
 
 	//ÐÇ¿Õ
 	void initSky();
+
+
+
+
 protected:
 	virtual void paintGL();
 
@@ -70,6 +74,14 @@ private:
 	osg::Node* m_earthNode;
 	
 	osg::ref_ptr<osgEarth::Util::EarthManipulator> em;
+
+public slots:
+	void slotSnow(int state);
+	void slotRain(int state);
+	void slotWu(int state);
+	void slotFire(int state);
+	void slotBoom(int state);
+
 };
 
 #endif // OSGCONTAINER_H

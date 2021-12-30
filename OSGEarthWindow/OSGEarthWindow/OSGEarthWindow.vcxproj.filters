@@ -79,13 +79,13 @@
     <ClCompile Include="QWidgetImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CPickHandler.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="CPickHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MyConvert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawXXX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -117,6 +117,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyConvert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawXXX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

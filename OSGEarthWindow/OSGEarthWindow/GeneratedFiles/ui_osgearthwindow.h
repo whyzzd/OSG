@@ -38,11 +38,11 @@ public:
     QGridLayout *gridLayout_2;
     QGroupBox *groupBox;
     QFormLayout *formLayout_2;
-    QCheckBox *checkBox_2;
-    QCheckBox *checkBox;
-    QCheckBox *checkBox_3;
-    QCheckBox *checkBox_4;
-    QCheckBox *checkBox_5;
+    QCheckBox *checkBoxSnow;
+    QCheckBox *checkBoxRain;
+    QCheckBox *checkBoxWu;
+    QCheckBox *checkBoxFire;
+    QCheckBox *checkBoxBoom;
     QSpacerItem *verticalSpacer_2;
     QFrame *frame;
     QGridLayout *gridLayout;
@@ -77,30 +77,31 @@ public:
         formLayout_2->setSpacing(6);
         formLayout_2->setContentsMargins(11, 11, 11, 11);
         formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
-        checkBox_2 = new QCheckBox(groupBox);
-        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBoxSnow = new QCheckBox(groupBox);
+        checkBoxSnow->setObjectName(QStringLiteral("checkBoxSnow"));
+        checkBoxSnow->setTristate(false);
 
-        formLayout_2->setWidget(0, QFormLayout::LabelRole, checkBox_2);
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, checkBoxSnow);
 
-        checkBox = new QCheckBox(groupBox);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBoxRain = new QCheckBox(groupBox);
+        checkBoxRain->setObjectName(QStringLiteral("checkBoxRain"));
 
-        formLayout_2->setWidget(1, QFormLayout::LabelRole, checkBox);
+        formLayout_2->setWidget(1, QFormLayout::LabelRole, checkBoxRain);
 
-        checkBox_3 = new QCheckBox(groupBox);
-        checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
+        checkBoxWu = new QCheckBox(groupBox);
+        checkBoxWu->setObjectName(QStringLiteral("checkBoxWu"));
 
-        formLayout_2->setWidget(2, QFormLayout::LabelRole, checkBox_3);
+        formLayout_2->setWidget(2, QFormLayout::LabelRole, checkBoxWu);
 
-        checkBox_4 = new QCheckBox(groupBox);
-        checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
+        checkBoxFire = new QCheckBox(groupBox);
+        checkBoxFire->setObjectName(QStringLiteral("checkBoxFire"));
 
-        formLayout_2->setWidget(3, QFormLayout::LabelRole, checkBox_4);
+        formLayout_2->setWidget(3, QFormLayout::LabelRole, checkBoxFire);
 
-        checkBox_5 = new QCheckBox(groupBox);
-        checkBox_5->setObjectName(QStringLiteral("checkBox_5"));
+        checkBoxBoom = new QCheckBox(groupBox);
+        checkBoxBoom->setObjectName(QStringLiteral("checkBoxBoom"));
 
-        formLayout_2->setWidget(4, QFormLayout::LabelRole, checkBox_5);
+        formLayout_2->setWidget(4, QFormLayout::LabelRole, checkBoxBoom);
 
 
         gridLayout_2->addWidget(groupBox, 0, 0, 1, 1);
@@ -143,11 +144,11 @@ public:
         OSGEarthWindowClass->setWindowTitle(QApplication::translate("OSGEarthWindowClass", "OSGEarthWindow", Q_NULLPTR));
         dockWidget->setWindowTitle(QApplication::translate("OSGEarthWindowClass", "\345\212\237\350\203\275", Q_NULLPTR));
         groupBox->setTitle(QApplication::translate("OSGEarthWindowClass", "\347\211\271\346\225\210", Q_NULLPTR));
-        checkBox_2->setText(QApplication::translate("OSGEarthWindowClass", "\344\270\213\351\233\252", Q_NULLPTR));
-        checkBox->setText(QApplication::translate("OSGEarthWindowClass", "\344\270\213\351\233\250", Q_NULLPTR));
-        checkBox_3->setText(QApplication::translate("OSGEarthWindowClass", "\351\233\276", Q_NULLPTR));
-        checkBox_4->setText(QApplication::translate("OSGEarthWindowClass", "\347\201\253", Q_NULLPTR));
-        checkBox_5->setText(QApplication::translate("OSGEarthWindowClass", "\347\202\270\345\274\271", Q_NULLPTR));
+        checkBoxSnow->setText(QApplication::translate("OSGEarthWindowClass", "\344\270\213\351\233\252", Q_NULLPTR));
+        checkBoxRain->setText(QApplication::translate("OSGEarthWindowClass", "\344\270\213\351\233\250", Q_NULLPTR));
+        checkBoxWu->setText(QApplication::translate("OSGEarthWindowClass", "\351\233\276", Q_NULLPTR));
+        checkBoxFire->setText(QApplication::translate("OSGEarthWindowClass", "\347\201\253", Q_NULLPTR));
+        checkBoxBoom->setText(QApplication::translate("OSGEarthWindowClass", "\347\202\270\345\274\271", Q_NULLPTR));
         pushButton->setText(QApplication::translate("OSGEarthWindowClass", "PushButton", Q_NULLPTR));
         pushButton_2->setText(QApplication::translate("OSGEarthWindowClass", "PushButton", Q_NULLPTR));
     } // retranslateUi

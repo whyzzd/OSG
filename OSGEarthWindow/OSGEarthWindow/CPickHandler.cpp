@@ -2,6 +2,7 @@
 #include<iostream>
 
 #include"OsgContainer.h"
+#include"DrawXXX.h"
 CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
 {
 	mMyConv.setViewer(viewer);
@@ -44,9 +45,11 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
 					
 					vvv[1] = mLonLatAlt;
-						oc->getRoot()->addChild(createLine(vvv[0],vvv[1]));
-						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
-						//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
+
+					DrawXXX drawline;
+					oc->getRoot()->addChild(drawline.createLine(vvv[0],vvv[1]));
+					//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
+					//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
 				}
 				else
 				{
@@ -79,7 +82,7 @@ void CPickHandler::pick(float x, float y)
 		osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin();
 		osg::NodePath getNodePath = hitr->nodePath;
 
-		std::cout<<hitr->matrix.valid();
+		//std::cout<<hitr->matrix.valid();
 
 		for (int i = getNodePath.size() - 1; i >= 0; --i)
 		{
