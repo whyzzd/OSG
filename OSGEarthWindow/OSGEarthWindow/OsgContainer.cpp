@@ -1,14 +1,14 @@
 #include "OsgContainer.h"
+#include <QApplication>
+#include <Windows.h>
+#include <typeinfo>
+#include<ctime>
 #include <QInputEvent>
 #include <osg/MatrixTransform>
 #include <osgDB/ReadFile>
 #include <osgGA/MultiTouchTrackballManipulator>
 #include <osgGA/StateSetManipulator>
 #include <osgViewer/ViewerEventHandlers>
-#include <QApplication>
-
-#include <Windows.h>
-#include <typeinfo>
 #include <osgFX/Scribe>
 #include <osg/Notify>
 #include <osgGA/GUIEventHandler>
@@ -18,11 +18,8 @@
 #include <osgEarthUtil/Controls>
 #include <osgEarthUtil/ExampleResources>
 #include <osgEarthSymbology/Color>
-#include<ctime>
-#include <osgParticle/PrecipitationEffect>
-#include <osgParticle/FireEffect>
-#include<osgParticle/ExplosionEffect>
-#include<osgParticle/ExplosionDebrisEffect>
+#include "DrawXXX.h"
+
 //#include<osgEarthUtil/Ephemeris>
 //#include<osgEarthUtil/Sky>
 
@@ -31,8 +28,8 @@
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
-	init3D();
-	//initCowTest();
+	//initEarth();
+	initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 	
@@ -127,7 +124,6 @@ void OsgContainer::mousePressEvent(QMouseEvent *event) {
 			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(1);
 			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
 			qDebug() << button;*/
-			Pick(event->x(), event->y());
 			break; 
 
 		}
@@ -178,13 +174,13 @@ void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event) {
 	update();
 }
 void OsgContainer::mouseMoveEvent(QMouseEvent *event) {
-	setKeyboardModifiers(event);
+	//setKeyboardModifiers(event);
 	window->getEventQueue()->mouseMotion(event->x(), event->y());
 	QOpenGLWidget::mouseMoveEvent(event);
 	update();
 }
 void OsgContainer::wheelEvent(QWheelEvent *event) {
-	setKeyboardModifiers(event);
+	//setKeyboardModifiers(event);
 	window->getEventQueue()->mouseScroll(
 		event->orientation() == Qt::Vertical ?
 		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_UP : osgGA::GUIEventAdapter::SCROLL_DOWN) :
@@ -216,43 +212,9 @@ void OsgContainer::paintGL() {
 	}
 	
 }
-void OsgContainer::Pick(float x, float y)
-{
-	// 申请一个相交测试的结果集，判断屏幕与场景相交后，得出的结果集放入此中
-	osgUtil::LineSegmentIntersector::Intersections intersections;
-	if (computeIntersections(x, y, intersections)) {
-		int n = 1;
-		// 申请一个结果集遍历器，遍历该结果集
-		for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
 
-			// 注意这里取的是 back()
-			if (!hitr->nodePath.empty() && !(hitr->nodePath.back()->getName().empty())) {
 
-				// 得到遍历器中的 nodepath，以此可以判断该 path 中是否有想要的结点
-				const osg::NodePath &np = hitr->nodePath;
-				// 如果结果集中有所需要的结点，则设置隐藏该结点
-				// 其中有一个动态转换，如果可以转换成功则左值不为 NULL，否则为 NULL。
-				for (int i = np.size() - 1; i >= 0; --i) {
-
-					// 添加一个 scribe 结点，该结点下的模型会被加白描线高亮显示
-					osgFX::Scribe *sc = dynamic_cast<osgFX::Scribe *>(np[i]);
-					if (sc != NULL) {
-
-						if (sc->getNodeMask() != 0)
-							sc->setNodeMask(0);
-						
-					}
-				}
-				
-			}
-			//qDebug() << x << y<<n++;;
-			
-		}
-	}
-	
-}
-
-void OsgContainer::init3D() {
+void OsgContainer::initEarth() {
 
 	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
 	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
@@ -285,22 +247,25 @@ void OsgContainer::init3D() {
 	setCameraManipulator(manipulator);*/
 	
 
-	createSnow();
+	//createSnow();
 	addEventHandler(new CPickHandler(this));
 	addEventHandler(new osgViewer::WindowSizeHandler());
 	addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
-	setSceneData(root);
 	
+	setSceneData(root);
 	//setRunFrameScheme(ON_DEMAND);
 	//initSky();
+	
+	DrawXXX sanjiao;
+	root->addChild(sanjiao.createTrinangle());
 	
 	startTimer(10);
 	
 }
 void OsgContainer::initCowTest()
 {
-	m_earthNode = osgDB::readNodeFile("glider.osg"); 
+	m_earthNode = osgDB::readNodeFile("cow.osg"); 
 	//osg::Node*axe = osgDB::readNodeFile("axes.osgt");
 	
 	if (!m_earthNode)
@@ -332,7 +297,7 @@ void OsgContainer::initCowTest()
 	sc->addChild(m_earthNode);
 	root->addChild(sc);*/
 	
-	root->addChild(m_earthNode);
+	//root->addChild(m_earthNode);
 	
 	setCamera(createCamera(0, 0, width(), height()));
 
@@ -349,6 +314,8 @@ void OsgContainer::initCowTest()
 	addEventHandler(new osgGA::StateSetManipulator(getCamera()->getOrCreateStateSet()));
 	setSceneData(root);
 	
+	DrawXXX sanjiao;
+	root->addChild(sanjiao.createTrinangle());
 	startTimer(10);
 }
 
@@ -398,58 +365,176 @@ osg::ref_ptr<osg::Camera> OsgContainer::createCamera(int x, int y, int w, int h)
 	return camera.release();
 }
 //下雪
-void OsgContainer::createSnow()
+bool OsgContainer::createSnow()
 {
 
-	osg::ref_ptr<osgParticle::PrecipitationEffect> sn = new osgParticle::PrecipitationEffect;
+
+	mSnowNode = new osgParticle::PrecipitationEffect;
 
 	//设置雪花颜色
-	sn->setParticleColor(osg::Vec4(1, 1, 1, 1));
-	sn->setUseFarLineSegments(true);
+	mSnowNode->setParticleColor(osg::Vec4(1, 1, 1, 1));
+	mSnowNode->setUseFarLineSegments(true);
 	//设置雪花方向
-	sn->setWind(osg::Vec3(2, 0, 0));
+	mSnowNode->setWind(osg::Vec3(2, 0, 0));
 
 	// 设置雪花浓度
-	sn->snow(0.8);
+	mSnowNode->snow(0.8);
 
-	root->addChild(sn);
+	return root->addChild(mSnowNode);
 	
-	//this->realize();
-	//this->run();
-}
-void OsgContainer::createFire()
-{
-	osg::ref_ptr<osgParticle::FireEffect> fe = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
-	root->addChild(fe);
-}
-void OsgContainer::createExplosion()
-{
-	osg::ref_ptr<osgParticle::ExplosionEffect> ee = new osgParticle::ExplosionEffect(osg::Vec3(30, 30, 30), 90);
-	root->addChild(ee);
-}
-void OsgContainer::crateExplosionDebris()
-{
-	osg::ref_ptr<osgParticle::ExplosionDebrisEffect> ede = new osgParticle::ExplosionDebrisEffect(osg::Vec3(30, 30, 30), 9);
-	root->addChild(ede);
 
 }
+bool OsgContainer::createRain()
+{
+	mRainNode = new osgParticle::PrecipitationEffect;
+
+	// 设置颜色
+	mRainNode->setParticleColor(osg::Vec4(1, 1, 1, 1));
+	mRainNode->setUseFarLineSegments(true);
+	// iLevel參数是一个int值，表示雨的级别，一般1-10就够用了
+	mRainNode->setParticleSize(2 / 10.0);
+	mRainNode->rain(1.0);
+	return root->addChild(mRainNode);
+}
+void OsgContainer::createWu()
+{
+	mWuNode = new osg::Fog;
+	mWuNode->setDensity(0.01);
+	mWuNode->setColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	mWuNode->setMode(osg::Fog::LINEAR);  //osg::Fog::EXP  //osg::Fog::EXP2
+	mWuNode->setStart(10);
+	mWuNode->setEnd(50);
+	root->getOrCreateStateSet()->setAttributeAndModes(mWuNode, osg::StateAttribute::ON);
+	//root->addChild(mWuNode);
+
+}
+bool OsgContainer::createFire()
+{
+	mFireNode = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
+	return root->addChild(mFireNode);
+}
+bool OsgContainer::createBoom()
+{
+	mBoomNode = new osgParticle::ExplosionEffect(osg::Vec3(30, 30, 30), 90);
+	return root->addChild(mBoomNode);
+}
+//bool OsgContainer::crateExplosionDebris()
+//{
+//	mEDEBoomNode = new osgParticle::ExplosionDebrisEffect(osg::Vec3(30, 30, 30), 9);
+//	return root->addChild(mEDEBoomNode);
+//}
 
 void OsgContainer::slotSnow(int state)
 {
-	std::cout << "snow!!!!!!";
+	if (!mHaveSnow)
+	{
+		if (!createSnow())
+		{
+			std::cout << "雪特效创建失败";
+			return;
+		}
+		mHaveSnow = true;
+	}
+	else
+	{
+		if (state == 0)//取消选中
+		{
+			mSnowNode->setNodeMask(0);
+			std::cout << "取消选中 ";
+		}
+		else if (state == 2)//选中
+		{
+			mSnowNode->setNodeMask(1);
+			std::cout << "选中 ";
+		}
+	}
 }
 void OsgContainer::slotRain(int state)
 {
+	if (!mHaveRain)
+	{
+		if (!createRain())
+		{
+			std::cout << "雨特效创建失败";
+			return;
+		}
+		mHaveRain = true;
+	}
+	else
+	{
+		if (state == 0)//取消选中
+		{
+			mRainNode->setNodeMask(0);
+		}
+		else if (state == 2)//选中
+		{
+			mRainNode->setNodeMask(1);
+		}
+	}
 
 }
 void OsgContainer::slotWu(int state)
 {
+	if (!mHaveWu)
+	{
+		createWu();
+		
+		mHaveWu = true;
+	}
+	else
+	{
+		if (state == 0)//取消选中
+		{
+			root->getOrCreateStateSet()->setAttributeAndModes(mWuNode, osg::StateAttribute::OFF);
+		}
+		else if (state == 2)//选中
+		{
+			root->getOrCreateStateSet()->setAttributeAndModes(mWuNode, osg::StateAttribute::ON);
+		}
+	}
+	
 }
 void OsgContainer::slotFire(int state)
 {
-
+	if (!mHaveFire)
+	{
+		if (!createFire())
+		{
+			std::cout << "火特效创建失败";
+			return;
+		}
+		mHaveFire = true;
+	}
+	else
+	{
+		if (state == 0)//取消选中
+		{
+			mFireNode->setNodeMask(0);
+		}
+		else if (state == 2)//选中
+		{
+			mFireNode->setNodeMask(1);
+		}
+	}
 }
 void OsgContainer::slotBoom(int state)
 {
-
+	if (!mHaveBoom)
+	{
+		if (!createBoom())
+		{
+			std::cout << "爆炸特效创建失败";
+			return;
+		}
+		mHaveBoom = true;
+	}
+	else
+	{
+		if (state == 0)//取消选中
+		{
+			root->removeChild(mBoomNode);
+			mHaveBoom = false;
+		}
+		
+	}
 }

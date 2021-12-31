@@ -7,6 +7,11 @@
 #include<osgEarth/MapNode>
 #include<osgEarthUtil/EarthManipulator>
 
+#include <osgParticle/PrecipitationEffect>
+#include <osgParticle/FireEffect>
+#include<osgParticle/ExplosionEffect>
+#include<osgParticle/ExplosionDebrisEffect>
+#include<osg/Fog>
 extern osg::ref_ptr<osg::EllipsoidModel>em ;
 extern osg::Node* createLine(osg::Vec3d start, osg::Vec3d end);
 
@@ -31,7 +36,6 @@ public:
 	void resizeEvent(QResizeEvent *event);
 	void moveEvent(QMoveEvent *event);
 	void timerEvent(QTimerEvent *);
-	void Pick(float x,float y);
 	osgViewer::Viewer *getOSGViewer()
 	{
 		return this;
@@ -47,22 +51,24 @@ public:
 	}
 
 	//控制特效
-	void createSnow();//雪
-	void createFire();//火
-	void createExplosion();//爆炸
-	void crateExplosionDebris();//爆炸碎片
+	bool createSnow();//雪
+	bool createRain();
+	void createWu();
+	bool createFire();//火
+	bool createBoom();//爆炸
+	bool crateExplosionDebris();//爆炸碎片
 
 	//星空
 	void initSky();
 
-
+	
 
 
 protected:
 	virtual void paintGL();
 
 private:
-	void init3D();
+	void initEarth();
 	void initCowTest();
 
 	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);
@@ -75,7 +81,25 @@ private:
 	
 	osg::ref_ptr<osgEarth::Util::EarthManipulator> em;
 
+private:
+	//特效节点
+	osg::ref_ptr<osgParticle::PrecipitationEffect> mSnowNode;
+	osg::ref_ptr<osgParticle::PrecipitationEffect> mRainNode;
+	osg::ref_ptr<osg::Fog>mWuNode;
+	osg::ref_ptr<osgParticle::FireEffect> mFireNode;
+	osg::ref_ptr<osgParticle::ExplosionEffect> mBoomNode;
+	
+	/*osg::ref_ptr<osgParticle::ExplosionDebrisEffect> mEDEBoomNode;*/
+
+	//特效是否已经存在
+	bool mHaveSnow=false;
+	bool mHaveRain=false;
+	bool mHaveWu=false;
+	bool mHaveFire=false;
+	bool mHaveBoom=false;
+
 public slots:
+	//特效槽函数
 	void slotSnow(int state);
 	void slotRain(int state);
 	void slotWu(int state);

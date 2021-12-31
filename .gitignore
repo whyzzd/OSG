@@ -11,11 +11,7 @@
 *.ipch
 *.tlh
 *.aps
-
-MapMatrix3D/res/FeatureCollector2009.rc
 *.user
-mm3dDll/domDsmToOsgb/temporaryfile_xsjz_transparent_mosaic_group1.tif
-MapMatrix3D/x64/Release/FeatureCollector2009.res
 *.res
 *.db
 *.txt

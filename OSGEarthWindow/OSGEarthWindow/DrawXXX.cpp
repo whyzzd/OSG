@@ -27,7 +27,7 @@ osg::Node* DrawXXX::createLine(osg::Vec3d start, osg::Vec3d end)
 	vectex->push_back(SecondPoint);
 
 	//红色
-	color->push_back(osg::Vec4(1.0, 0.0, 0.0, 1.0));
+	//color->push_back(osg::Vec4(1.0, 0.0, 0.0, 1.0));
 	color->push_back(osg::Vec4(1.0, 0.0, 0.0, 1.0));
 	//画线
 	gemo->setVertexArray(vectex);
@@ -42,4 +42,40 @@ osg::Node* DrawXXX::createLine(osg::Vec3d start, osg::Vec3d end)
 	line_gnode->addDrawable(gemo);
 
 	return line_gnode;
+}
+osg::Node* DrawXXX::createTrinangle(/*osg::Vec3Array vec*/)
+{
+	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+
+	//首先定义四个点
+	osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array;
+	geom->setVertexArray(v.get());
+	v->push_back(osg::Vec3(-1.f, 0.f, -1.f));
+	v->push_back(osg::Vec3(1.f, 0.f, -1.f));
+	v->push_back(osg::Vec3(1.f, 0.f, 1.f));
+	v->push_back(osg::Vec3(-1.f, 0.f, 1.f));
+
+	//定义颜色数组
+	osg::ref_ptr<osg::Vec4Array> c = new osg::Vec4Array;
+	geom->setColorArray(c.get());
+	geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+	c->push_back(osg::Vec4(1.f, 0.f, 0.f, 1.f));
+	/*c->push_back(osg::Vec4(0.f, 1.f, 0.f, 1.f));
+	c->push_back(osg::Vec4(0.f, 0.f, 1.f, 1.f));
+	c->push_back(osg::Vec4(1.f, 1.f, 1.f, 1.f));*/
+	//设置定点关联方式
+	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4));
+	//geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, 4));
+	//方法一
+	//手动定义法线
+	osg::ref_ptr<osg::Vec3Array> n = new osg::Vec3Array;
+	geom->setNormalArray(n.get());
+	geom->setNormalBinding(osg::Geometry::BIND_OVERALL);
+	n->push_back(osg::Vec3(-2.f, -1.f, 10.f));
+	//方法二
+	//自动生成法线
+	//osgUtil::SmoothingVisitor::smooth(*(geom.get()));//自动生成法线
+	osg::Geode *geode = new osg::Geode;
+	geode->addDrawable(geom.get());
+	return geode;
 }
