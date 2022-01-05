@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <Windows.h>
 #include <typeinfo>
-#include<ctime>
+#include <ctime>
 #include <QInputEvent>
 #include <osg/MatrixTransform>
 #include <osgDB/ReadFile>
@@ -19,17 +19,14 @@
 #include <osgEarthUtil/ExampleResources>
 #include <osgEarthSymbology/Color>
 #include "DrawXXX.h"
-
-//#include<osgEarthUtil/Ephemeris>
-//#include<osgEarthUtil/Sky>
-
 #include<qdebug.h>
 #include"CPickHandler.h"
+#include"MyConvert.h"
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
-	//initEarth();
-	initCowTest();
+	initEarth();
+	//initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 	
@@ -174,13 +171,13 @@ void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event) {
 	update();
 }
 void OsgContainer::mouseMoveEvent(QMouseEvent *event) {
-	//setKeyboardModifiers(event);
+	setKeyboardModifiers(event);
 	window->getEventQueue()->mouseMotion(event->x(), event->y());
 	QOpenGLWidget::mouseMoveEvent(event);
 	update();
 }
 void OsgContainer::wheelEvent(QWheelEvent *event) {
-	//setKeyboardModifiers(event);
+	setKeyboardModifiers(event);
 	window->getEventQueue()->mouseScroll(
 		event->orientation() == Qt::Vertical ?
 		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_UP : osgGA::GUIEventAdapter::SCROLL_DOWN) :
@@ -216,7 +213,9 @@ void OsgContainer::paintGL() {
 
 void OsgContainer::initEarth() {
 
-	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+	//m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+	m_earthNode = osgDB::readNodeFile("feature_clip_plane.earth");
+	
 	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
 	
 	if (!m_earthNode)
@@ -237,29 +236,16 @@ void OsgContainer::initEarth() {
 	setCameraManipulator(em);
 	
 
-	//在地球表面画线
-	/*osg::Vec3d start(116.1, 40.1, 900);
-	osg::Vec3d end(116.3, 40.3, 900);
-	root->addChild(createLine(start, end));
-	em->setHomeViewpoint(osgEarth::Viewpoint("视点", 116.2, 40.2, 900, 0.0, -90, 7e3));*/
-
-	/*osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
-	setCameraManipulator(manipulator);*/
-	
-
-	//createSnow();
-	addEventHandler(new CPickHandler(this));
+	mCPickHandler = new CPickHandler(this);//两个类重复包含了
+	addEventHandler(mCPickHandler);
 	addEventHandler(new osgViewer::WindowSizeHandler());
 	addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
 	
+
 	setSceneData(root);
-	//setRunFrameScheme(ON_DEMAND);
-	//initSky();
-	
-	DrawXXX sanjiao;
-	root->addChild(sanjiao.createTrinangle());
-	
+
+
 	startTimer(10);
 	
 }
@@ -299,6 +285,7 @@ void OsgContainer::initCowTest()
 	
 	//root->addChild(m_earthNode);
 	
+
 	setCamera(createCamera(0, 0, width(), height()));
 
 	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
@@ -308,14 +295,15 @@ void OsgContainer::initCowTest()
 	//createExplosion();
 	//crateExplosionDebris();
 	
-	//addEventHandler(new CPickHandler(this));//自定义类操作类
+	mCPickHandler = new CPickHandler(this);
+	addEventHandler(mCPickHandler);//自定义类操作类
 	addEventHandler(new osgViewer::WindowSizeHandler());
-	this->addEventHandler(new osgViewer::StatsHandler);
+	addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(getCamera()->getOrCreateStateSet()));
 	setSceneData(root);
 	
-	DrawXXX sanjiao;
-	root->addChild(sanjiao.createTrinangle());
+	/*DrawXXX sanjiao;
+	root->addChild(sanjiao.createTrinangle());*/
 	startTimer(10);
 }
 
@@ -410,12 +398,29 @@ void OsgContainer::createWu()
 }
 bool OsgContainer::createFire()
 {
-	mFireNode = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
+	MyConvert myc;
+	osg::Vec3 lonLatAlt;
+	lonLatAlt.x() = 110;
+	lonLatAlt.y() = 30;
+	lonLatAlt.z() = 900;
+	osg::Vec3 vec =myc.LonLatAltToWorld(lonLatAlt);
+	mFireNode = new osgParticle::FireEffect(osg::Vec3(vec.x(), vec.y(), vec.z()), 90);
+	em->setViewpoint(osgEarth::Viewpoint("视点", 110.0,30.0 , 900.0, 0.0, -90, 7e3));
+	
+	//mFireNode = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
+	//getEM()->setViewpoint(osgEarth::Viewpoint("视点", (, , 900, 0.0, -90, 7e3));
 	return root->addChild(mFireNode);
 }
 bool OsgContainer::createBoom()
 {
-	mBoomNode = new osgParticle::ExplosionEffect(osg::Vec3(30, 30, 30), 90);
+	MyConvert myc;
+	osg::Vec3 lonLatAlt;
+	lonLatAlt.x() = 110;
+	lonLatAlt.y() = 30;
+	lonLatAlt.z() = 900;
+	osg::Vec3 vec = myc.LonLatAltToWorld(lonLatAlt);
+	mBoomNode = new osgParticle::ExplosionEffect(osg::Vec3(vec.x(), vec.y(), vec.z()), 90);
+	em->setViewpoint(osgEarth::Viewpoint("视点", 110.0, 30.0, 900.0, 0.0, -90, 7e3));
 	return root->addChild(mBoomNode);
 }
 //bool OsgContainer::crateExplosionDebris()

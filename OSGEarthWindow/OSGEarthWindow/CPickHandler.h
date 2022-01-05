@@ -7,20 +7,55 @@
 #include<qdebug.h>
 #include <osg/MatrixTransform>
 #include"MyConvert.h"
-class CPickHandler : public osgGA::GUIEventHandler {
+#include<QObject>
+class CPickHandler :public QObject, public osgGA::GUIEventHandler {
+	Q_OBJECT
+	
+public:
+
+	enum SelectedDraw {
+		NONE=0,
+		LINE = 1 ,
+		TRIANGLES = 2,
+		PARALLELOGRAM = 3,
+		
+	};
+	int mSelected;
 
 public:
 	CPickHandler(osgViewer::Viewer *viewer); 
 	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 	void pick(float x, float y);
-	osg::Vec3 screen2World(float x, float y);
-	bool PickObject;
+	void reDrawXXX();
+
+	
+	bool mIsPickObject;
 	osg::ref_ptr<osg::MatrixTransform> picked;
-	bool lbuttonDown;
+	
+	//存放点击坐标以及点击次数
+	osg::ref_ptr<osg::Vec3Array> mLineVec=new osg::Vec3Array;
+	int mLineN =1;
+	osg::ref_ptr<osg::Vec3Array> mTrinangleVec = new osg::Vec3Array;
+	int mTrinangleN=1;
+	osg::ref_ptr<osg::Vec3Array> mParallelogramVec = new osg::Vec3Array;
+	int mParallelogramN=1;
+
+	//滑动条的值
+	float mDrawLineWid;
 
 protected:
 	osgViewer::Viewer *mViewer; // mViewer
 	osg::Vec3 mWorld;
 	osg::Vec3 mLonLatAlt;
 	MyConvert mMyConv;
+
+signals:
+	void signShowLonLatAlt(const osg::Vec3 &lla);
+	void signReDefault();
+
+public slots:
+	void slotGetDrawIndex(int n);
+	void slotDrawLineWid(float a);
+
+
 };

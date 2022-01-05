@@ -48,6 +48,7 @@ osg::ref_ptr<osg::Node> createQuad()
 
 int main(int argc, char *argv[])
 {
+
     QApplication a(argc, argv);
 	/*osg::ArgumentParser argument(&argc, argv);*/
     OSGEarthWindow w/*(argument)*/;

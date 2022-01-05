@@ -8,6 +8,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_osgearthwindow.h"
 #include <osgViewer/Viewer>
+
 class OSGEarthWindow : public QMainWindow
 {
     Q_OBJECT
@@ -15,6 +16,14 @@ class OSGEarthWindow : public QMainWindow
 public:
 	OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent = Q_NULLPTR);
 
+	QLabel *mStatusLabel1;
+	QLabel *mStatusLabel2;
 private:
     Ui::OSGEarthWindowClass ui;
+
+signals:
+	void signDrawLineWid(float a);
+public slots:
+	void slotShowLonLatAlt(const osg::Vec3 &lla);
+	void slotReDefaultCombo();
 };

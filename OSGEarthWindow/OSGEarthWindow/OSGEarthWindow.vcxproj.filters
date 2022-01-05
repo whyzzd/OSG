@@ -88,6 +88,12 @@
     <ClCompile Include="DrawXXX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CPickHandler.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CPickHandler.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="osgearthwindow.h">
@@ -105,6 +111,9 @@
     <CustomBuild Include="QGraphicsViewAdapter.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="CPickHandler.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_osgearthwindow.h">
@@ -120,9 +129,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DrawXXX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CPickHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

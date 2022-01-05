@@ -12,9 +12,7 @@
 #include<osgParticle/ExplosionEffect>
 #include<osgParticle/ExplosionDebrisEffect>
 #include<osg/Fog>
-extern osg::ref_ptr<osg::EllipsoidModel>em ;
-extern osg::Node* createLine(osg::Vec3d start, osg::Vec3d end);
-
+class CPickHandler;//无法直接包含,只能提前声明
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
 {
@@ -61,7 +59,8 @@ public:
 	//星空
 	void initSky();
 
-	
+public:
+	CPickHandler *mCPickHandler;
 
 
 protected:
