@@ -22,6 +22,12 @@
 #include<qdebug.h>
 #include"CPickHandler.h"
 #include"MyConvert.h"
+#include<osgEarthDrivers/tms/TMSOptions>
+#include<osgEarthDrivers/gdal/GDALOptions>
+#include <osgEarthDrivers/arcgis/ArcGISOptions>
+#include<osgEarthDrivers/xyz/XYZOptions>
+#include<osgEarth/ImageLayer>
+#include<osgEarth/Map>
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
@@ -214,25 +220,50 @@ void OsgContainer::paintGL() {
 void OsgContainer::initEarth() {
 
 	//m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
-	m_earthNode = osgDB::readNodeFile("feature_clip_plane.earth");
-	
+	//m_earthNode = osgDB::readNodeFile("zzz.earth");
 	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
-	
-	if (!m_earthNode)
-	{
-		return;
-	}
+	//TMSOptions imagery;
+
+	osg::ref_ptr<osgEarth::Map>m_pMap = new osgEarth::Map;
+	//使用api加载本地数据
+	osgEarth::Drivers::GDALOptions imageLayerOpt;
+	imageLayerOpt.url() = osgEarth::URI("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.tif");
+	std::string imageLayerName = "worldimage";
+	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
+	m_pMap->addLayer(imageLayer);
+
+
+	//使用api加载网络数据
+	osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
+	//netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
+	netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
+	std::string netImageLayerName = "worldimage1";
+	osg::ref_ptr<osgEarth::ImageLayer>netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
+	m_pMap->addLayer(netImageLayer);
+
+	//加载xyz格式文件
+	/*osgEarth::Drivers::XYZOptions tileOptions;
+	tileOptions.url() = "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
+	tileOptions.profile()->namedProfile() = ("spherical-mercator");
+	osgEarth::ImageLayerOptions options = osgEarth::ImageLayerOptions("debug", tileOptions);
+	osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer(options);
+	m_pMap->addLayer(layer);*/
+
+
 	root = new osg::Group();
-	
 	//root->addChild(m_earthNode);
-	osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
-	
-	root->addChild(map);
+	//osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
+	osgEarth::MapNode *mapNode = new osgEarth::MapNode(m_pMap);
+	/*osgEarth::Drivers::TMSOptions imagery;
+	imagery.url() = "http://readymap.org/readymap/tiles/1.0.0/22/";
+	map->addLayer(new ImageLayer("ReadyMap Imagery", imagery));*/
+
+	root->addChild(mapNode);
 	
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
 	em = new osgEarth::Util::EarthManipulator;
-	em->setNode(map);
+	em->setNode(mapNode);
 	setCameraManipulator(em);
 	
 

@@ -12,6 +12,7 @@
 #include<osgParticle/ExplosionEffect>
 #include<osgParticle/ExplosionDebrisEffect>
 #include<osg/Fog>
+
 class CPickHandler;//无法直接包含,只能提前声明
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer

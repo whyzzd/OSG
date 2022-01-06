@@ -38,7 +38,7 @@
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <ExecutablePath>D:\OSGCore\Build\OsgEarth\bin;D:\OSGCore\Build\OpenSceneGraphic\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>D:\OSGCore\Build\OsgEarth\include;D:\OSGCore\Build\OpenSceneGraphic\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OSGCore\Build\OsgEarth\bin;D:\OSGCore\Build\OpenSceneGraphic\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\OSGCore\Build\OpenSceneGraphic\lib;D:\OSGCore\Build\OsgEarth\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
