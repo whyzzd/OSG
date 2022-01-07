@@ -12,7 +12,10 @@
 #include<osgParticle/ExplosionEffect>
 #include<osgParticle/ExplosionDebrisEffect>
 #include<osg/Fog>
-
+#include<osgEarth/ImageLayer>
+#include<QThread>
+#include <osgEarthDrivers/arcgis/ArcGISOptions>
+#include"Worker.h"
 class CPickHandler;//无法直接包含,只能提前声明
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
@@ -46,7 +49,11 @@ public:
 	}
 	osgEarth::Util::EarthManipulator*getEM()
 	{
-		return em;
+		return m_EM;
+	}
+	osgEarth::Map *getPMap()
+	{
+		return m_pMap;
 	}
 
 	//控制特效
@@ -79,7 +86,16 @@ private:
 
 	osg::Node* m_earthNode;
 	
-	osg::ref_ptr<osgEarth::Util::EarthManipulator> em;
+	osg::ref_ptr<osgEarth::Util::EarthManipulator> m_EM;
+	osg::ref_ptr<osgEarth::Map>m_pMap;
+	//网络图像层
+	osg::ref_ptr<osgEarth::ImageLayer>m_netImageLayer;
+	bool m_netIsOpen = false;
+	QThread workerThread;
+	Worker *mWorker=NULL;
+
+	//测试用,无多线程
+	osg::ref_ptr<osgEarth::ImageLayer>netImageLayer;
 
 private:
 	//特效节点
@@ -106,6 +122,11 @@ public slots:
 	void slotFire(int state);
 	void slotBoom(int state);
 
+	//网络数据槽函数
+	void slotAddNetArcgis();
+	void slotRemvNetArcgis();
+signals:
+	void startWork();
 };
 
 #endif // OSGCONTAINER_H

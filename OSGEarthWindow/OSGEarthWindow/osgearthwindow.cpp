@@ -44,6 +44,10 @@ OSGEarthWindow::OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent)
 	});
 	emit signDrawLineWid(1.0);
 
+	//连接-断开网络
+	connect(ui.pushButtonOpen, &QPushButton::clicked, osgViewer, &OsgContainer::slotAddNetArcgis);
+	connect(ui.pushButtonClose, &QPushButton::clicked, osgViewer, &OsgContainer::slotRemvNetArcgis);
+
 	//显示经纬度
 	mStatusLabel1 = new QLabel(this);
 	mStatusLabel1->setMinimumWidth(100);
@@ -55,6 +59,7 @@ OSGEarthWindow::OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent)
 	ui.statusBar->addWidget(mStatusLabel2);
 	mStatusLabel2->setText(QString("已拾取,请拾取"));*/
 	connect(osgViewer->mCPickHandler, &CPickHandler::signShowLonLatAlt, this, &OSGEarthWindow::slotShowLonLatAlt);
+
 }
 void OSGEarthWindow::slotShowLonLatAlt(const osg::Vec3 &lla)
 {

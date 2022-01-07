@@ -24,22 +24,39 @@
 #include"MyConvert.h"
 #include<osgEarthDrivers/tms/TMSOptions>
 #include<osgEarthDrivers/gdal/GDALOptions>
-#include <osgEarthDrivers/arcgis/ArcGISOptions>
 #include<osgEarthDrivers/xyz/XYZOptions>
-#include<osgEarth/ImageLayer>
+#include<osgEarthDrivers/tms/TMSOptions>
 #include<osgEarth/Map>
+#include <QMetaType>
+//#include"XYZExSource.h"
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
+	qRegisterMetaType<std::string>("std::string");
+	qRegisterMetaType<osgEarth::Drivers::ArcGISOptions>("osgEarth::Drivers::ArcGISOptions");
 	initEarth();
 	//initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 	
+	//加载地图多线程注册
+	mWorker = new Worker;
+	mWorker->moveToThread(&workerThread);
+	connect(&workerThread, &QThread::finished, mWorker, &QObject::deleteLater);
+	connect(this, &OsgContainer::startWork, mWorker, &Worker::doWork);
+	connect(mWorker, &Worker::resultReady, this, [&](osgEarth::ImageLayer*lay){
+		m_netImageLayer = lay;
+		std::cout << typeid(*lay).name() <<":"<<lay<< std::endl;
+		m_pMap->addLayer(m_netImageLayer);
+	});
+	workerThread.start();
+	
 }
 
 OsgContainer::~OsgContainer()
 {
+	workerThread.quit();
+	workerThread.wait();
 }
 
 bool OsgContainer::event(QEvent *event) {
@@ -224,47 +241,62 @@ void OsgContainer::initEarth() {
 	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
 	//TMSOptions imagery;
 
-	osg::ref_ptr<osgEarth::Map>m_pMap = new osgEarth::Map;
+	m_pMap = new osgEarth::Map;
 	//使用api加载本地数据
 	osgEarth::Drivers::GDALOptions imageLayerOpt;
 	imageLayerOpt.url() = osgEarth::URI("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.tif");
 	std::string imageLayerName = "worldimage";
 	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
 	m_pMap->addLayer(imageLayer);
-
+	
 
 	//使用api加载网络数据
 	osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
-	//netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
-	netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
+	netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
+	//netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
 	std::string netImageLayerName = "worldimage1";
-	osg::ref_ptr<osgEarth::ImageLayer>netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
+	/*osg::ref_ptr<osgEarth::ImageLayer>*/netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
 	m_pMap->addLayer(netImageLayer);
 
 	//加载xyz格式文件
-	/*osgEarth::Drivers::XYZOptions tileOptions;
-	tileOptions.url() = "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
+	osgEarth::Drivers::XYZOptions tileOptions;
+	//高德卫星
+	//tileOptions.url() = osgEarth::URI("https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}");
+	//高德路线
+	//tileOptions.url() = osgEarth::URI("https://wprd01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=2&style=8&ltype=11");
+	
+	/*tileOptions.url() = "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
 	tileOptions.profile()->namedProfile() = ("spherical-mercator");
 	osgEarth::ImageLayerOptions options = osgEarth::ImageLayerOptions("debug", tileOptions);
 	osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer(options);
 	m_pMap->addLayer(layer);*/
 
+	//mapbox高程图
+	//tileOptions.url() = osgEarth::URI("http://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=pk.eyJ1IjoicXd1c2VyIiwiYSI6ImNreTN0YmhtZTAwdncyb2xtdWZ3ZWZodXEifQ.23yUvHmVWIQ8sRwy68EDlA");
+
+
+	//osgEarth::Drivers::XYZOptions exyz;
+	//exyz.url() = "http://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=pk.eyJ1IjoicXd1c2VyIiwiYSI6ImNreTN0YmhtZTAwdncyb2xtdWZ3ZWZodXEifQ.23yUvHmVWIQ8sRwy68EDlA";
+	//exyz.profile()->namedProfile() = "spherical-mercator";
+	////XYZExSource* etileSource = new XYZExSource(exyz);
+	////auto eStatus = etileSource->open();
+	//osgEarth::ElevationLayerOptions options1 = osgEarth::ElevationLayerOptions ("mapboxEle", exyz);
+	//m_pMap->addLayer(new osgEarth::ElevationLayer(options1));
+	
 
 	root = new osg::Group();
 	//root->addChild(m_earthNode);
 	//osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
 	osgEarth::MapNode *mapNode = new osgEarth::MapNode(m_pMap);
-	/*osgEarth::Drivers::TMSOptions imagery;
-	imagery.url() = "http://readymap.org/readymap/tiles/1.0.0/22/";
-	map->addLayer(new ImageLayer("ReadyMap Imagery", imagery));*/
+
 
 	root->addChild(mapNode);
 	
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
-	em = new osgEarth::Util::EarthManipulator;
-	em->setNode(mapNode);
-	setCameraManipulator(em);
+	m_EM = new osgEarth::Util::EarthManipulator;
+	m_EM->setNode(mapNode);
+	setCameraManipulator(m_EM);
 	
 
 	mCPickHandler = new CPickHandler(this);//两个类重复包含了
@@ -436,7 +468,7 @@ bool OsgContainer::createFire()
 	lonLatAlt.z() = 900;
 	osg::Vec3 vec =myc.LonLatAltToWorld(lonLatAlt);
 	mFireNode = new osgParticle::FireEffect(osg::Vec3(vec.x(), vec.y(), vec.z()), 90);
-	em->setViewpoint(osgEarth::Viewpoint("视点", 110.0,30.0 , 900.0, 0.0, -90, 7e3));
+	m_EM->setViewpoint(osgEarth::Viewpoint("视点", 110.0, 30.0, 900.0, 0.0, -90, 7e3));
 	
 	//mFireNode = new osgParticle::FireEffect(osg::Vec3(30, 30, 30), 90);
 	//getEM()->setViewpoint(osgEarth::Viewpoint("视点", (, , 900, 0.0, -90, 7e3));
@@ -451,7 +483,7 @@ bool OsgContainer::createBoom()
 	lonLatAlt.z() = 900;
 	osg::Vec3 vec = myc.LonLatAltToWorld(lonLatAlt);
 	mBoomNode = new osgParticle::ExplosionEffect(osg::Vec3(vec.x(), vec.y(), vec.z()), 90);
-	em->setViewpoint(osgEarth::Viewpoint("视点", 110.0, 30.0, 900.0, 0.0, -90, 7e3));
+	m_EM->setViewpoint(osgEarth::Viewpoint("视点", 110.0, 30.0, 900.0, 0.0, -90, 7e3));
 	return root->addChild(mBoomNode);
 }
 //bool OsgContainer::crateExplosionDebris()
@@ -571,6 +603,41 @@ void OsgContainer::slotBoom(int state)
 			root->removeChild(mBoomNode);
 			mHaveBoom = false;
 		}
-		
 	}
+}
+
+void OsgContainer::slotAddNetArcgis()
+{
+	//判断是否有网络连接
+	if (m_netIsOpen)
+	{
+		return;
+	}
+	m_netIsOpen = true;	
+	emit startWork();
+	
+
+	//以下代码,经测试可以使用
+	//m_pMap->addLayer(m_netImageLayer);
+	//osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
+	////netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
+	//netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
+	//std::string netImageLayerName = "worldimage1";
+	///*osg::ref_ptr<osgEarth::ImageLayer>*/netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
+	//m_pMap->addLayer(netImageLayer);
+}
+void OsgContainer::slotRemvNetArcgis()
+{
+	if (!m_netIsOpen)
+	{
+		return;
+	}
+	m_netIsOpen = false;
+	if (m_netImageLayer)
+	{ 
+		m_pMap->removeLayer(m_netImageLayer);
+	}
+
+	//以下代码经测试可以使用
+	//m_pMap->removeLayer(netImageLayer);
 }

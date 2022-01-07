@@ -22,6 +22,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			if (mSelected==SelectedDraw::NONE)
 			{
 				pick(ea.getX(), ea.getY());
+				
 			}
 			else if (mSelected==SelectedDraw::LINE)
 			{ 
@@ -33,6 +34,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (mLineN >= 2)
 					{
 						mLineN = 1;
+						std::cout << typeid(*mViewer).name() << std::endl;//打印mViewer所指的实际类型
 						OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
 					
 						mLineVec->push_back(mLonLatAlt);
