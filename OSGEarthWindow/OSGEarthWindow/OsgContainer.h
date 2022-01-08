@@ -75,7 +75,10 @@ protected:
 	virtual void paintGL();
 
 private:
-	void initEarth();
+	//以文件的形式加载
+	void initEarth1();
+	//以api的形式加载
+	void initEarth2();
 	void initCowTest();
 
 	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);

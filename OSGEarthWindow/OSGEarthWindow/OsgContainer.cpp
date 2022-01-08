@@ -27,14 +27,34 @@
 #include<osgEarthDrivers/xyz/XYZOptions>
 #include<osgEarthDrivers/tms/TMSOptions>
 #include<osgEarth/Map>
-#include <QMetaType>
-//#include"XYZExSource.h"
+#include"XYZExSource.h"
+#include<osgEarthDrivers/feature_ogr/OGRFeatureOptions>
+#include<osgEarthFeatures/FeatureModelLayer>
+
+
+#include<osgEarthFeatures/Feature>
+#include<osgEarthAnnotation/AnnotationNode>
+#include<osgEarthAnnotation/FeatureNode>
+#include<osgEarthAnnotation/FeatureEditing>
+#include <osgEarthAnnotation/ImageOverlay>
+#include <osgEarthAnnotation/CircleNode>
+#include <osgEarthAnnotation/RectangleNode>
+#include <osgEarthAnnotation/EllipseNode>
+#include <osgEarthAnnotation/PlaceNode>
+#include <osgEarthAnnotation/LabelNode>
+#include <osgEarthAnnotation/LocalGeometryNode>
+#include <osgEarthAnnotation/FeatureNode>
+#include <osgEarthAnnotation/ModelNode>
+#include <osgEarthAnnotation/AnnotationEditing>
+#include <osgEarthAnnotation/ImageOverlayEditor>
+#include <osgEarthSymbology/GeometryFactory>
+
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
-	qRegisterMetaType<std::string>("std::string");
-	qRegisterMetaType<osgEarth::Drivers::ArcGISOptions>("osgEarth::Drivers::ArcGISOptions");
-	initEarth();
+
+	//initEarth1();
+	initEarth2();
 	//initCowTest();
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
@@ -233,15 +253,40 @@ void OsgContainer::paintGL() {
 	
 }
 
-
-void OsgContainer::initEarth() {
-
-	//m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+void OsgContainer::initEarth1()
+{
+	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
+	osg::Node*shp = osgDB::readNodeFile("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp");
 	//m_earthNode = osgDB::readNodeFile("zzz.earth");
-	//osg::Node *cow = osgDB::readNodeFile("cow.osg");
-	//TMSOptions imagery;
 
+	root = new osg::Group();
+	root->addChild(m_earthNode);
+	osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
+	root->addChild(m_earthNode);
+	root->addChild(shp);
+	setCamera(createCamera(0, 0, width(), height()));
+	//设置地球操作器
+	m_EM = new osgEarth::Util::EarthManipulator;
+	m_EM->setNode(m_earthNode);
+	setCameraManipulator(m_EM);
+
+
+	mCPickHandler = new CPickHandler(this);//两个类重复包含了
+	addEventHandler(mCPickHandler);
+	addEventHandler(new osgViewer::WindowSizeHandler());
+	addEventHandler(new osgViewer::StatsHandler);
+	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
+
+	setSceneData(root);
+	startTimer(10);
+}
+void OsgContainer::initEarth2() 
+{
 	m_pMap = new osgEarth::Map;
+	osgEarth::MapNode *mapNode = new osgEarth::MapNode(m_pMap);
+	root = new osg::Group();
+	root->addChild(mapNode);
+
 	//使用api加载本地数据
 	osgEarth::Drivers::GDALOptions imageLayerOpt;
 	imageLayerOpt.url() = osgEarth::URI("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.tif");
@@ -249,14 +294,22 @@ void OsgContainer::initEarth() {
 	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
 	m_pMap->addLayer(imageLayer);
 	
+	//尝试使用api加载本地shp(疑惑:为啥加载不出来?)
+	/*osgEarth::Drivers::OGRFeatureOptions ogrData;
+	ogrData.url() = "D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp";
+	FeatureSourceLayerOptions ogrLayer;
+	ogrLayer.name() = "vector-data";
+	ogrLayer.featureSource() = ogrData;
+	m_pMap->addLayer(new osgEarth::Features::FeatureSourceLayer(ogrData));*/
+	
 
 	//使用api加载网络数据
-	osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
-	netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
-	//netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
-	std::string netImageLayerName = "worldimage1";
-	/*osg::ref_ptr<osgEarth::ImageLayer>*/netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
-	m_pMap->addLayer(netImageLayer);
+	//osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
+	//netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
+	////netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
+	//std::string netImageLayerName = "worldimage1";
+	///*osg::ref_ptr<osgEarth::ImageLayer>*/netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
+	//m_pMap->addLayer(netImageLayer);
 
 	//加载xyz格式文件
 	osgEarth::Drivers::XYZOptions tileOptions;
@@ -271,46 +324,54 @@ void OsgContainer::initEarth() {
 	osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer(options);
 	m_pMap->addLayer(layer);*/
 
-	//mapbox高程图
-	//tileOptions.url() = osgEarth::URI("http://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=pk.eyJ1IjoicXd1c2VyIiwiYSI6ImNreTN0YmhtZTAwdncyb2xtdWZ3ZWZodXEifQ.23yUvHmVWIQ8sRwy68EDlA");
-
-
+	//mapbox高程图(只能显示为图像,无法转换为高程)
 	//osgEarth::Drivers::XYZOptions exyz;
 	//exyz.url() = "http://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=pk.eyJ1IjoicXd1c2VyIiwiYSI6ImNreTN0YmhtZTAwdncyb2xtdWZ3ZWZodXEifQ.23yUvHmVWIQ8sRwy68EDlA";
 	//exyz.profile()->namedProfile() = "spherical-mercator";
-	////XYZExSource* etileSource = new XYZExSource(exyz);
-	////auto eStatus = etileSource->open();
-	//osgEarth::ElevationLayerOptions options1 = osgEarth::ElevationLayerOptions ("mapboxEle", exyz);
-	//m_pMap->addLayer(new osgEarth::ElevationLayer(options1));
+	///*XYZExSource *source = new XYZExSource(exyz);
+	//auto estatus = source->open();*/
+	//osgEarth::ImageLayerOptions options1 = osgEarth::ImageLayerOptions("mapboxEle", exyz);
+	//m_pMap->addLayer(new osgEarth::ImageLayer(options1));
 	
 
-	root = new osg::Group();
-	//root->addChild(m_earthNode);
-	//osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
-	osgEarth::MapNode *mapNode = new osgEarth::MapNode(m_pMap);
+	//------------------------测试第二种方式画图--------------------------------------
+	/*const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
+	osg::Group*geometryGroup = new osg::Group;
+	osgEarth::Symbology::Style geomStyle;
+	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
+	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
+	geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;
+	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
+	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;
+
+	osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
+	polygon->push_back(osg::Vec3d(0, 40, 0));
+	polygon->push_back(osg::Vec3d(-60, 40, 0));
+	polygon->push_back(osg::Vec3d(-60, 60, 0));
+	polygon->push_back(osg::Vec3d(0, 60, 0));
+
+	osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
+	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+	geometryGroup->addChild(featureNode);
+	osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+	mapNode->addChild(editor);*/
+	//-----------------------------------------------------------
 
 
-	root->addChild(mapNode);
-	
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
 	m_EM = new osgEarth::Util::EarthManipulator;
 	m_EM->setNode(mapNode);
 	setCameraManipulator(m_EM);
 	
-
 	mCPickHandler = new CPickHandler(this);//两个类重复包含了
 	addEventHandler(mCPickHandler);
 	addEventHandler(new osgViewer::WindowSizeHandler());
 	addEventHandler(new osgViewer::StatsHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
 	
-
 	setSceneData(root);
-
-
-	startTimer(10);
-	
+	startTimer(10);	
 }
 void OsgContainer::initCowTest()
 {
@@ -418,7 +479,6 @@ osg::ref_ptr<osg::Camera> OsgContainer::createCamera(int x, int y, int w, int h)
 //下雪
 bool OsgContainer::createSnow()
 {
-
 
 	mSnowNode = new osgParticle::PrecipitationEffect;
 
