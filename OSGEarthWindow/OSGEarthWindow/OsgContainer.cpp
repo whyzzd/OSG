@@ -26,6 +26,7 @@
 #include<osgEarthDrivers/gdal/GDALOptions>
 #include<osgEarthDrivers/xyz/XYZOptions>
 #include<osgEarthDrivers/tms/TMSOptions>
+#include<osgEarthDrivers/agglite/AGGLiteOptions>
 #include<osgEarth/Map>
 #include"XYZExSource.h"
 #include<osgEarthDrivers/feature_ogr/OGRFeatureOptions>
@@ -66,7 +67,7 @@ OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	connect(this, &OsgContainer::startWork, mWorker, &Worker::doWork);
 	connect(mWorker, &Worker::resultReady, this, [&](osgEarth::ImageLayer*lay){
 		m_netImageLayer = lay;
-		std::cout << typeid(*lay).name() <<":"<<lay<< std::endl;
+		//std::cout << typeid(*lay).name() <<":"<<lay<< std::endl;
 		m_pMap->addLayer(m_netImageLayer);
 	});
 	workerThread.start();
@@ -255,19 +256,15 @@ void OsgContainer::paintGL() {
 
 void OsgContainer::initEarth1()
 {
-	m_earthNode = osgDB::readNodeFile("gdal_multiple_files.earth");
-	osg::Node*shp = osgDB::readNodeFile("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp");
-	//m_earthNode = osgDB::readNodeFile("zzz.earth");
-
 	root = new osg::Group();
-	root->addChild(m_earthNode);
+	m_pMap = new osgEarth::Map;//防止程序崩溃
+	m_earthNode= osgDB::readNodeFile("simple.earth");
 	osg::ref_ptr<osgEarth::MapNode>map = dynamic_cast<osgEarth::MapNode*>(m_earthNode);
-	root->addChild(m_earthNode);
-	root->addChild(shp);
+	root->addChild(map);
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
 	m_EM = new osgEarth::Util::EarthManipulator;
-	m_EM->setNode(m_earthNode);
+	m_EM->setNode(map);
 	setCameraManipulator(m_EM);
 
 
@@ -301,7 +298,6 @@ void OsgContainer::initEarth2()
 	ogrLayer.name() = "vector-data";
 	ogrLayer.featureSource() = ogrData;
 	m_pMap->addLayer(new osgEarth::Features::FeatureSourceLayer(ogrData));*/
-	
 
 	//使用api加载网络数据
 	//osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
@@ -335,7 +331,7 @@ void OsgContainer::initEarth2()
 	
 
 	//------------------------测试第二种方式画图--------------------------------------
-	/*const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
+	const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
 	osg::Group*geometryGroup = new osg::Group;
 	osgEarth::Symbology::Style geomStyle;
 	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
@@ -354,7 +350,7 @@ void OsgContainer::initEarth2()
 	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
 	geometryGroup->addChild(featureNode);
 	osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-	mapNode->addChild(editor);*/
+	mapNode->addChild(editor);
 	//-----------------------------------------------------------
 
 

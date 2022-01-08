@@ -12,5 +12,4 @@ void Worker::doWork()
 	std::string LayerName = "worldimage1";
 	m_imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(LayerName, LayerOpt));
 	emit resultReady(m_imageLayer);
-	std::cout << "zzzzzz" << std::endl;
 }
