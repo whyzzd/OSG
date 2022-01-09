@@ -19,6 +19,7 @@
 #include <osgEarthUtil/Controls>
 #include <osgEarthUtil/ExampleResources>
 #include <osgEarthSymbology/Color>
+#include<osgEarthSymbology/AltitudeSymbol>
 #include "DrawXXX.h"
 #include<qdebug.h>
 #include"CPickHandler.h"
@@ -35,6 +36,7 @@
 #include<osgEarthFeatures/FeatureModelLayer>
 #include <osgEarth/GLUtils>
 #include<osgUtil/Optimizer>
+#include<osgEarthDrivers/cache_filesystem/FileSystemCache>
 
 #include<osgEarthFeatures/Feature>
 #include<osgEarthAnnotation/AnnotationNode>
@@ -334,64 +336,82 @@ void OsgContainer::initEarth2()
 	
 
 	//------------------------测试第二种方式画图(测试官方例子1)--------------------------------------
-	//const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
-	//osg::Group*geometryGroup = new osg::Group;
-	//osgEarth::Symbology::Style geomStyle;
-	////geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
-	////geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
-	////geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;
-	////geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
-	////geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;
+	const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
+	osg::Group*geometryGroup = new osg::Group;
+	osgEarth::Symbology::Style geomStyle;
+	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
+	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
+	geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;
+	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
+	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;
 
-	//osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
-	//polygon->push_back(osg::Vec3d(0, 40, 0));
-	//polygon->push_back(osg::Vec3d(-60, 40, 0));
-	//polygon->push_back(osg::Vec3d(-60, 60, 0));
-	//polygon->push_back(osg::Vec3d(0, 60, 0));
+	osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
+	polygon->push_back(osg::Vec3d(0, 40, 0));
+	polygon->push_back(osg::Vec3d(-60, 40, 0));
+	polygon->push_back(osg::Vec3d(-60, 60, 0));
+	polygon->push_back(osg::Vec3d(0, 60, 0));
 
-	//osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
-	//osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
-	//geometryGroup->addChild(featureNode);
-	//osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-	//mapNode->addChild(editor);
+	osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
+	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+	geometryGroup->addChild(featureNode);
+	osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+	mapNode->addChild(editor);
 	//-----------------------------------------------------------
 
-	//--------------------------------------测试官方例子2-------------------------------
-	OGRFeatureOptions ogrData;
-	if (0)
-	{
-		// Configures the feature driver to load the vectors from a shapefile:
-		ogrData.url() = "D:/OSGCore/Build/OpenSceneGraph-Data/world.shp";
-	}
-	else
-	{
-		// the --mem options tells us to just make an in-memory geometry:
-		Ring* line = new Ring();
-		line->push_back(osg::Vec3d(-60, 20, 0));
-		line->push_back(osg::Vec3d(-120, 20, 0));
-		line->push_back(osg::Vec3d(-120, 60, 0));
-		line->push_back(osg::Vec3d(-60, 60, 0));
-		ogrData.geometry() = line;
-	}
+	
 
-	// Make a feature source layer and add it to the Map:
-	FeatureSourceLayerOptions ogrLayer;
-	ogrLayer.name() = "vector-data";
-	ogrLayer.featureSource() = ogrData;
-	m_pMap->addLayer(new FeatureSourceLayer(ogrLayer));
+	//----------------官方例子2(加载本地自带矢量)---------------------------------------------------
+	//std::string filePath = "D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp";
+	//osgEarth::Drivers::OGRFeatureOptions featureData;
+	//featureData.url() = filePath;
 
-	Style style;
-	LineSymbol* ls = style.getOrCreateSymbol<LineSymbol>();
-	ls->stroke()->color() = Color::Yellow;
-	ls->stroke()->width() = 2.0f;
+	//// Make a feature source layer and add it to the Map:
+	//osgEarth::Features::FeatureSourceLayerOptions ogrLayer;
+	//ogrLayer.name() = filePath + "_source";
+	//ogrLayer.featureSource() = featureData;
+	//osgEarth::Features::FeatureSourceLayer*  featureSourceLayer = new osgEarth::Features::FeatureSourceLayer(ogrLayer);
+	//m_pMap->addLayer(featureSourceLayer);
+	//osgEarth::Features::FeatureSource *features = featureSourceLayer->getFeatureSource();
+	//if (!features)
+	//{
+	//	printf(("无法打开该矢量文件！"));
+	//	qDebug() << "------------";
+	//	return;
+	//}
+	//
+	////设置样式
+	//osgEarth::Symbology::Style style;
 
-	// That's it, the map is ready; now create a MapNode to render the Map:
-	osgEarth::Drivers::RexTerrainEngine::RexTerrainEngineOptions rex;
+	////可见性
+	//osgEarth::Symbology::RenderSymbol* rs = style.getOrCreate<osgEarth::Symbology::RenderSymbol>();
+	//rs->depthTest() = true;
 
-	/*MapNodeOptions mapNodeOptions;
-	mapNodeOptions.enableLighting() = false;
-	mapNodeOptions.setTerrainOptions(rex);
-	mapNode = new MapNode(m_pMap, mapNodeOptions);*/
+	////贴地设置
+	////osgEarth::Symbology::AltitudeSymbol* alt = style.getOrCreate<osgEarth::Symbology::AltitudeSymbol>();
+	////alt->clamping() = alt->CLAMP_TO_TERRAIN;
+	////alt->technique() = alt->TECHNIQUE_DRAPE;
+	//
+	////设置矢量面样式（包括边界线）
+	//osgEarth::Symbology::LineSymbol* ls = style.getOrCreateSymbol<osgEarth::Symbology::LineSymbol>();
+	//ls->stroke()->color() = osgEarth::Symbology::Color("#FA8072");
+	//ls->stroke()->width() = 1.0;
+	//ls->tessellationSize()->set(100, osgEarth::Units::KILOMETERS);
+
+	//osgEarth::Symbology::PolygonSymbol *polygonSymbol = style.getOrCreateSymbol<osgEarth::Symbology::PolygonSymbol>();
+	//polygonSymbol->fill()->color() = osgEarth::Symbology::Color(152.0f / 255, 251.0f / 255, 152.0f / 255, 0.8f); //238 230 133
+	//polygonSymbol->outline() = true;
+
+	////将矢量当成模型来加载才能显示
+	//osgEarth::Features::FeatureModelLayerOptions fmlOpt;
+	//fmlOpt.name() = filePath;
+	//fmlOpt.featureSourceLayer() = filePath + "_source";
+	//fmlOpt.enableLighting() = false;
+	//fmlOpt.styles() = new osgEarth::Symbology::StyleSheet();
+	//fmlOpt.styles()->addStyle(style);
+
+	//osg::ref_ptr<osgEarth::Features::FeatureModelLayer> fml = new osgEarth::Features::FeatureModelLayer(fmlOpt);
+	//m_pMap->addLayer(fml);
+	//------------------------2 end--------------------------------------------
 
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
@@ -406,7 +426,6 @@ void OsgContainer::initEarth2()
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
 	addEventHandler(new osgViewer::WindowSizeHandler());//响应f
 	addEventHandler(new osgViewer::StatsHandler);//响应s,w
-
 
 
 	//优化场景数据
