@@ -12,6 +12,7 @@
 #include <osgFX/Scribe>
 #include <osg/Notify>
 #include <osgGA/GUIEventHandler>
+#include<osgGA/GUIEventAdapter>
 #include <osgViewer/Viewer>
 #include <osgEarth/Registry>
 #include <osgEarthUtil/EarthManipulator>
@@ -27,11 +28,13 @@
 #include<osgEarthDrivers/xyz/XYZOptions>
 #include<osgEarthDrivers/tms/TMSOptions>
 #include<osgEarthDrivers/agglite/AGGLiteOptions>
+#include<osgEarthDrivers/engine_rex/RexTerrainEngineOptions>
 #include<osgEarth/Map>
 #include"XYZExSource.h"
 #include<osgEarthDrivers/feature_ogr/OGRFeatureOptions>
 #include<osgEarthFeatures/FeatureModelLayer>
-
+#include <osgEarth/GLUtils>
+#include<osgUtil/Optimizer>
 
 #include<osgEarthFeatures/Feature>
 #include<osgEarthAnnotation/AnnotationNode>
@@ -138,11 +141,11 @@ void OsgContainer::setKeyboardModifiers(QInputEvent *event) {
 }
 void OsgContainer::keyPressEvent(QKeyEvent *event) {
 	setKeyboardModifiers(event);
-	window->getEventQueue()->keyPress(event->key());
-	
+	//window->getEventQueue()->keyPress(event->key());
+	window->getEventQueue()->keyPress((osgGA::GUIEventAdapter::KeySymbol)*(event->text().toLatin1().data()));
+
 	if (event->key() == Qt::Key_H)
 	{
-
 		qDebug() << "H键";
 		return;
 	}
@@ -330,29 +333,65 @@ void OsgContainer::initEarth2()
 	//m_pMap->addLayer(new osgEarth::ImageLayer(options1));
 	
 
-	//------------------------测试第二种方式画图--------------------------------------
-	const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
-	osg::Group*geometryGroup = new osg::Group;
-	osgEarth::Symbology::Style geomStyle;
-	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
-	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
-	geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;
-	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
-	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;
+	//------------------------测试第二种方式画图(测试官方例子1)--------------------------------------
+	//const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
+	//osg::Group*geometryGroup = new osg::Group;
+	//osgEarth::Symbology::Style geomStyle;
+	////geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
+	////geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
+	////geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;
+	////geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
+	////geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;
 
-	osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
-	polygon->push_back(osg::Vec3d(0, 40, 0));
-	polygon->push_back(osg::Vec3d(-60, 40, 0));
-	polygon->push_back(osg::Vec3d(-60, 60, 0));
-	polygon->push_back(osg::Vec3d(0, 60, 0));
+	//osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
+	//polygon->push_back(osg::Vec3d(0, 40, 0));
+	//polygon->push_back(osg::Vec3d(-60, 40, 0));
+	//polygon->push_back(osg::Vec3d(-60, 60, 0));
+	//polygon->push_back(osg::Vec3d(0, 60, 0));
 
-	osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
-	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
-	geometryGroup->addChild(featureNode);
-	osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-	mapNode->addChild(editor);
+	//osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
+	//osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+	//geometryGroup->addChild(featureNode);
+	//osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+	//mapNode->addChild(editor);
 	//-----------------------------------------------------------
 
+	//--------------------------------------测试官方例子2-------------------------------
+	OGRFeatureOptions ogrData;
+	if (0)
+	{
+		// Configures the feature driver to load the vectors from a shapefile:
+		ogrData.url() = "D:/OSGCore/Build/OpenSceneGraph-Data/world.shp";
+	}
+	else
+	{
+		// the --mem options tells us to just make an in-memory geometry:
+		Ring* line = new Ring();
+		line->push_back(osg::Vec3d(-60, 20, 0));
+		line->push_back(osg::Vec3d(-120, 20, 0));
+		line->push_back(osg::Vec3d(-120, 60, 0));
+		line->push_back(osg::Vec3d(-60, 60, 0));
+		ogrData.geometry() = line;
+	}
+
+	// Make a feature source layer and add it to the Map:
+	FeatureSourceLayerOptions ogrLayer;
+	ogrLayer.name() = "vector-data";
+	ogrLayer.featureSource() = ogrData;
+	m_pMap->addLayer(new FeatureSourceLayer(ogrLayer));
+
+	Style style;
+	LineSymbol* ls = style.getOrCreateSymbol<LineSymbol>();
+	ls->stroke()->color() = Color::Yellow;
+	ls->stroke()->width() = 2.0f;
+
+	// That's it, the map is ready; now create a MapNode to render the Map:
+	osgEarth::Drivers::RexTerrainEngine::RexTerrainEngineOptions rex;
+
+	/*MapNodeOptions mapNodeOptions;
+	mapNodeOptions.enableLighting() = false;
+	mapNodeOptions.setTerrainOptions(rex);
+	mapNode = new MapNode(m_pMap, mapNodeOptions);*/
 
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
@@ -360,12 +399,21 @@ void OsgContainer::initEarth2()
 	m_EM->setNode(mapNode);
 	setCameraManipulator(m_EM);
 	
+	
 	mCPickHandler = new CPickHandler(this);//两个类重复包含了
 	addEventHandler(mCPickHandler);
-	addEventHandler(new osgViewer::WindowSizeHandler());
-	addEventHandler(new osgViewer::StatsHandler);
+	addEventHandler(new osgViewer::ThreadingHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
-	
+	addEventHandler(new osgViewer::WindowSizeHandler());//响应f
+	addEventHandler(new osgViewer::StatsHandler);//响应s,w
+
+
+
+	//优化场景数据
+	osgUtil::Optimizer optimzier;
+	optimzier.optimize(root.get());
+	osgEarth::GLUtils::setGlobalDefaults(getCamera()->getOrCreateStateSet());
+
 	setSceneData(root);
 	startTimer(10);	
 }

@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	//osg::ArgumentParser argument(&argc, argv);
 	//osgViewer::Viewer viewer(argument);
 	//osg::Group *root = new osg::Group();
-	//osg::Node *m_earthNode = osgDB::readNodeFile("glider.osg");
+	//osg::Node *m_earthNode = osgDB::readNodeFile("simple.earth");
 	//
 	//
 	///*osgFX::Scribe *sc=new osgFX::Scribe();
@@ -71,29 +71,8 @@ int main(int argc, char *argv[])
 	//viewer.setSceneData(root);
 	//viewer.realize();
 	//viewer.run();
+	//
 	
-	//osg::ref_ptr<osgViewer::Viewer> viewer = new osgViewer::Viewer;
-	//osg::ref_ptr<osg::Group> gp = new osg::Group;
-	//gp->addChild(osgDB::readNodeFile("cow.osg"));
-
-	//osg::ref_ptr<osg::Fog> fog = new osg::Fog;
-	//fog->setDensity(0.01);
-	//fog->setColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
-	//fog->setMode(osg::Fog::LINEAR);  //osg::Fog::EXP  //osg::Fog::EXP2
-	//fog->setStart(10);
-	//fog->setEnd(50);
-	//gp->getOrCreateStateSet()->setAttributeAndModes(fog.get(), osg::StateAttribute::ON);
-
-	//viewer->setSceneData(gp);
-	//viewer->run();
-
-	//mainÖÐ²âÊÔ»æÖÆÃæ
-	/*osgViewer::Viewer viewer;
-	osg::Group *root = new osg::Group();
-	root->addChild(createQuad().get());
-	viewer.setSceneData(root);
-	viewer.realize();
-	viewer.run();*/
 	
 
     return a.exec();
