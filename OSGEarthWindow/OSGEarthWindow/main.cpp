@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
 	//viewer.run();
 	//
 	
-	
-
     return a.exec();
 }
+

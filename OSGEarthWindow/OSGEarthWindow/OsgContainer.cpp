@@ -336,7 +336,7 @@ void OsgContainer::initEarth2()
 	
 
 	//------------------------测试第二种方式画图(测试官方例子1)--------------------------------------
-	const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
+	/*const osgEarth::SpatialReference* mapSRS = mapNode->getMapSRS();
 	osg::Group*geometryGroup = new osg::Group;
 	osgEarth::Symbology::Style geomStyle;
 	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
@@ -355,9 +355,9 @@ void OsgContainer::initEarth2()
 	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
 	geometryGroup->addChild(featureNode);
 	osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-	mapNode->addChild(editor);
+	mapNode->addChild(editor);*/
 	//-----------------------------------------------------------
-
+	
 	
 
 	//----------------官方例子2(加载本地自带矢量)---------------------------------------------------

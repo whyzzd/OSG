@@ -55,9 +55,7 @@ OSGEarthWindow::OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent)
 	ui.statusBar->setSizeGripEnabled(false);//去掉状态栏右下角的三角
 	mStatusLabel1->setText(QString("经纬度:"));
 	//提示信息
-	/*mStatusLabel2 = new  QLabel(this);
-	ui.statusBar->addWidget(mStatusLabel2);
-	mStatusLabel2->setText(QString("已拾取,请拾取"));*/
+	/*mStatusLabel2 = new  QLabel(this);*/
 	connect(osgViewer->mCPickHandler, &CPickHandler::signShowLonLatAlt, this, &OSGEarthWindow::slotShowLonLatAlt);
 
 }
