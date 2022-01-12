@@ -128,6 +128,9 @@ public slots:
 	//网络数据槽函数
 	void slotAddNetArcgis();
 	void slotRemvNetArcgis();
+
+	//播放视频槽函数
+	void slotPlayVideo();
 signals:
 	void startWork();
 };

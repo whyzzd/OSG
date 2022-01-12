@@ -50,20 +50,19 @@ int main(int argc, char *argv[])
 {
 
     QApplication a(argc, argv);
-	/*osg::ArgumentParser argument(&argc, argv);*/
-    OSGEarthWindow w/*(argument)*/;
+    OSGEarthWindow w;
     w.show();
-
+	
+	//test´úÂë
 	//osg::ArgumentParser argument(&argc, argv);
 	//osgViewer::Viewer viewer(argument);
 	//osg::Group *root = new osg::Group();
 	//osg::Node *m_earthNode = osgDB::readNodeFile("simple.earth");
-	//
-	//
+
 	///*osgFX::Scribe *sc=new osgFX::Scribe();
 	//sc->addChild(m_earthNode);
 	//root->addChild(sc);*/
-	//
+
 	//viewer.addEventHandler(new osgViewer::StatsHandler());
 	//viewer.addEventHandler(new osgViewer::WindowSizeHandler());
 	//viewer.addEventHandler(new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()));
@@ -71,7 +70,7 @@ int main(int argc, char *argv[])
 	//viewer.setSceneData(root);
 	//viewer.realize();
 	//viewer.run();
-	//
+	
 	
     return a.exec();
 }

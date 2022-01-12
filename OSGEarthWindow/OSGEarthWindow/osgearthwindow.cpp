@@ -9,13 +9,13 @@
 #include<QAction>
 #include"CPickHandler.h"
 #include<QLabel>
-OSGEarthWindow::OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent)
+OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	setWindowTitle("µØÇò");
-	resize(600, 400);
-	OsgContainer *osgViewer = new OsgContainer(/*argument,*/this);
+	resize(800, 500);
+	OsgContainer *osgViewer = new OsgContainer(this);
 	
 	this->setCentralWidget(osgViewer);
 	connect(ui.actionExit, &QAction::triggered, this, &QMainWindow::close);

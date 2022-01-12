@@ -14,7 +14,7 @@ class OSGEarthWindow : public QMainWindow
     Q_OBJECT
 
 public:
-	OSGEarthWindow(/*osg::ArgumentParser argument,*/QWidget *parent = Q_NULLPTR);
+	OSGEarthWindow(QWidget *parent = Q_NULLPTR);
 
 	QLabel *mStatusLabel1;
 	QLabel *mStatusLabel2;

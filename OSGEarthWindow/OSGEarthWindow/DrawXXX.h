@@ -16,10 +16,10 @@ public:
 	osg::Node* createParallelogram(osg::ref_ptr<osg::Vec3Array> vec);
 	
 	
-	osg::Node* createTest(){
+	/*osg::Node* createTest(){
 		return new osg::Node;
 	}
-
+*/
 	
 	float mLineWidth;
 protected:

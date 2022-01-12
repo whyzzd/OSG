@@ -292,6 +292,7 @@ void OsgContainer::initEarth2()
 	//使用api加载本地数据
 	osgEarth::Drivers::GDALOptions imageLayerOpt;
 	imageLayerOpt.url() = osgEarth::URI("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.tif");
+
 	std::string imageLayerName = "worldimage";
 	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
 	m_pMap->addLayer(imageLayer);
@@ -740,7 +741,7 @@ void OsgContainer::slotAddNetArcgis()
 	emit startWork();
 	
 
-	//以下代码,经测试可以使用
+	//代码,经测试可以使用
 	//m_pMap->addLayer(m_netImageLayer);
 	//osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
 	////netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
@@ -761,6 +762,10 @@ void OsgContainer::slotRemvNetArcgis()
 		m_pMap->removeLayer(m_netImageLayer);
 	}
 
-	//以下代码经测试可以使用
+	//代码经测试可以使用
 	//m_pMap->removeLayer(netImageLayer);
+}
+void OsgContainer::slotPlayVideo()
+{
+
 }
