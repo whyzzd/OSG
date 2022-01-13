@@ -54,7 +54,7 @@
 #include <osgEarthAnnotation/AnnotationEditing>
 #include <osgEarthAnnotation/ImageOverlayEditor>
 #include <osgEarthSymbology/GeometryFactory>
-
+#include<osg/ImageStream>
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
@@ -765,7 +765,54 @@ void OsgContainer::slotRemvNetArcgis()
 	//代码经测试可以使用
 	//m_pMap->removeLayer(netImageLayer);
 }
+
+
 void OsgContainer::slotPlayVideo()
 {
+	if (!mHaveVideo)
+	{ 
+		osg::ref_ptr<osg::EllipsoidModel>em = new osg::EllipsoidModel;
+		osg::Vec3d p,p1,p2,p3,p4;
+		em->convertLatLongHeightToXYZ(osg::DegreesToRadians(30.0f), osg::DegreesToRadians(110.0f), 300.0f, p.x(), p.y(), p.z());
+
+		//注册插件
+		osgDB::Registry::instance()->addFileExtensionAlias("avi", "ffmpeg");
+
+		osg::ref_ptr<osg::Image> image;
+
+		//本地视频(自己选择视频路径)
+		image = osgDB::readImageFile("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\mp4\\test.avi");
+
+		osg::ImageStream* imageStream = dynamic_cast<osg::ImageStream*>(image.get());
+		if (imageStream)
+			imageStream->play();
+
+		//添加到四边形
+		osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
+		texture->setImage(image.get());
+		osg::ref_ptr<osg::Drawable> quad = osg::createTexturedQuadGeometry(
+			osg::Vec3(100.0f,0.0f,100.0f), osg::Vec3(0.0f, 0.0f, -200.0f), osg::Vec3(-200.0f, 0.0f, 0.0f));
+		quad->getOrCreateStateSet()->setTextureAttributeAndModes(0, texture.get());
+
+		//添加到geode
+		osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+		geode->addDrawable(quad.get());
+		geode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
+
+		//作变换
+		osg::Quat rot;
+		rot.makeRotate(osg::Vec3d(0.0f, -1.0f, 0.0f),p );
+		osg::PositionAttitudeTransform* pat = new osg::PositionAttitudeTransform();
+		pat->setAttitude(rot);
+		pat->setPosition(p);
+
+		pat->addChild(geode);
+
+
+		root->addChild(pat);
+
+		mHaveVideo = true;
+	}
+	m_EM->setViewpoint(osgEarth::Viewpoint("视点", 110.0, 30.0, 300.0, -23.0, -90.0, 0.5e3));
 
 }

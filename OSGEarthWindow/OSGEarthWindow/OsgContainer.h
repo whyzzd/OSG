@@ -117,6 +117,9 @@ private:
 	bool mHaveFire=false;
 	bool mHaveBoom=false;
 
+	//视频是否已存在
+	bool mHaveVideo = false;
+
 public slots:
 	//特效槽函数
 	void slotSnow(int state);

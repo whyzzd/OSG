@@ -44,10 +44,15 @@ OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 	});
 	emit signDrawLineWid(1.0);
 
-	//连接-断开网络
+	//---连接/断开网络
 	connect(ui.pushButtonOpen, &QPushButton::clicked, osgViewer, &OsgContainer::slotAddNetArcgis);
 	connect(ui.pushButtonClose, &QPushButton::clicked, osgViewer, &OsgContainer::slotRemvNetArcgis);
 
+	//在球面播放视频
+	connect(ui.pushButtonPlay, &QPushButton::clicked, osgViewer, &OsgContainer::slotPlayVideo);
+	
+
+	//状态栏
 	//显示经纬度
 	mStatusLabel1 = new QLabel(this);
 	mStatusLabel1->setMinimumWidth(100);

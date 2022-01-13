@@ -26,3 +26,6 @@
 *.db-shm
 *.db-wal
 *.opendb
+OSGEarthWindow/x64/Release/OSGEarthWindow.exe
+*.exe
+

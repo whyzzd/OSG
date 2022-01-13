@@ -34,8 +34,8 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>128</width>
-     <height>393</height>
+     <width>148</width>
+     <height>428</height>
     </size>
    </property>
    <property name="layoutDirection">
@@ -52,79 +52,26 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="3" column="1">
-      <widget class="QTreeView" name="treeView">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <attribute name="headerDefaultSectionSize">
-        <number>50</number>
-       </attribute>
-       <attribute name="headerMinimumSectionSize">
-        <number>20</number>
-       </attribute>
-      </widget>
-     </item>
      <item row="2" column="1">
-      <layout class="QGridLayout" name="gridLayout_3">
-       <property name="spacing">
-        <number>6</number>
+      <widget class="QPushButton" name="pushButtonOpen">
+       <property name="text">
+        <string>连接网络数据</string>
        </property>
-       <item row="0" column="1" colspan="2">
-        <widget class="QSlider" name="horizontalSlider">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>线宽</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="comboBox">
-       <item>
-        <property name="text">
-         <string>无</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>绘制线</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>绘制三角形</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>绘制平行四边形</string>
-        </property>
-       </item>
       </widget>
      </item>
-     <item row="4" column="1">
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
+     <item row="3" column="1">
+      <widget class="QPushButton" name="pushButtonClose">
+       <property name="text">
+        <string>断开网络数据</string>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>54</height>
-        </size>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QPushButton" name="pushButtonPlay">
+       <property name="text">
+        <string>播放视频</string>
        </property>
-      </spacer>
+      </widget>
      </item>
      <item row="0" column="1">
       <widget class="QGroupBox" name="groupBox">
@@ -173,17 +120,70 @@
        </layout>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QPushButton" name="pushButtonClose">
-       <property name="text">
-        <string>断开网络数据</string>
+     <item row="1" column="1">
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>绘制</string>
        </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QComboBox" name="comboBox">
+          <item>
+           <property name="text">
+            <string>无</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>绘制线</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>绘制三角形</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>绘制平行四边形</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <item row="0" column="1" colspan="2">
+           <widget class="QSlider" name="horizontalSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>线宽</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QPushButton" name="pushButtonOpen">
-       <property name="text">
-        <string>连接网络数据</string>
+     <item row="4" column="1">
+      <widget class="QTreeView" name="treeView">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
       </widget>
      </item>
