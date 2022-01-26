@@ -9,49 +9,100 @@
 #include<QAction>
 #include"CPickHandler.h"
 #include<QLabel>
+#include"broadcaster.h"
+#include"receiver.h"
+#include"CameraPacket.h"
 OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	setWindowTitle("地球");
 	resize(800, 500);
-	OsgContainer *osgViewer = new OsgContainer(this);
-	
-	this->setCentralWidget(osgViewer);
+
+	initOSGViewer();
+	initMenuBar();
+	initWeather();
+	initComboBox();
+	initSlider();
+	initButton();
+	initStatusBar();
+}
+void OSGEarthWindow::initOSGViewer()
+{
+	mOSGViewer = new OsgContainer(this);
+
+	this->setCentralWidget(mOSGViewer);
+
+	Broadcaster     bc;
+	Receiver        rc;
+	Broadcaster     bc2;
+	Receiver        rc2;
+
+	int socketNumber = 8100;
+	bc.setPort(static_cast<short int>(socketNumber));
+	rc.setPort(static_cast<short int>(socketNumber));
+
+	bc2.setPort(static_cast<short int>(socketNumber + 1));
+	rc2.setPort(static_cast<short int>(socketNumber + 1));
+
+	CameraPacket *cp = new CameraPacket;
+	CameraPacket *cp2 = new CameraPacket;
+
+	bool masterKilled = false;
+	unsigned int messageSize = 1024;
+	DataConverter scratchPad(messageSize);
+	DataConverter scratchPad2(messageSize);
+
+
+}
+
+void OSGEarthWindow::initMenuBar()
+{
 	connect(ui.actionExit, &QAction::triggered, this, &QMainWindow::close);
-	
+}
+void OSGEarthWindow::initWeather()
+{
+
 	//特效
-	connect(ui.checkBoxSnow, &QCheckBox::stateChanged,osgViewer,&OsgContainer::slotSnow);
-	connect(ui.checkBoxRain, &QCheckBox::stateChanged, osgViewer, &OsgContainer::slotRain);
-	connect(ui.checkBoxWu, &QCheckBox::stateChanged, osgViewer, &OsgContainer::slotWu);
-	connect(ui.checkBoxFire, &QCheckBox::stateChanged, osgViewer, &OsgContainer::slotFire);
-	connect(ui.checkBoxBoom, &QCheckBox::stateChanged, osgViewer, &OsgContainer::slotBoom);
-	
+	connect(ui.checkBoxSnow, &QCheckBox::stateChanged, mOSGViewer, &OsgContainer::slotSnow);
+	connect(ui.checkBoxRain, &QCheckBox::stateChanged, mOSGViewer, &OsgContainer::slotRain);
+	connect(ui.checkBoxWu, &QCheckBox::stateChanged, mOSGViewer, &OsgContainer::slotWu);
+	connect(ui.checkBoxFire, &QCheckBox::stateChanged, mOSGViewer, &OsgContainer::slotFire);
+	connect(ui.checkBoxBoom, &QCheckBox::stateChanged, mOSGViewer, &OsgContainer::slotBoom);
+}
+void OSGEarthWindow::initComboBox()
+{
 	//下拉框
 	void(QComboBox::*activatedInt)(int) = &QComboBox::activated;//区分重载版本
-	connect(ui.comboBox, activatedInt, osgViewer->mCPickHandler, &CPickHandler::slotGetDrawIndex);
-	connect(osgViewer->mCPickHandler, &CPickHandler::signReDefault, this, &OSGEarthWindow::slotReDefaultCombo);
+	connect(ui.comboBox, activatedInt, mOSGViewer->mCPickHandler, &CPickHandler::slotGetDrawIndex);
+	connect(mOSGViewer->mCPickHandler, &CPickHandler::signReDefault, this, &OSGEarthWindow::slotReDefaultCombo);
 	emit ui.comboBox->activated(0);//让其默认就有活跃选项
-
+}
+void OSGEarthWindow::initSlider()
+{
 	//水平滑轮
 	ui.horizontalSlider->setMinimum(10);
 	ui.horizontalSlider->setMaximum(100);
 	ui.horizontalSlider->setSingleStep(1);
-	connect(this, &OSGEarthWindow::signDrawLineWid, osgViewer->mCPickHandler, &CPickHandler::slotDrawLineWid);
-	connect(ui.horizontalSlider, &QSlider::valueChanged, [=](int value){
+	connect(this, &OSGEarthWindow::signDrawLineWid, mOSGViewer->mCPickHandler, &CPickHandler::slotDrawLineWid);
+	connect(ui.horizontalSlider, &QSlider::valueChanged, [=](int value) {
 		float a = value / 10.0;
 		emit signDrawLineWid(a);
 	});
 	emit signDrawLineWid(1.0);
-
+}
+void OSGEarthWindow::initButton()
+{
 	//---连接/断开网络
-	connect(ui.pushButtonOpen, &QPushButton::clicked, osgViewer, &OsgContainer::slotAddNetArcgis);
-	connect(ui.pushButtonClose, &QPushButton::clicked, osgViewer, &OsgContainer::slotRemvNetArcgis);
+	connect(ui.pushButtonOpen, &QPushButton::clicked, mOSGViewer, &OsgContainer::slotAddNetArcgis);
+	connect(ui.pushButtonClose, &QPushButton::clicked, mOSGViewer, &OsgContainer::slotRemvNetArcgis);
 
 	//在球面播放视频
-	connect(ui.pushButtonPlay, &QPushButton::clicked, osgViewer, &OsgContainer::slotPlayVideo);
-	
+	connect(ui.pushButtonPlay, &QPushButton::clicked, mOSGViewer, &OsgContainer::slotPlayVideo);
 
+}
+void OSGEarthWindow::initStatusBar()
+{
 	//状态栏
 	//显示经纬度
 	mStatusLabel1 = new QLabel(this);
@@ -61,8 +112,7 @@ OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 	mStatusLabel1->setText(QString("经纬度:"));
 	//提示信息
 	/*mStatusLabel2 = new  QLabel(this);*/
-	connect(osgViewer->mCPickHandler, &CPickHandler::signShowLonLatAlt, this, &OSGEarthWindow::slotShowLonLatAlt);
-
+	connect(mOSGViewer->mCPickHandler, &CPickHandler::signShowLonLatAlt, this, &OSGEarthWindow::slotShowLonLatAlt);
 }
 void OSGEarthWindow::slotShowLonLatAlt(const osg::Vec3 &lla)
 {

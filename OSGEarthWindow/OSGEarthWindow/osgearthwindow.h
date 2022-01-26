@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef WIN32  
 #pragma execution_character_set("utf-8")  
 #endif
@@ -8,7 +7,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_osgearthwindow.h"
 #include <osgViewer/Viewer>
-
+class OsgContainer;
 class OSGEarthWindow : public QMainWindow
 {
     Q_OBJECT
@@ -16,10 +15,22 @@ class OSGEarthWindow : public QMainWindow
 public:
 	OSGEarthWindow(QWidget *parent = Q_NULLPTR);
 
-	QLabel *mStatusLabel1;
-	QLabel *mStatusLabel2;
+	//³õÊ¼»¯º¯Êý
+	void initOSGViewer();
+	void initMenuBar();
+	void initWeather();
+	void initComboBox();
+	void initSlider();
+	void initButton();
+	void initStatusBar();
+
+	
 private:
     Ui::OSGEarthWindowClass ui;
+
+	QLabel *mStatusLabel1;
+	QLabel *mStatusLabel2;
+	OsgContainer *mOSGViewer;
 
 signals:
 	void signDrawLineWid(float a);

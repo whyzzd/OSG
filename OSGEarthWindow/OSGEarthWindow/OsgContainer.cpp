@@ -428,6 +428,7 @@ void OsgContainer::initEarth2()
 	addEventHandler(new osgViewer::WindowSizeHandler());//响应f
 	addEventHandler(new osgViewer::StatsHandler);//响应s,w
 
+	
 
 	//优化场景数据
 	osgUtil::Optimizer optimzier;
