@@ -55,10 +55,12 @@
 #include <osgEarthAnnotation/ImageOverlayEditor>
 #include <osgEarthSymbology/GeometryFactory>
 #include<osg/ImageStream>
+
+
 OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
 {
-
+	initInteraction();
 	//initEarth1();
 	initEarth2();
 	//initCowTest();
@@ -81,6 +83,11 @@ OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
 
 OsgContainer::~OsgContainer()
 {
+	delete mCP;
+	delete mCP2;
+	delete mScratchPad;
+	delete mScratchPad2;
+
 	workerThread.quit();
 	workerThread.wait();
 }
@@ -254,11 +261,45 @@ void OsgContainer::timerEvent(QTimerEvent *) {
 }
 void OsgContainer::paintGL() {
 	if (isVisibleTo(QApplication::activeWindow())) {
+
+		if(1)
+		{ 
+			osg::Matrix modelview(getCamera()->getViewMatrix());
+			getFrameStamp();
+			mCP->setPacket(modelview, getFrameStamp());
+			mCP->readEventQueue(*this);
+			mScratchPad->reset();
+			mScratchPad->write(*mCP);
+			mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+			mBC.sync();
+
+			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
+			
+			unsigned int readsize = mRC2.sync();
+			
+			mScratchPad2->reset();
+			mScratchPad2->read(*mCP2);
+			mCP2->writeEventQueue(*this);
+		}
+
 		frame();
 	}
 	
 }
+void OsgContainer::initInteraction()
+{
+	mBC.setPort(static_cast<short int>(mSocketNumber));
+	mRC.setPort(static_cast<short int>(mSocketNumber));
 
+	mBC2.setPort(static_cast<short int>(mSocketNumber + 1));
+	mRC2.setPort(static_cast<short int>(mSocketNumber + 1));
+
+	mCP = new CameraPacket();
+	mCP2 = new CameraPacket();
+
+	mScratchPad = new DataConverter(mMessageSize);
+	mScratchPad2 = new DataConverter(mMessageSize);
+}
 void OsgContainer::initEarth1()
 {
 	root = new osg::Group();

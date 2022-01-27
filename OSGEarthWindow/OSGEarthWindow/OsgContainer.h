@@ -16,6 +16,10 @@
 #include<QThread>
 #include <osgEarthDrivers/arcgis/ArcGISOptions>
 #include"Worker.h"
+
+#include"broadcaster.h"
+#include"receiver.h"
+#include"CameraPacket.h"
 class CPickHandler;//无法直接包含,只能提前声明
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
@@ -73,6 +77,26 @@ public:
 
 protected:
 	virtual void paintGL();
+	void initInteraction();
+
+//声明initInteraction
+private:
+	Broadcaster     mBC;
+	Receiver        mRC;
+	Broadcaster     mBC2;
+	Receiver        mRC2;
+
+	int mSocketNumber = 8100;
+
+
+	CameraPacket *mCP;
+	CameraPacket *mCP2;
+
+	bool mMasterKilled = false;
+	unsigned int mMessageSize = 1024;
+
+	DataConverter *mScratchPad;
+	DataConverter *mScratchPad2;
 
 private:
 	//以文件的形式加载
@@ -81,9 +105,9 @@ private:
 	void initEarth2();
 	void initCowTest();
 
-	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);
 
 private:
+	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);
 	osg::ref_ptr<osg::Group>root;
 	osg::ref_ptr<osgViewer::GraphicsWindow >window;
 

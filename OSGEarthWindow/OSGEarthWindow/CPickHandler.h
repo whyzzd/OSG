@@ -1,3 +1,6 @@
+#pragma once
+#ifndef CPICKHANDLER_H
+#define CPICKHANDLER_H
 #include <osgDB/ReadFile>
 #include <osgViewer/Viewer>
 #include <osg/Group>
@@ -59,3 +62,4 @@ public slots:
 
 
 };
+#endif

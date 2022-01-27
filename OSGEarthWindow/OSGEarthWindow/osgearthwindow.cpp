@@ -1,3 +1,4 @@
+#pragma once
 #include "osgearthwindow.h"
 #include"qtextedit.h"
 #include"qdockwidget.h"
@@ -9,9 +10,9 @@
 #include<QAction>
 #include"CPickHandler.h"
 #include<QLabel>
-#include"broadcaster.h"
-#include"receiver.h"
-#include"CameraPacket.h"
+//#include"broadcaster.h"
+//#include"receiver.h"
+//#include"CameraPacket.h"
 OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -33,25 +34,26 @@ void OSGEarthWindow::initOSGViewer()
 
 	this->setCentralWidget(mOSGViewer);
 
-	Broadcaster     bc;
-	Receiver        rc;
-	Broadcaster     bc2;
-	Receiver        rc2;
+	//Broadcaster     bc;
+	//Receiver        rc;
+	//Broadcaster     bc2;
+	//Receiver        rc2;
 
-	int socketNumber = 8100;
-	bc.setPort(static_cast<short int>(socketNumber));
-	rc.setPort(static_cast<short int>(socketNumber));
+	//int socketNumber = 8100;
+	//bc.setPort(static_cast<short int>(socketNumber));
+	//rc.setPort(static_cast<short int>(socketNumber));
 
-	bc2.setPort(static_cast<short int>(socketNumber + 1));
-	rc2.setPort(static_cast<short int>(socketNumber + 1));
+	//bc2.setPort(static_cast<short int>(socketNumber + 1));
+	//rc2.setPort(static_cast<short int>(socketNumber + 1));
 
-	CameraPacket *cp = new CameraPacket;
-	CameraPacket *cp2 = new CameraPacket;
+	//CameraPacket *cp = new CameraPacket;
+	//CameraPacket *cp2 = new CameraPacket;
 
-	bool masterKilled = false;
-	unsigned int messageSize = 1024;
-	DataConverter scratchPad(messageSize);
-	DataConverter scratchPad2(messageSize);
+	//bool masterKilled = false;
+	//unsigned int messageSize = 1024;
+	//DataConverter scratchPad(messageSize);
+	//DataConverter scratchPad2(messageSize);
+
 
 
 }
