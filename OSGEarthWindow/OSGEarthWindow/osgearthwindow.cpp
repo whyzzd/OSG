@@ -13,14 +13,14 @@
 //#include"broadcaster.h"
 //#include"receiver.h"
 //#include"CameraPacket.h"
-OSGEarthWindow::OSGEarthWindow(QWidget *parent)
+OSGEarthWindow::OSGEarthWindow(osg::ArgumentParser ap, QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	setWindowTitle("µØÇò");
 	resize(800, 500);
 
-	initOSGViewer();
+	initOSGViewer(ap);
 	initMenuBar();
 	initWeather();
 	initComboBox();
@@ -28,10 +28,11 @@ OSGEarthWindow::OSGEarthWindow(QWidget *parent)
 	initButton();
 	initStatusBar();
 }
-void OSGEarthWindow::initOSGViewer()
+void OSGEarthWindow::initOSGViewer(osg::ArgumentParser ap)
 {
-	mOSGViewer = new OsgContainer(this);
-
+	
+	mOSGViewer = new OsgContainer(ap);
+	mOSGViewer->setParent(this);
 	this->setCentralWidget(mOSGViewer);
 
 	//Broadcaster     bc;

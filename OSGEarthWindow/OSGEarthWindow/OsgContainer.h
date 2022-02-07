@@ -26,8 +26,16 @@ class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
 {
 	Q_OBJECT
 public:
-	OsgContainer(/*osg::ArgumentParser argument,*/QWidget *parent = 0);
+	OsgContainer(osg::ArgumentParser argument,QWidget *parent = 0);
 	~OsgContainer();
+
+	enum ViewerMode
+	{
+		STAND_ALONE,
+		MASTER,
+		SLAVE		
+	};
+	int mViewerMode;
 
 	bool event(QEvent *event);
 	

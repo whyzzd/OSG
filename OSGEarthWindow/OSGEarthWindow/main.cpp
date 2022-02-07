@@ -48,9 +48,12 @@ osg::ref_ptr<osg::Node> createQuad()
 
 int main(int argc, char *argv[])
 {
-
+	osg::ArgumentParser arguments(&argc, argv);
+	arguments.getApplicationUsage()->addCommandLineOption("-m", "Set viewer to MASTER mode, sending view via packets.");
+	arguments.getApplicationUsage()->addCommandLineOption("-s", "Set viewer to SLAVE mode, receiving view via packets.");
     QApplication a(argc, argv);
-    OSGEarthWindow w;
+
+    OSGEarthWindow w(arguments);
     w.show();
 	
 	//test´úÂë

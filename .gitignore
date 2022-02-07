@@ -33,3 +33,4 @@ ui_*.h
 qrc_*.cpp
 OSGEarthWindow/OSGEarthWindow/GeneratedFiles/
 *.ilk
+*.dll

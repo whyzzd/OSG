@@ -13,10 +13,10 @@ class OSGEarthWindow : public QMainWindow
     Q_OBJECT
 
 public:
-	OSGEarthWindow(QWidget *parent = Q_NULLPTR);
+	OSGEarthWindow(osg::ArgumentParser ap,QWidget *parent = Q_NULLPTR);
 
 	//³õÊ¼»¯º¯Êý
-	void initOSGViewer();
+	void initOSGViewer(osg::ArgumentParser ap);
 	void initMenuBar();
 	void initWeather();
 	void initComboBox();

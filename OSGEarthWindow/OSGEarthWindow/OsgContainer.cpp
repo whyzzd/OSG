@@ -57,9 +57,11 @@
 #include<osg/ImageStream>
 
 
-OsgContainer::OsgContainer(/*osg::ArgumentParser argument,*/ QWidget *parent)
-	:QOpenGLWidget(parent)/*, osgViewer::Viewer(argument)*/
+OsgContainer::OsgContainer(osg::ArgumentParser argument, QWidget *parent)
+	:QOpenGLWidget(parent),mViewerMode(STAND_ALONE)
 {
+	while (argument.read("-m"))mViewerMode = MASTER;
+	while (argument.read("-s")) mViewerMode = SLAVE;
 	initInteraction();
 	//initEarth1();
 	initEarth2();
@@ -262,10 +264,9 @@ void OsgContainer::timerEvent(QTimerEvent *) {
 void OsgContainer::paintGL() {
 	if (isVisibleTo(QApplication::activeWindow())) {
 
-		if(1)
+		if(mViewerMode==MASTER)
 		{ 
 			osg::Matrix modelview(getCamera()->getViewMatrix());
-			getFrameStamp();
 			mCP->setPacket(modelview, getFrameStamp());
 			mCP->readEventQueue(*this);
 			mScratchPad->reset();
@@ -280,6 +281,24 @@ void OsgContainer::paintGL() {
 			mScratchPad2->reset();
 			mScratchPad2->read(*mCP2);
 			mCP2->writeEventQueue(*this);
+		}
+		else if(mViewerMode==SLAVE)
+		{
+			osg::Matrix modelview(getCamera()->getViewMatrix());
+			mCP2->setPacket(modelview, getFrameStamp());
+			mCP2->readEventQueue(*this);
+			mScratchPad2->reset();
+			mScratchPad2->write(*mCP2);
+			mBC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
+			mBC2.sync();
+
+			mRC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+
+			unsigned int readsize = mRC.sync();
+
+			mScratchPad->reset();
+			mScratchPad->read(*mCP);
+			mCP->writeEventQueue(*this);
 		}
 
 		frame();

@@ -53,7 +53,14 @@ Receiver::~Receiver( void )
     close( _so );
 #endif
 }
-
+//******************ÉèÖÃÎª·Ç×èÈû
+static void setnonblocking(int sockfd) {
+	unsigned long on = 1;
+	if (0 != ioctlsocket(sockfd, FIONBIO, &on))
+	{
+		/* Handle failure. */
+	}
+}
 bool Receiver::init( void )
 {
 #if defined(WIN32) && !defined(__CYGWIN__)
@@ -74,9 +81,12 @@ bool Receiver::init( void )
         perror( "Socket" );
     return false;
     }
+
+	
+	
 #if defined (WIN32) && !defined(__CYGWIN__)
-//    const BOOL on = TRUE;
-//    setsockopt( _so, SOL_SOCKET, SO_REUSEADDR, (const char*) &on, sizeof(int));
+    /*const BOOL on = TRUE;
+    setsockopt( _so, SOL_SOCKET, SO_REUSEADDR, (const char*) &on, sizeof(int));*/
 #else
     int on = 1;
     setsockopt( _so, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
@@ -139,11 +149,12 @@ unsigned int Receiver::sync( void )
     tv.tv_usec = 0;
 
 #if defined (WIN32) && !defined(__CYGWIN__)
-//    saddr.sin_port   = htons( _port );
+
     recvfrom( _so, (char *)_buffer, _buffer_size, 0, (sockaddr*)&saddr, &size );
-//    recvfrom(sock_Receive, szMessage, 256, 0, (sockaddr*)&addr_Cli, &clilen)
-    int err = WSAGetLastError ();
-    if (err!=0) fprintf( stderr, "Receiver::sync() - error %d\n",err );
+	
+
+	int err = WSAGetLastError();
+	if (err != 0) fprintf(stderr, "Receiver::sync() - error %d\n", err);
 
 	while (select(static_cast<int>(_so) + 1, &fdset, 0L, 0L, &tv))
 	{
