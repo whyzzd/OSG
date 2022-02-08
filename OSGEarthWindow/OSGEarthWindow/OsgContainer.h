@@ -67,6 +67,10 @@ public:
 	{
 		return m_pMap;
 	}
+	osgEarth::MapNode *getMapNode()
+	{
+		return m_mapNode;
+	}
 
 	//控制特效
 	bool createSnow();//雪
@@ -119,6 +123,8 @@ private:
 	osg::ref_ptr<osg::Group>root;
 	osg::ref_ptr<osgViewer::GraphicsWindow >window;
 
+	//用于存放地球节点和其它节点
+	osgEarth::MapNode *m_mapNode;
 	osg::Node* m_earthNode;
 	
 	osg::ref_ptr<osgEarth::Util::EarthManipulator> m_EM;

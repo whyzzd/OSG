@@ -22,7 +22,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			//判断选择绘制类型
 			if (mSelected==SelectedDraw::NONE)
 			{
-				pick1(ea.getX(), ea.getY());
+				//pick1(ea.getX(), ea.getY());
 				
 			}
 			else if (mSelected==SelectedDraw::LINE)
@@ -42,7 +42,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 						
 						DrawXXX drawline(mDrawLineWid);
 						
-						oc->getRoot()->addChild(drawline.createLine(mLineVec));
+						oc->getMapNode()->addChild(drawline.createLine(mLineVec));
+						//oc->getRoot()->addChild(drawline.createLine(mLineVec));
 						mLineVec->clear();
 						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
 						//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
@@ -67,7 +68,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 						mTrinangleVec->push_back(mLonLatAlt);
 
 						DrawXXX drawTrinangle;
-						oc->getRoot()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
+						oc->getMapNode()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
+						//oc->getRoot()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
 						mTrinangleVec->clear();
 						
 					}
