@@ -29,6 +29,7 @@ public:
 	CPickHandler(osgViewer::Viewer *viewer); 
 	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 	void pick(float x, float y);
+	void pick1(float x, float y);
 	void reDrawXXX();
 
 	

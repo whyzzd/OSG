@@ -3,6 +3,7 @@
 
 #include"OsgContainer.h"
 #include"DrawXXX.h"
+#include<osgEarthAnnotation/FeatureNode>
 CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
 {
 	mMyConv.setViewer(viewer);
@@ -21,7 +22,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			//判断选择绘制类型
 			if (mSelected==SelectedDraw::NONE)
 			{
-				pick(ea.getX(), ea.getY());
+				pick1(ea.getX(), ea.getY());
 				
 			}
 			else if (mSelected==SelectedDraw::LINE)
@@ -40,6 +41,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 						mLineVec->push_back(mLonLatAlt);
 						
 						DrawXXX drawline(mDrawLineWid);
+						
 						oc->getRoot()->addChild(drawline.createLine(mLineVec));
 						mLineVec->clear();
 						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
@@ -122,6 +124,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 
 void CPickHandler::pick(float x, float y)
 {
+
+
 	osgUtil::LineSegmentIntersector::Intersections intersections;
 
 	if (mViewer->computeIntersections(x, y, intersections))
@@ -131,8 +135,9 @@ void CPickHandler::pick(float x, float y)
 
 		//std::cout<<hitr->matrix.valid();
 
-		for (int i = getNodePath.size() - 1; i >= 0; --i)
+		for (int i = getNodePath.size() - 1; i >=0; --i)
 		{
+			
 			osg::MatrixTransform* mt = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
 			if (mt == NULL)
 			{
@@ -142,6 +147,7 @@ void CPickHandler::pick(float x, float y)
 			{
 				mIsPickObject = true;
 				picked = mt;
+				
 			}
 		}
 
@@ -158,8 +164,50 @@ void CPickHandler::pick(float x, float y)
 	{
 		mIsPickObject = false;
 	}
-
 }
+
+void CPickHandler::pick1(float x, float y)
+{
+	osgUtil::LineSegmentIntersector::Intersections intersections;
+
+	if (mViewer->computeIntersections(x, y, intersections))
+	{
+		osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin();
+		osg::NodePath getNodePath = hitr->nodePath;
+
+		//std::cout<<hitr->matrix.valid();
+
+		for (int i = getNodePath.size() - 1; i >= 0; --i)
+		{
+
+			osg::MatrixTransform* mt = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
+			if (mt == NULL)
+			{
+				continue;
+			}
+			else
+			{
+				/*mIsPickObject = true;
+				picked = mt;*/
+				getNodePath[i]->setNodeMask(0);
+			}
+		}
+
+
+		mWorld = hitr->getWorldIntersectPoint();
+
+		//std::cout << "世界坐标:" << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
+		mLonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
+		mLonLatAlt.z() = 900;
+		emit signShowLonLatAlt(mLonLatAlt);
+		std::cout << "经纬度:" << mLonLatAlt.x() << " " << mLonLatAlt.y() << " " << mLonLatAlt.z() << std::endl;
+	}
+	else
+	{
+		//mIsPickObject = false;
+	}
+}
+
 void CPickHandler::reDrawXXX()
 {
 	mIsPickObject = false;
