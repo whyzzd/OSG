@@ -18,9 +18,10 @@ public:
 
 	enum SelectedDraw {
 		NONE=0,
-		LINE = 1 ,
-		TRIANGLES = 2,
-		PARALLELOGRAM = 3,
+		DOT=1,
+		LINE = 2 ,
+		TRIANGLES = 3,
+		PARALLELOGRAM = 4,
 		
 	};
 	int mSelected;

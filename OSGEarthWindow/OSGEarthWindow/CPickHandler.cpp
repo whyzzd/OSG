@@ -4,6 +4,8 @@
 #include"OsgContainer.h"
 #include"DrawXXX.h"
 #include<osgEarthAnnotation/FeatureNode>
+#include<osgEarth/Picker>
+#include<osgEarthAnnotation/FeatureEditing>
 CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
 {
 	mMyConv.setViewer(viewer);
@@ -23,7 +25,39 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			if (mSelected==SelectedDraw::NONE)
 			{
 				//pick1(ea.getX(), ea.getY());
+
 				
+				
+			}
+			else if (mSelected == SelectedDraw::DOT)
+			{
+				pick(ea.getX(), ea.getY());
+				if(mIsPickObject)
+				{ 
+					OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+					const osgEarth::SpatialReference* mapSRS = oc->getMapNode()->getMapSRS();
+					//osg::Group*geometryGroup = new osg::Group;
+					osgEarth::Symbology::Style geomStyle;
+					/*geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
+					geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
+					geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;*/
+					/*geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
+					geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;*/
+
+					osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
+					polygon->push_back(osg::Vec3d(mLonLatAlt.x(), mLonLatAlt.y(), 0));
+					//polygon->push_back(osg::Vec3d(-60, 40, 0));
+					//polygon->push_back(osg::Vec3d(-60, 60, 0));
+					//polygon->push_back(osg::Vec3d(0, 60, 0));
+
+
+					osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
+					osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
+					//geometryGroup->addChild(featureNode);
+					osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+					oc->getMapNode()->addChild(editor);
+					//m_mapNode->addChild(featureNode);
+				}
 			}
 			else if (mSelected==SelectedDraw::LINE)
 			{ 
@@ -41,6 +75,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 						mLineVec->push_back(mLonLatAlt);
 						
 						DrawXXX drawline(mDrawLineWid);
+						
 						
 						oc->getMapNode()->addChild(drawline.createLine(mLineVec));
 						//oc->getRoot()->addChild(drawline.createLine(mLineVec));

@@ -20,7 +20,7 @@ osg::Node* DrawXXX::createLine(osg::ref_ptr<osg::Vec3Array> vec)
 	osg::ref_ptr<osg::Vec3Array>vectex = new osg::Vec3Array;
 	osg::ref_ptr<osg::Vec4Array>color = new osg::Vec4Array;
 	osg::ref_ptr<osg::Geometry>gemo = new osg::Geometry;
-
+	
 	//上一个点
 	osg::Vec3d FirstPoint, SecondPoint;
 	//第一个点经纬高转世界坐标  单位度

@@ -342,6 +342,48 @@ void OsgContainer::initEarth1()
 	setSceneData(root);
 	startTimer(10);
 }
+osg::ref_ptr<osg::EllipsoidModel>em = new osg::EllipsoidModel;
+osg::Node* createTrinangle1()
+{
+	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+	osg::ref_ptr<osg::Vec3Array>vectex = new osg::Vec3Array;
+	//上一个点
+	osg::Vec3d FirstPoint, SecondPoint, ThirdPoint, ForthPoint;
+	//第一个点经纬高转世界坐标  单位度
+	em->convertLatLongHeightToXYZ(osg::DegreesToRadians(40.0), osg::DegreesToRadians(117.0), 900, FirstPoint.x(), FirstPoint.y(), FirstPoint.z());
+	vectex->push_back(FirstPoint);
+	//第二个点经纬高转世界坐标  单位度
+	em->convertLatLongHeightToXYZ(osg::DegreesToRadians(41.0), osg::DegreesToRadians(89.0), 900, SecondPoint.x(), SecondPoint.y(), SecondPoint.z());
+	vectex->push_back(SecondPoint);
+	//第三个点经纬高转世界坐标  单位度
+	em->convertLatLongHeightToXYZ(osg::DegreesToRadians(32.0), osg::DegreesToRadians(103.0), 900, ThirdPoint.x(), ThirdPoint.y(), ThirdPoint.z());
+	vectex->push_back(ThirdPoint);
+	geom->setVertexArray(vectex);
+
+	//定义颜色数组
+	osg::ref_ptr<osg::Vec4Array> c = new osg::Vec4Array;
+	geom->setColorArray(c.get());
+	//geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+	geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+	c->push_back(osg::Vec4(1.f, 0.f, 0.f, 1.f));
+	//设置定点关联方式
+	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, 3));
+	//手动定义法线
+	osg::ref_ptr<osg::Vec3Array> n = new osg::Vec3Array;
+	geom->setNormalArray(n.get());
+	geom->setNormalBinding(osg::Geometry::BIND_OVERALL);
+	//n->push_back(osg::Vec3(-2.f, -1.f, 10.f));
+	n->push_back(osg::Vec3(0.f, -1.f, 0.f));
+
+
+	//灯光
+	//geom->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.0), osg::StateAttribute::OFF);
+	geom->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+	osg::Geode *geode = new osg::Geode;
+	geode->addDrawable(geom.get());
+	return geode;
+}
 void OsgContainer::initEarth2() 
 {
 	m_pMap = new osgEarth::Map;
@@ -356,7 +398,20 @@ void OsgContainer::initEarth2()
 	std::string imageLayerName = "worldimage";
 	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
 	m_pMap->addLayer(imageLayer);
-	
+	///////////////////////////////////////////////////////////////////////////
+	osg::Vec3d FirstPoint;
+	//第一个点经纬高转世界坐标  单位度
+	em->convertLatLongHeightToXYZ(osg::DegreesToRadians(40.0), osg::DegreesToRadians(117.0), 900, FirstPoint.x(), FirstPoint.y(), FirstPoint.z());
+	//平移操作
+	osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
+	trans->setMatrix(osg::Matrix::scale(50000, 50000, 50000)*osg::Matrix::translate(FirstPoint.x(), FirstPoint.y(), FirstPoint.z()));
+	trans->addChild(osgDB::readNodeFile("cow.osg"));
+	root->addChild(trans);
+
+	/*osg::Node *n = createTrinangle1();
+	osgEarth::Registry::objectIndex()->tagNode(n,root);
+	root->addChild(n);*/
+
 	//尝试使用api加载本地shp(疑惑:为啥加载不出来?)
 	/*osgEarth::Drivers::OGRFeatureOptions ogrData;
 	ogrData.url() = "D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp";
@@ -397,28 +452,29 @@ void OsgContainer::initEarth2()
 	
 
 	//------------------------测试第二种方式画图(测试官方例子1)--------------------------------------
-	const osgEarth::SpatialReference* mapSRS = m_mapNode->getMapSRS();
-	osg::Group*geometryGroup = new osg::Group;
-	osgEarth::Symbology::Style geomStyle;
-	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
-	geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
-	geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;
-	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
-	geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;
+	//const osgEarth::SpatialReference* mapSRS = m_mapNode->getMapSRS();
+	////osg::Group*geometryGroup = new osg::Group;
+	//osgEarth::Symbology::Style geomStyle;
+	///*geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
+	//geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
+	//geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;*/
+	///*geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
+	//geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;*/
 
-	osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
-	polygon->push_back(osg::Vec3d(0, 40, 0));
-	polygon->push_back(osg::Vec3d(-60, 40, 0));
-	polygon->push_back(osg::Vec3d(-60, 60, 0));
-	polygon->push_back(osg::Vec3d(0, 60, 0));
+	//osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
+	//polygon->push_back(osg::Vec3d(0, 40, 0));
+	//polygon->push_back(osg::Vec3d(-60, 40, 0));
+	//polygon->push_back(osg::Vec3d(-60, 60, 0));
+	////polygon->push_back(osg::Vec3d(0, 60, 0));
 
+	//
+	//osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
+	//osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
+	////geometryGroup->addChild(featureNode);
+	//osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+	//m_mapNode->addChild(editor);
+	////m_mapNode->addChild(featureNode);
 	
-	osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
-	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
-	geometryGroup->addChild(featureNode);
-	osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-	m_mapNode->addChild(editor);
-	//m_mapNode->addChild(geometryGroup);
 	//-----------------------------------------------------------
 	
 	

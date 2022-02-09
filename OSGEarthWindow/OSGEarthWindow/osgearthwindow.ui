@@ -135,6 +135,11 @@
           </item>
           <item>
            <property name="text">
+            <string>绘制点</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>绘制线</string>
            </property>
           </item>
