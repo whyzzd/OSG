@@ -23,6 +23,8 @@
 #include"CameraPacket.h"
 
 #include<QMenu>
+#include<QUndoCommand>
+#include<QUndoStack>
 class CPickHandler;//无法直接包含,只能提前声明
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
@@ -59,6 +61,8 @@ public:
 	QAction *m_undoAction;
 	QAction *m_redoAction;
 	QAction *m_delAction;
+	QUndoStack *m_undoStack;
+
 
 	osgViewer::Viewer *getOSGViewer()
 	{
@@ -182,6 +186,9 @@ public slots:
 
 	//播放视频槽函数
 	void slotPlayVideo();
+
+	void slotUndo();
+	void slotRedo();
 signals:
 	void startWork();
 };

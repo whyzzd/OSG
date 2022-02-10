@@ -125,6 +125,7 @@
     <ClCompile Include="GraphicsWindowQt.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyConvert.cpp" />
+    <ClCompile Include="NodeUndoCommand.cpp" />
     <ClCompile Include="OsgContainer.cpp" />
     <ClCompile Include="osgearthwindow.cpp" />
     <ClCompile Include="QGraphicsViewAdapter.cpp" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraPacket.h" />
+    <ClInclude Include="NodeUndoCommand.h" />
     <ClInclude Include="receiver.h" />
     <CustomBuild Include="Worker.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

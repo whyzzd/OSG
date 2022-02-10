@@ -121,6 +121,9 @@
     <ClCompile Include="CameraPacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NodeUndoCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="osgearthwindow.h">
@@ -171,6 +174,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CameraPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeUndoCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
