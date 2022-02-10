@@ -81,6 +81,17 @@ OsgContainer::OsgContainer(osg::ArgumentParser argument, QWidget *parent)
 	});
 	workerThread.start();
 	
+
+	m_contextMenu = new QMenu;
+	m_undoAction = new QAction("³·Ïú", this);
+	m_redoAction = new QAction("ÖØ×ö", this);
+	m_delAction = new QAction("É¾³ý", this);
+	m_contextMenu->addAction(m_undoAction);
+	m_contextMenu->addAction(m_redoAction);
+	m_contextMenu->addAction(m_delAction);
+	connect(this->m_undoAction, &QAction::triggered, mCPickHandler,&CPickHandler::slotActionUndo);
+	connect(this->m_redoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionRedo);
+	connect(this->m_delAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionDel);
 }
 
 OsgContainer::~OsgContainer()
@@ -261,6 +272,11 @@ void OsgContainer::moveEvent(QMoveEvent *event) {
 void OsgContainer::timerEvent(QTimerEvent *) {
 	update();
 }
+void OsgContainer::contextMenuEvent(QContextMenuEvent *event)
+{
+	m_contextMenu->exec(event->globalPos());
+}
+
 void OsgContainer::paintGL() {
 	if (isVisibleTo(QApplication::activeWindow())) {
 
@@ -388,6 +404,7 @@ void OsgContainer::initEarth2()
 {
 	m_pMap = new osgEarth::Map;
 	m_mapNode = new osgEarth::MapNode(m_pMap);
+	
 	root = new osg::Group();
 	root->addChild(m_mapNode);
 	

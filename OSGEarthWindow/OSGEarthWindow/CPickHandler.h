@@ -11,6 +11,9 @@
 #include <osg/MatrixTransform>
 #include"MyConvert.h"
 #include<QObject>
+#include<osgEarthAnnotation/FeatureEditing>
+
+class OsgContainer;
 class CPickHandler :public QObject, public osgGA::GUIEventHandler {
 	Q_OBJECT
 	
@@ -33,10 +36,11 @@ public:
 	void pick1(float x, float y);
 	void reDrawXXX();
 
-	
+	OsgContainer *m_oc;
+
 	bool mIsPickObject;
-	osg::ref_ptr<osg::MatrixTransform> picked;
-	
+	//osg::ref_ptr<osg::MatrixTransform> picked;
+	osg::ref_ptr < osgEarth::Annotation::FeatureEditor>picked;
 	//存放点击坐标以及点击次数
 	osg::ref_ptr<osg::Vec3Array> mLineVec=new osg::Vec3Array;
 	int mLineN =1;
@@ -61,7 +65,9 @@ signals:
 public slots:
 	void slotGetDrawIndex(int n);
 	void slotDrawLineWid(float a);
-
+	void slotActionUndo(bool checked=false);
+	void slotActionRedo(bool checked = false);
+	void slotActionDel(bool checked = false);
 
 };
 #endif

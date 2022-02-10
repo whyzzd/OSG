@@ -1,4 +1,5 @@
 #pragma once
+#pragma execution_character_set("UTF-8")
 #ifndef OSGCONTAINER_H
 #define OSGCONTAINER_H
 
@@ -20,6 +21,8 @@
 #include"broadcaster.h"
 #include"receiver.h"
 #include"CameraPacket.h"
+
+#include<QMenu>
 class CPickHandler;//无法直接包含,只能提前声明
 class QInputEvent;
 class OsgContainer :public QOpenGLWidget,public osgViewer::Viewer
@@ -50,6 +53,13 @@ public:
 	void resizeEvent(QResizeEvent *event);
 	void moveEvent(QMoveEvent *event);
 	void timerEvent(QTimerEvent *);
+
+	void contextMenuEvent(QContextMenuEvent *event);
+	QMenu *m_contextMenu;
+	QAction *m_undoAction;
+	QAction *m_redoAction;
+	QAction *m_delAction;
+
 	osgViewer::Viewer *getOSGViewer()
 	{
 		return this;

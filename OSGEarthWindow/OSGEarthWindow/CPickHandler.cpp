@@ -5,11 +5,14 @@
 #include"DrawXXX.h"
 #include<osgEarthAnnotation/FeatureNode>
 #include<osgEarth/Picker>
-#include<osgEarthAnnotation/FeatureEditing>
+
 CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
 {
 	mMyConv.setViewer(viewer);
-
+	m_oc = dynamic_cast<OsgContainer*>(mViewer);
+	
+	//connect(m_oc->m_undoAction, &QAction::triggered, this, &CPickHandler::slotMenuAction);
+	
 }
 bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
@@ -34,8 +37,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if(mIsPickObject)
 				{ 
-					OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
-					const osgEarth::SpatialReference* mapSRS = oc->getMapNode()->getMapSRS();
+					//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+					const osgEarth::SpatialReference* mapSRS = m_oc->getMapNode()->getMapSRS();
 					//osg::Group*geometryGroup = new osg::Group;
 					osgEarth::Symbology::Style geomStyle;
 					/*geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
@@ -55,8 +58,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
 					//geometryGroup->addChild(featureNode);
 					osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-					oc->getMapNode()->addChild(editor);
-					//m_mapNode->addChild(featureNode);
+					m_oc->getMapNode()->addChild(editor);
+					
 				}
 			}
 			else if (mSelected==SelectedDraw::LINE)
@@ -69,15 +72,15 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (mLineN >= 2)
 					{
 						mLineN = 1;
-						std::cout << typeid(*mViewer).name() << std::endl;//打印mViewer所指的实际类型
-						OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+						//std::cout << typeid(*mViewer).name() << std::endl;//打印mViewer所指的实际类型
+						//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
 					
 						mLineVec->push_back(mLonLatAlt);
 						
 						DrawXXX drawline(mDrawLineWid);
 						
 						
-						oc->getMapNode()->addChild(drawline.createLine(mLineVec));
+						m_oc->getMapNode()->addChild(drawline.createLine(mLineVec));
 						//oc->getRoot()->addChild(drawline.createLine(mLineVec));
 						mLineVec->clear();
 						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
@@ -98,12 +101,12 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (mTrinangleN >= 3)
 					{
 						mTrinangleN = 1;
-						OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+						//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
 
 						mTrinangleVec->push_back(mLonLatAlt);
 
 						DrawXXX drawTrinangle;
-						oc->getMapNode()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
+						m_oc->getMapNode()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
 						//oc->getRoot()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
 						mTrinangleVec->clear();
 						
@@ -123,12 +126,13 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (mParallelogramN >= 3)
 					{
 						mParallelogramN = 1;
-						OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+						//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
 
 						mParallelogramVec->push_back(mLonLatAlt);
 
 						DrawXXX drawQuads;
-						oc->getRoot()->addChild(drawQuads.createParallelogram(mParallelogramVec));
+						m_oc->getRoot()->addChild(drawQuads.createParallelogram(mParallelogramVec));
+						
 						mParallelogramVec->clear();
 
 					}
@@ -149,6 +153,11 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		else if (button == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON)
 		{
 			reDrawXXX();
+			pick(ea.getX(), ea.getY());
+
+			
+			
+			
 		}
 		return false;
 	}
@@ -162,7 +171,6 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 void CPickHandler::pick(float x, float y)
 {
 
-
 	osgUtil::LineSegmentIntersector::Intersections intersections;
 
 	if (mViewer->computeIntersections(x, y, intersections))
@@ -175,19 +183,25 @@ void CPickHandler::pick(float x, float y)
 		for (int i = getNodePath.size() - 1; i >=0; --i)
 		{
 			
-			osg::MatrixTransform* mt = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
+			
+			osgEarth::Annotation::FeatureEditor *mt = dynamic_cast<osgEarth::Annotation::FeatureEditor*>(getNodePath[i]);
+			osg::MatrixTransform* mt1 = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
+			if (mt1 != NULL || mt != NULL)
+			{
+				mIsPickObject = true;
+			}
 			if (mt == NULL)
 			{
 				continue;
 			}
 			else
 			{
-				mIsPickObject = true;
-				picked = mt;
 				
+				picked = mt;
+				//break;
 			}
 		}
-
+		
 		
 		mWorld = hitr->getWorldIntersectPoint();
 		
@@ -264,4 +278,20 @@ void CPickHandler::slotGetDrawIndex(int n)
 void CPickHandler::slotDrawLineWid(float a)
 {
 	mDrawLineWid = a;
+}
+void CPickHandler::slotActionUndo(bool checked)
+{
+	
+}
+void CPickHandler::slotActionRedo(bool checked )
+{
+
+}
+void CPickHandler::slotActionDel(bool checked )
+{
+	if (m_oc->getMapNode()->findMapNode(picked))
+	{
+		//picked->setNodeMask(0);
+		m_oc->getMapNode()->removeChild(picked);
+	}
 }
