@@ -89,10 +89,13 @@ OsgContainer::OsgContainer(osg::ArgumentParser argument, QWidget *parent)
 	m_contextMenu->addAction(m_undoAction);
 	m_contextMenu->addAction(m_redoAction);
 	m_contextMenu->addAction(m_delAction);
-	connect(this->m_undoAction, &QAction::triggered, this, &OsgContainer::slotUndo);
-	connect(this->m_redoAction, &QAction::triggered, this, &OsgContainer::slotRedo);
-	connect(this->m_delAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionDel);
 	m_undoStack = new QUndoStack(this);
+	/*connect(this->m_undoAction, &QAction::triggered, this, &OsgContainer::slotUndo);
+	connect(this->m_redoAction, &QAction::triggered, this, &OsgContainer::slotRedo);*/
+	connect(this->m_undoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionUndo);
+	connect(this->m_redoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionRedo);
+	connect(this->m_delAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionDel);
+	
 
 }
 
@@ -955,11 +958,12 @@ void OsgContainer::slotPlayVideo()
 
 }
 
-void OsgContainer::slotUndo()
-{
-	m_undoStack->undo();
-}
-void OsgContainer::slotRedo()
-{
-	m_undoStack->redo();
-}
+//void OsgContainer::slotUndo()
+//{
+//	m_undoStack->undo();
+//	
+//}
+//void OsgContainer::slotRedo()
+//{
+//	m_undoStack->redo();
+//}

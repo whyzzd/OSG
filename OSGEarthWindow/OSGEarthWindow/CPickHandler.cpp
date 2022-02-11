@@ -5,7 +5,7 @@
 #include"DrawXXX.h"
 #include<osgEarthAnnotation/FeatureNode>
 #include<osgEarth/Picker>
-
+#include<NodeUndoCommand.h>
 CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
 {
 	mMyConv.setViewer(viewer);
@@ -57,9 +57,10 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
 					osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
 					//geometryGroup->addChild(featureNode);
-					osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+					/*osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);*/
+					osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(featureNode);
 					m_oc->getMapNode()->addChild(editor);
-					
+					m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor));
 				}
 			}
 			else if (mSelected==SelectedDraw::LINE)
@@ -198,6 +199,7 @@ void CPickHandler::pick(float x, float y)
 			{
 				
 				picked = mt;
+				std::cout << "picked";
 				//break;
 			}
 		}
@@ -209,7 +211,7 @@ void CPickHandler::pick(float x, float y)
 		mLonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
 		mLonLatAlt.z() = 900;
 		emit signShowLonLatAlt(mLonLatAlt);
-		std::cout << "经纬度:" << mLonLatAlt.x() << " " << mLonLatAlt.y() << " " << mLonLatAlt.z() << std::endl;
+		//std::cout << "经纬度:" << mLonLatAlt.x() << " " << mLonLatAlt.y() << " " << mLonLatAlt.z() << std::endl;
 	}
 	else
 	{
@@ -281,17 +283,21 @@ void CPickHandler::slotDrawLineWid(float a)
 }
 void CPickHandler::slotActionUndo(bool checked)
 {
-	
+	m_oc->m_undoStack->undo();
 }
 void CPickHandler::slotActionRedo(bool checked )
 {
-
+	m_oc->m_undoStack->redo();
 }
 void CPickHandler::slotActionDel(bool checked )
 {
+	
 	if (m_oc->getMapNode()->findMapNode(picked))
 	{
 		//picked->setNodeMask(0);
 		m_oc->getMapNode()->removeChild(picked);
+		
 	}
+	m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked));
+	
 }

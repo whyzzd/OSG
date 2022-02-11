@@ -63,6 +63,11 @@ public:
 	QAction *m_delAction;
 	QUndoStack *m_undoStack;
 
+	QUndoStack* getUndoStack()
+	{
+		return m_undoStack;
+	}
+
 
 	osgViewer::Viewer *getOSGViewer()
 	{
@@ -187,8 +192,8 @@ public slots:
 	//²¥·ÅÊÓÆµ²Ûº¯Êý
 	void slotPlayVideo();
 
-	void slotUndo();
-	void slotRedo();
+	/*void slotUndo();
+	void slotRedo();*/
 signals:
 	void startWork();
 };
