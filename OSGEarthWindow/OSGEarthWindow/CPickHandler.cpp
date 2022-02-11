@@ -69,29 +69,13 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (mIsPickObject)
 				{
-
-					if (mLineN >= 2)
-					{
-						mLineN = 1;
-						//std::cout << typeid(*mViewer).name() << std::endl;//打印mViewer所指的实际类型
-						//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+					//oldDrawLine();
+					osgEarth::Symbology::Style m_lineStyle;
+					osgEarth::Features::Feature* m_pFeature;
+					osgEarth::Annotation::FeatureNode* m_pFeatureNode;
+					m_pFeature = NULL;
+					m_pFeatureNode = NULL;
 					
-						mLineVec->push_back(mLonLatAlt);
-						
-						DrawXXX drawline(mDrawLineWid);
-						
-						
-						m_oc->getMapNode()->addChild(drawline.createLine(mLineVec));
-						//oc->getRoot()->addChild(drawline.createLine(mLineVec));
-						mLineVec->clear();
-						//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
-						//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
-					}
-					else
-					{
-						mLineVec->push_back(mLonLatAlt);
-						mLineN++;	
-					}
 				}
 			}
 			else if(mSelected == SelectedDraw::TRIANGLES)
@@ -99,24 +83,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (mIsPickObject)
 				{
-					if (mTrinangleN >= 3)
-					{
-						mTrinangleN = 1;
-						//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
-
-						mTrinangleVec->push_back(mLonLatAlt);
-
-						DrawXXX drawTrinangle;
-						m_oc->getMapNode()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
-						//oc->getRoot()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
-						mTrinangleVec->clear();
-						
-					}
-					else
-					{
-						mTrinangleVec->push_back(mLonLatAlt);
-						mTrinangleN++;
-					}
+					//oldDrawTriangles();
+					
 				}
 			}
 			else if (mSelected == SelectedDraw::PARALLELOGRAM)
@@ -124,25 +92,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (mIsPickObject)
 				{
-					if (mParallelogramN >= 3)
-					{
-						mParallelogramN = 1;
-						//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
-
-						mParallelogramVec->push_back(mLonLatAlt);
-
-						DrawXXX drawQuads;
-						m_oc->getRoot()->addChild(drawQuads.createParallelogram(mParallelogramVec));
-						
-						mParallelogramVec->clear();
-
-					}
-					else
-					{
-						mParallelogramVec->push_back(mLonLatAlt);
-						mParallelogramN++;
-					}
-
+					//oldDrawParallelogram();
 				}
 			}
 			else //无选择时
@@ -199,7 +149,6 @@ void CPickHandler::pick(float x, float y)
 			{
 				
 				picked = mt;
-				std::cout << "picked";
 				//break;
 			}
 		}
@@ -219,47 +168,6 @@ void CPickHandler::pick(float x, float y)
 	}
 }
 
-void CPickHandler::pick1(float x, float y)
-{
-	osgUtil::LineSegmentIntersector::Intersections intersections;
-
-	if (mViewer->computeIntersections(x, y, intersections))
-	{
-		osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin();
-		osg::NodePath getNodePath = hitr->nodePath;
-
-		//std::cout<<hitr->matrix.valid();
-
-		for (int i = getNodePath.size() - 1; i >= 0; --i)
-		{
-
-			osg::MatrixTransform* mt = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
-			if (mt == NULL)
-			{
-				continue;
-			}
-			else
-			{
-				/*mIsPickObject = true;
-				picked = mt;*/
-				getNodePath[i]->setNodeMask(0);
-			}
-		}
-
-
-		mWorld = hitr->getWorldIntersectPoint();
-
-		//std::cout << "世界坐标:" << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
-		mLonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
-		mLonLatAlt.z() = 900;
-		emit signShowLonLatAlt(mLonLatAlt);
-		std::cout << "经纬度:" << mLonLatAlt.x() << " " << mLonLatAlt.y() << " " << mLonLatAlt.z() << std::endl;
-	}
-	else
-	{
-		//mIsPickObject = false;
-	}
-}
 
 void CPickHandler::reDrawXXX()
 {
@@ -271,6 +179,74 @@ void CPickHandler::reDrawXXX()
 	mTrinangleVec->clear();
 	mTrinangleVec->clear();
 	emit signReDefault();
+}
+void CPickHandler::oldDrawLine()
+{
+	if (mLineN >= 2)
+	{
+		mLineN = 1;
+		//std::cout << typeid(*mViewer).name() << std::endl;//打印mViewer所指的实际类型
+		//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+
+		mLineVec->push_back(mLonLatAlt);
+
+		DrawXXX drawline(mDrawLineWid);
+
+
+		m_oc->getMapNode()->addChild(drawline.createLine(mLineVec));
+		//oc->getRoot()->addChild(drawline.createLine(mLineVec));
+		mLineVec->clear();
+		//oc->getEM()->setHomeViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x()+vvv[1].x())/2, (vvv[0].y()+vvv[1].y())/2, 900, 0.0, -90, 7e3));
+		//oc->getEM()->setViewpoint(osgEarth::Viewpoint("视点", (vvv[0].x() + vvv[1].x()) / 2, (vvv[0].y() + vvv[1].y()) / 2, 900, 0.0, -90, 7e3));
+	}
+	else
+	{
+		mLineVec->push_back(mLonLatAlt);
+		mLineN++;
+	}
+}
+void CPickHandler::oldDrawTriangles()
+{
+	if (mTrinangleN >= 3)
+	{
+		mTrinangleN = 1;
+		//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+
+		mTrinangleVec->push_back(mLonLatAlt);
+
+		DrawXXX drawTrinangle;
+		m_oc->getMapNode()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
+		//oc->getRoot()->addChild(drawTrinangle.createTrinangle(mTrinangleVec));
+		mTrinangleVec->clear();
+
+	}
+	else
+	{
+		mTrinangleVec->push_back(mLonLatAlt);
+		mTrinangleN++;
+	}
+}
+void CPickHandler::oldDrawParallelogram()
+{
+	if (mParallelogramN >= 3)
+	{
+		mParallelogramN = 1;
+		//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+
+		mParallelogramVec->push_back(mLonLatAlt);
+
+		DrawXXX drawQuads;
+		m_oc->getRoot()->addChild(drawQuads.createParallelogram(mParallelogramVec));
+
+		mParallelogramVec->clear();
+
+	}
+	else
+	{
+		mParallelogramVec->push_back(mLonLatAlt);
+		mParallelogramN++;
+	}
+
 }
 
 void CPickHandler::slotGetDrawIndex(int n)

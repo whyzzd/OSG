@@ -36,6 +36,10 @@ public:
 	void pick1(float x, float y);
 	void reDrawXXX();
 
+	void oldDrawLine();
+	void oldDrawTriangles();
+	void oldDrawParallelogram();
+
 	OsgContainer *m_oc;
 
 	bool mIsPickObject;
