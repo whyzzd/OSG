@@ -116,24 +116,25 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					//pathFeature->geoInterp() = GEOINTERP_GREAT_CIRCLE;
 
 					Style pathStyle;
-					pathStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::White;
-					pathStyle.getOrCreate<LineSymbol>()->stroke()->width() = 1.0f;
+					pathStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Red;
+					pathStyle.getOrCreate<LineSymbol>()->stroke()->width() = 2.0f;
 					pathStyle.getOrCreate<LineSymbol>()->stroke()->smooth() = true;
 					pathStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
-					pathStyle.getOrCreate<PointSymbol>()->size() = 8;
-					pathStyle.getOrCreate<PointSymbol>()->fill()->color() = Color::Red;
+					pathStyle.getOrCreate<PointSymbol>()->size() = 7;
+					//pathStyle.getOrCreate<PointSymbol>()->fill()->color() = Color::Red;
 					pathStyle.getOrCreate<PointSymbol>()->smooth() = true;
 					pathStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
-					//pathStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
+					//pathStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
 					pathStyle.getOrCreate<RenderSymbol>()->depthOffset()->enabled() = true;
 
 					//OE_INFO << "Path extent = " << pathFeature->getExtent().toString() << std::endl;
 
 					pathNode = new osgEarth::Annotation::FeatureNode(pathFeature, pathStyle);
 
-					/*osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(pathNode);
-					m_oc->getMapNode()->addChild(editor);*/
+					osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(pathNode);
+					m_oc->getMapNode()->addChild(editor);
 					m_oc->getMapNode()->addChild(pathNode);
+					
 				}
 			}
 			else if(mSelected == SelectedDraw::TRIANGLES)
@@ -142,6 +143,32 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				if (mIsPickObject)
 				{
 					//oldDrawTriangles();
+
+					Geometry* geom = new osgEarth::Annotation::Polygon();
+					geom->push_back(-160., -30.);
+					geom->push_back(150., -20.);
+					geom->push_back(160., -45.);
+					geom->push_back(-150., -40.);
+					Style geomStyle;
+
+					osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
+					//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
+
+					geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
+					geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 3.0f;
+					geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
+					geomStyle.getOrCreate<PolygonSymbol>()->fill()->color() = Color(Color::Red);
+					geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
+					//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
+
+					
+					osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+					
+					osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
+					
+					m_oc->getMapNode()->addChild(editor);
+					m_oc->getMapNode()->addChild(gnode);
+					
 					
 				}
 			}
@@ -195,11 +222,13 @@ void CPickHandler::pick(float x, float y)
 			
 			osgEarth::Annotation::FeatureEditor *mt = dynamic_cast<osgEarth::Annotation::FeatureEditor*>(getNodePath[i]);
 			osg::MatrixTransform* mt1 = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
-			if (mt1 != NULL || mt != NULL)
+			osgEarth::Annotation::FeatureNode *mt2= dynamic_cast<osgEarth::Annotation::FeatureNode*>(getNodePath[i]);
+			if (mt1 != NULL || mt != NULL||mt2!=NULL)
 			{
 				mIsPickObject = true;
 			}
-			if (mt == NULL)
+
+			if (mt == NULL&&mt2==NULL)
 			{
 				continue;
 			}
@@ -209,6 +238,7 @@ void CPickHandler::pick(float x, float y)
 				picked = mt;
 				//break;
 			}
+			pickednode = mt2;
 		}
 		
 		
@@ -330,8 +360,14 @@ void CPickHandler::slotActionDel(bool checked )
 	{
 		//picked->setNodeMask(0);
 		m_oc->getMapNode()->removeChild(picked);
-		
+		m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked));
+		//m_oc->getMapNode()->removeChild(picked->getChild(0)); 
 	}
-	m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked));
 	
+	if (m_oc->getMapNode()->findMapNode(pickednode))
+	{
+		//pickednode->setNodeMask(0);
+		m_oc->getMapNode()->removeChild(pickednode);
+
+	}
 }
