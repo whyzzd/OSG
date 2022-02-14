@@ -12,7 +12,7 @@
 #include"MyConvert.h"
 #include<QObject>
 #include<osgEarthAnnotation/FeatureEditing>
-
+#include<QHash>
 class OsgContainer;
 class CPickHandler :public QObject, public osgGA::GUIEventHandler {
 	Q_OBJECT
@@ -43,14 +43,18 @@ public:
 	OsgContainer *m_oc;
 
 	bool mIsPickObject;
-	//osg::ref_ptr<osg::MatrixTransform> picked;
+	osg::ref_ptr<osg::MatrixTransform> picked0;
 	osg::ref_ptr < osgEarth::Annotation::FeatureEditor>picked;
 	osg::ref_ptr < osgEarth::Annotation::FeatureNode> pickednode;
+	QHash<osgEarth::Annotation::FeatureEditor*, osgEarth::Annotation::FeatureNode*>m_kv;
+	
+
 	//存放点击坐标以及点击次数
 	osg::ref_ptr<osg::Vec3Array> mLineVec=new osg::Vec3Array;
 	int mLineN =1;
 	osg::ref_ptr<osg::Vec3Array> mTrinangleVec = new osg::Vec3Array;
 	int mTrinangleN=1;
+	
 	osg::ref_ptr<osg::Vec3Array> mParallelogramVec = new osg::Vec3Array;
 	int mParallelogramN=1;
 

@@ -150,7 +150,7 @@
           </item>
           <item>
            <property name="text">
-            <string>绘制平行四边形</string>
+            <string>绘制四边形</string>
            </property>
           </item>
          </widget>
