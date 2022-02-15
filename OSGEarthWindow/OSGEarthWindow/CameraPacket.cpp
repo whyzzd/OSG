@@ -19,7 +19,7 @@ void CameraPacket::readEventQueue(osgViewer::Viewer& viewer)
 		_events.insert(_events.end(), gw_events.begin(), gw_events.end());
 	}
 
-	viewer.getEventQueue()->copyEvents(_events);
+	//viewer.getEventQueue()->copyEvents(_events);
 
 	osg::notify(osg::INFO) << "written events = " << _events.size() << std::endl;
 }

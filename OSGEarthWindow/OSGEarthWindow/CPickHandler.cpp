@@ -28,7 +28,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			//判断选择绘制类型
 			if (mSelected==SelectedDraw::NONE)
 			{
-				//pick1(ea.getX(), ea.getY());
+				pick(ea.getX(), ea.getY());
 								
 			}
 			else if (mSelected == SelectedDraw::DOT)
