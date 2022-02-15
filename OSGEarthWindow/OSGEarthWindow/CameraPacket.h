@@ -295,6 +295,8 @@ public:
 		writeUInt(event.getButtonMask());
 		writeUInt(event.getModKeyMask());
 		writeDouble(event.getTime());
+		//新增鼠标滚轮
+		writeUInt(event.getScrollingMotion());
 	}
 
 	void read(osgGA::GUIEventAdapter& event)
@@ -317,6 +319,9 @@ public:
 		event.setButtonMask(readUInt());
 		event.setModKeyMask(readUInt());
 		event.setTime(readDouble());
+		//新增鼠标滚轮
+		event.setScrollingMotion((osgGA::GUIEventAdapter::ScrollingMotion)readUInt());
+
 	}
 
 	void write(CameraPacket& cameraPacket)
