@@ -46,6 +46,11 @@ public:
 
 	osgGA::EventQueue::Events _events;
 
+	//操作以及相关参数
+	unsigned int _operaType;
+	float _lonLatAltX;
+	float _lonLatAltY;
+
 };
 
 class DataConverter
@@ -281,7 +286,7 @@ public:
 	{
 		writeUInt(event.getEventType());
 		writeUInt(event.getKey());
-		writeUInt(event.getButton());
+		//writeUInt(event.getButton());
 		writeInt(event.getWindowX());
 		writeInt(event.getWindowY());
 		writeUInt(event.getWindowWidth());
@@ -303,7 +308,7 @@ public:
 	{
 		event.setEventType((osgGA::GUIEventAdapter::EventType)readUInt());
 		event.setKey(readUInt());
-		event.setButton(readUInt());
+		//event.setButton(readUInt());
 		int x = readInt();
 		int y = readInt();
 		int width = readUInt();
@@ -341,6 +346,11 @@ public:
 			osgGA::GUIEventAdapter* event = (*itr)->asGUIEventAdapter();
 			if (event) write(*event);
 		}
+
+		//新增
+		writeUInt(cameraPacket._operaType);
+		writeFloat(cameraPacket._lonLatAltX);
+		writeFloat(cameraPacket._lonLatAltY);
 	}
 
 	void read(CameraPacket& cameraPacket)
@@ -364,6 +374,12 @@ public:
 			read(*(event));
 			cameraPacket._events.push_back(event);
 		}
+
+		//
+		cameraPacket._operaType = readUInt();
+		cameraPacket._lonLatAltX = readFloat();
+		cameraPacket._lonLatAltY = readFloat();
+		
 	}
 };
 

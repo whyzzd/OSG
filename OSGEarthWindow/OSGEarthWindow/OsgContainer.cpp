@@ -290,8 +290,18 @@ void OsgContainer::paintGL() {
 			osg::Matrix modelview(getCamera()->getViewMatrix());
 			mCP->setPacket(modelview, getFrameStamp());
 			mCP->readEventQueue(*this);
+			if (mOperaPacket._operaType == 1)
+			{
+				mCP->_operaType = mOperaPacket._operaType;
+				mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
+				mCP->_lonLatAltY = mOperaPacket._lonLatAltY;	
+			}
+			mOperaPacket._operaType = 0;
+
 			mScratchPad->reset();
 			mScratchPad->write(*mCP);
+
+			mCP->_operaType = 0;
 			mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 			mBC.sync();
 
@@ -302,6 +312,9 @@ void OsgContainer::paintGL() {
 			mScratchPad2->reset();
 			mScratchPad2->read(*mCP2);
 			mCP2->writeEventQueue(*this);
+			
+
+
 		}
 		else if(mViewerMode==SLAVE)
 		{
@@ -320,6 +333,12 @@ void OsgContainer::paintGL() {
 			mScratchPad->reset();
 			mScratchPad->read(*mCP);
 			mCP->writeEventQueue(*this);
+			if (mCP->_operaType == 1)
+			{
+				mCPickHandler->drawDot(mCP->_lonLatAltX, mCP->_lonLatAltY);
+				
+			}
+			mCP->_operaType = 0;
 		}
 
 		frame();

@@ -97,7 +97,7 @@ public:
 	void createWu();
 	bool createFire();//火
 	bool createBoom();//爆炸
-	bool crateExplosionDebris();//爆炸碎片
+	//bool crateExplosionDebris();//爆炸碎片
 
 	//星空
 	void initSky();
@@ -128,6 +128,22 @@ private:
 
 	DataConverter *mScratchPad;
 	DataConverter *mScratchPad2;
+
+	//网络传输操作包
+	struct OperaPacket
+	{
+		unsigned int _operaType;
+		float _lonLatAltX;
+		float _lonLatAltY;
+		OperaPacket():_operaType(0),_lonLatAltX(0.0f),_lonLatAltY(0.0f) {};
+		OperaPacket(unsigned int operaType, float lonLatAltX, float lonLatAltY)
+			:_operaType(operaType),
+			_lonLatAltX(lonLatAltX),
+			_lonLatAltY(lonLatAltY)
+		{}
+	};
+public:
+	OperaPacket mOperaPacket;
 
 private:
 	//以文件的形式加载

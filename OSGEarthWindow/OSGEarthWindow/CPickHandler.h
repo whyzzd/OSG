@@ -36,6 +36,10 @@ public:
 	void pick1(float x, float y);
 	void reDrawXXX();
 
+	void drawDot(float x,float y);
+	void drawTriangles();
+	void drawParallelogram();
+
 	void oldDrawLine();
 	void oldDrawTriangles();
 	void oldDrawParallelogram();

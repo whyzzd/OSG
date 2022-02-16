@@ -36,30 +36,15 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if(mIsPickObject)
 				{ 
-					//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
-					const osgEarth::SpatialReference* mapSRS = m_oc->getMapNode()->getMapSRS();
-					//osg::Group*geometryGroup = new osg::Group;
-					osgEarth::Symbology::Style geomStyle;
-					/*geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
-					geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
-					geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;*/
-					/*geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
-					geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;*/
+					drawDot(mLonLatAlt.x(), mLonLatAlt.y());
 
-					osg::ref_ptr<osgEarth::Symbology::Geometry> polygon = new osgEarth::Symbology::Polygon();
-					polygon->push_back(osg::Vec3d(mLonLatAlt.x(), mLonLatAlt.y(), 0));
-					//polygon->push_back(osg::Vec3d(-60, 40, 0));
-					//polygon->push_back(osg::Vec3d(-60, 60, 0));
-					//polygon->push_back(osg::Vec3d(0, 60, 0));
-
-
-					osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
-					osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
-					//geometryGroup->addChild(featureNode);
-					/*osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);*/
-					osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-					m_oc->getMapNode()->addChild(editor);
-					m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor));
+					if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+					{
+						m_oc->mOperaPacket._operaType = 1;
+						m_oc->mOperaPacket._lonLatAltX = mLonLatAlt.x();
+						m_oc->mOperaPacket._lonLatAltY = mLonLatAlt.y();
+					}
+					
 				}
 			}
 			else if (mSelected==SelectedDraw::LINE)
@@ -341,6 +326,23 @@ void CPickHandler::reDrawXXX()
 	mTrinangleVec->clear();
 	emit signReDefault();
 }
+void CPickHandler::drawDot(float x, float y)
+{
+	//OsgContainer *oc = dynamic_cast<OsgContainer*>(mViewer);
+	const osgEarth::SpatialReference* mapSRS = m_oc->getMapNode()->getMapSRS();
+	//osg::Group*geometryGroup = new osg::Group;
+	osgEarth::Symbology::Style geomStyle;
+
+	osg::ref_ptr<osgEarth::Symbology::Geometry> polygon = new osgEarth::Symbology::Polygon();
+	polygon->push_back(osg::Vec3d(x,y, 0));
+
+	osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
+	osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
+
+	osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(featureNode);
+	m_oc->getMapNode()->addChild(editor);
+	m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor));
+}
 void CPickHandler::oldDrawLine()
 {
 	if (mLineN >= 2)
@@ -440,17 +442,5 @@ void CPickHandler::slotActionDel(bool checked )
 		m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked, m_kv.value(picked)));
 	}
 	
-	//if (m_oc->getMapNode()->findMapNode(pickednode))
-	//{
-	//	//pickednode->setNodeMask(0);
-	//	m_oc->getMapNode()->removeChild(pickednode);
-	//	
-	//	picked0 = NULL;
-	//}
-	//if (m_oc->getMapNode()->findMapNode(picked0))
 
-	//{
-	//	m_oc->getMapNode()->removeChild(picked0);
-	//	
-	//}
 }
