@@ -68,8 +68,10 @@ public:
 protected:
 	osgViewer::Viewer *mViewer; // mViewer
 	osg::Vec3 mWorld;
-	osg::Vec3 mLonLatAlt;
+	
 	MyConvert mMyConv;
+public:
+	osg::Vec3 mLonLatAlt;
 
 signals:
 	void signShowLonLatAlt(const osg::Vec3 &lla);

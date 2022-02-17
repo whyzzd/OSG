@@ -29,7 +29,12 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			if (mSelected==SelectedDraw::NONE)
 			{
 				pick(ea.getX(), ea.getY());
-								
+				if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+				{
+					
+					m_oc->mOperaPacket._lonLatAltX = ea.getX();
+					m_oc->mOperaPacket._lonLatAltY = ea.getY();
+				}
 			}
 			else if (mSelected == SelectedDraw::DOT)
 			{
@@ -41,8 +46,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 					{
 						m_oc->mOperaPacket._operaType = 1;
-						m_oc->mOperaPacket._lonLatAltX = mLonLatAlt.x();
-						m_oc->mOperaPacket._lonLatAltY = mLonLatAlt.y();
+						m_oc->mOperaPacket._lonLatAltX = ea.getX();
+						m_oc->mOperaPacket._lonLatAltY = ea.getY();
 					}
 					
 				}
@@ -209,6 +214,10 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		}
 		return false;
 	}
+	case osgGA::GUIEventAdapter::DRAG:
+	{
+		
+	}
 
 	default:
 		return false;
@@ -251,17 +260,17 @@ void CPickHandler::pick(float x, float y)
 				//pickednode = mt2;
 				//break;
 			}
-			
-			
+						
 		}
-		
-		
-		
+						
 		mWorld = hitr->getWorldIntersectPoint();
 		
 		//std::cout << "世界坐标:" << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
 		mLonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
 		mLonLatAlt.z() = 900;
+		//emit signShowLonLatAlt(mLonLatAlt);
+		/*mLonLatAlt.x() = x;
+		mLonLatAlt.y() = y;*/
 		emit signShowLonLatAlt(mLonLatAlt);
 		//std::cout << "经纬度:" << mLonLatAlt.x() << " " << mLonLatAlt.y() << " " << mLonLatAlt.z() << std::endl;
 	}
