@@ -66,6 +66,8 @@ public:
 		_currentPtr = _startPtr = new char[numBytes];
 		_endPtr = _startPtr + numBytes;
 		_numBytes = numBytes;
+
+
 	}
 
 	char* _startPtr;
@@ -194,6 +196,8 @@ public:
 		}
 	}
 
+	
+
 	inline void writeChar(char c) { write1(&c); }
 	inline void writeUChar(unsigned char c) { write1((char*)&c); }
 	inline void writeShort(short c) { write2((char*)&c); }
@@ -284,9 +288,13 @@ public:
 
 	void write(const osgGA::GUIEventAdapter& event)
 	{
+		writeFloat(event.getX());
+		writeFloat(event.getY());
+
 		writeUInt(event.getEventType());
 		writeUInt(event.getKey());
 		//writeUInt(event.getButton());
+
 		writeInt(event.getWindowX());
 		writeInt(event.getWindowY());
 		writeUInt(event.getWindowWidth());
@@ -295,11 +303,9 @@ public:
 		writeFloat(event.getYmin());
 		writeFloat(event.getXmax());
 		writeFloat(event.getYmax());
-		float x, y;
-		x=event.getX();
-		y=event.getY();
-		writeFloat(x);
-		writeFloat(y);
+		
+		
+		writeUInt(event.getMouseYOrientation());
 		writeUInt(event.getButtonMask());
 		writeUInt(event.getModKeyMask());
 		writeDouble(event.getTime());
@@ -309,24 +315,27 @@ public:
 
 	void read(osgGA::GUIEventAdapter& event)
 	{
+		event.setX(readFloat());
+		event.setY(readFloat());
+
 		event.setEventType((osgGA::GUIEventAdapter::EventType)readUInt());
 		event.setKey(readUInt());
 		//event.setButton(readUInt());
+		
 		int x = readInt();
 		int y = readInt();
 		int width = readUInt();
-
 		int height = readUInt();
-		event.setWindowRectangle(0, 0, width, height);
+		event.setWindowRectangle(x, y, width, height);
 		float xmin = readFloat();
 		float ymin = readFloat();
 		float xmax = readFloat();
 		float ymax = readFloat();
 		event.setInputRange(xmin, ymin, xmax, ymax);
-		float xx = readFloat();
-		float yy = readFloat();
-		event.setX(xx);
-		event.setY(yy);
+		
+		
+		
+		event.setMouseYOrientation((osgGA::GUIEventAdapter::MouseYOrientation)readUInt());
 		event.setButtonMask(readUInt());
 		event.setModKeyMask(readUInt());
 		event.setTime(readDouble());
@@ -334,34 +343,7 @@ public:
 		event.setScrollingMotion((osgGA::GUIEventAdapter::ScrollingMotion)readUInt());
 
 	}
-	//zz
-	void read(osgGA::GUIEventAdapter& event,float x0,float y0)
-	{
-		event.setEventType((osgGA::GUIEventAdapter::EventType)readUInt());
-		event.setKey(readUInt());
-		//event.setButton(readUInt());
-		int x = readInt();
-		int y = readInt();
-		int width = readUInt();
-
-		int height = readUInt();
-		event.setWindowRectangle(0, 0, width, height);
-		float xmin = readFloat();
-		float ymin = readFloat();
-		float xmax = readFloat();
-		float ymax = readFloat();
-		event.setInputRange(xmin, ymin, xmax, ymax);
-		float xx = readFloat();
-		float yy = readFloat();
-		event.setX(x0);
-		event.setY(y0);
-		event.setButtonMask(readUInt());
-		event.setModKeyMask(readUInt());
-		event.setTime(readDouble());
-		//ÐÂÔöÊó±ê¹öÂÖ
-		event.setScrollingMotion((osgGA::GUIEventAdapter::ScrollingMotion)readUInt());
-
-	}
+	
 
 
 	void write(CameraPacket& cameraPacket)
@@ -372,8 +354,8 @@ public:
 
 		writeUInt(cameraPacket._masterKilled);
 
-		write(cameraPacket._matrix);
-		write(cameraPacket._frameStamp);
+		//write(cameraPacket._matrix);
+		//write(cameraPacket._frameStamp);
 
 		writeUInt(cameraPacket._events.size());
 		for (osgGA::EventQueue::Events::iterator itr = cameraPacket._events.begin();
@@ -400,8 +382,8 @@ public:
 
 		cameraPacket._masterKilled = readUInt() != 0;
 
-		read(cameraPacket._matrix);
-		read(cameraPacket._frameStamp);
+		//read(cameraPacket._matrix);
+		//read(cameraPacket._frameStamp);
 
 		cameraPacket._events.clear();
 		unsigned int numEvents = readUInt();

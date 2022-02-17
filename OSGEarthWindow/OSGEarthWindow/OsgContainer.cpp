@@ -290,12 +290,13 @@ void OsgContainer::paintGL() {
 			osg::Matrix modelview(getCamera()->getViewMatrix());
 			mCP->setPacket(modelview, getFrameStamp());
 			mCP->readEventQueue(*this);
-			
+
+			mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
+			mCP->_lonLatAltY = mOperaPacket._lonLatAltY;
 			if (mOperaPacket._operaType == 1)
 			{
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
-				mCP->_lonLatAltY = mOperaPacket._lonLatAltY;
+				
 			}
 			
 			mOperaPacket._operaType = 0;
@@ -337,14 +338,20 @@ void OsgContainer::paintGL() {
 
 			
 
-			mCP->writeEventQueue(*this);
+			//mCP->writeEventQueue(*this);
 
 			
+			if (mCP->_operaType == 0)
+			{
+				//this->getEventQueue()->clear();
+				this->getEventQueue()->mouseButtonPress(mCP->_lonLatAltX, mCP->_lonLatAltY,1);
+				this->getEventQueue()->mouseMotion(mCP->_lonLatAltX+1 , mCP->_lonLatAltY+1 );
+			}
 			if (mCP->_operaType == 1)
 			{
-				
-				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());
 				mCPickHandler->pick(mCP->_lonLatAltX, mCP->_lonLatAltY);
+				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());
+				
 			}
 			mCP->_operaType = 0;
 		}
