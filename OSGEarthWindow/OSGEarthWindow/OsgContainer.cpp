@@ -294,9 +294,10 @@ void OsgContainer::paintGL() {
 			if (mOperaPacket._operaType == 1)
 			{
 				mCP->_operaType = mOperaPacket._operaType;
+				mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
+				mCP->_lonLatAltY = mOperaPacket._lonLatAltY;
 			}
-			mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
-			mCP->_lonLatAltY = mOperaPacket._lonLatAltY;
+			
 			mOperaPacket._operaType = 0;
 
 			mScratchPad->reset();
@@ -334,7 +335,7 @@ void OsgContainer::paintGL() {
 			mScratchPad->reset();
 			mScratchPad->read(*mCP);
 
-			mCPickHandler->pick(mCP->_lonLatAltX, mCP->_lonLatAltY);
+			
 
 			mCP->writeEventQueue(*this);
 
@@ -343,7 +344,7 @@ void OsgContainer::paintGL() {
 			{
 				
 				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());
-				
+				mCPickHandler->pick(mCP->_lonLatAltX, mCP->_lonLatAltY);
 			}
 			mCP->_operaType = 0;
 		}
