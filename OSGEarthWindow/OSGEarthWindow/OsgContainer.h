@@ -135,6 +135,11 @@ private:
 		unsigned int _operaType;
 		float _lonLatAltX;
 		float _lonLatAltY;
+		float _oldScreenX;
+		float _oldScreenY;
+
+		int _buttonState;
+		int _isPressed;
 		OperaPacket():_operaType(0),_lonLatAltX(0.0f),_lonLatAltY(0.0f) {};
 		OperaPacket(unsigned int operaType, float lonLatAltX, float lonLatAltY)
 			:_operaType(operaType),

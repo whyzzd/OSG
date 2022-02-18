@@ -49,6 +49,7 @@ public:
 	bool mIsPickObject;
 	osg::ref_ptr<osg::MatrixTransform> picked0;
 	osg::ref_ptr < osgEarth::Annotation::FeatureEditor>picked;
+	bool ispickededitor=false;
 	osg::ref_ptr < osgEarth::Annotation::FeatureNode> pickednode;
 	QHash<osgEarth::Annotation::FeatureEditor*, osgEarth::Annotation::FeatureNode*>m_kv;
 	
@@ -72,6 +73,9 @@ protected:
 	MyConvert mMyConv;
 public:
 	osg::Vec3 mLonLatAlt;
+
+	float _oldSceenX;
+	float _oldSceenY;
 
 signals:
 	void signShowLonLatAlt(const osg::Vec3 &lla);

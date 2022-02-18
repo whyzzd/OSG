@@ -31,9 +31,16 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 				{
-					
+					m_oc->mOperaPacket._operaType = 0;
 					m_oc->mOperaPacket._lonLatAltX = ea.getX();
 					m_oc->mOperaPacket._lonLatAltY = ea.getY();
+
+					m_oc->mOperaPacket._buttonState = 1;
+					m_oc->mOperaPacket._isPressed = 1;
+					
+					_oldSceenX = ea.getX();
+					_oldSceenY = ea.getY();
+
 				}
 			}
 			else if (mSelected == SelectedDraw::DOT)
@@ -216,9 +223,47 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	}
 	case osgGA::GUIEventAdapter::DRAG:
 	{
-		
-	}
+		/*int button = ea.getButton();
+		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+		{*/
+			
 
+			if (!((abs(_oldSceenX - ea.getX()) <= 1.0) && (abs(_oldSceenY - ea.getY()) <= 1.0)))
+			{
+				m_oc->mOperaPacket._buttonState = 2;
+				m_oc->mOperaPacket._oldScreenX = _oldSceenX;
+				m_oc->mOperaPacket._oldScreenY = _oldSceenY;
+
+				m_oc->mOperaPacket._lonLatAltX = ea.getX();
+				m_oc->mOperaPacket._lonLatAltY = ea.getY();
+
+				_oldSceenX = ea.getX();
+				_oldSceenY = ea.getY();
+			}
+			else
+			{
+
+				m_oc->mOperaPacket._buttonState = 0;
+				m_oc->mOperaPacket._oldScreenX = ea.getX();
+				m_oc->mOperaPacket._oldScreenY = ea.getY();
+				m_oc->mOperaPacket._lonLatAltX = ea.getX();
+				m_oc->mOperaPacket._lonLatAltY = ea.getY();
+			}
+		/*}*/
+			
+	}
+	case osgGA::GUIEventAdapter::RELEASE:
+	{
+		int button = ea.getButton();
+		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+		{
+			m_oc->mOperaPacket._buttonState = 3;
+			m_oc->mOperaPacket._isPressed = 0;
+			m_oc->mOperaPacket._lonLatAltX = ea.getX();
+			m_oc->mOperaPacket._lonLatAltY = ea.getY();
+		}
+		ispickededitor = false;
+	}
 	default:
 		return false;
 	}
@@ -257,6 +302,8 @@ void CPickHandler::pick(float x, float y)
 			{
 				
 				picked = mt;
+
+				ispickededitor = true;
 				//pickednode = mt2;
 				//break;
 			}

@@ -50,7 +50,11 @@ public:
 	unsigned int _operaType;
 	float _lonLatAltX;
 	float _lonLatAltY;
-
+	float _oldScreenX;
+	float _oldScreenY;
+	unsigned int _buttonState;
+	unsigned int _isPressed;
+	
 };
 
 class DataConverter
@@ -292,23 +296,23 @@ public:
 		writeFloat(event.getY());
 
 		writeUInt(event.getEventType());
-		writeUInt(event.getKey());
+		//writeUInt(event.getKey());
 		//writeUInt(event.getButton());
 
 		writeInt(event.getWindowX());
 		writeInt(event.getWindowY());
-		writeUInt(event.getWindowWidth());
-		writeUInt(event.getWindowHeight());
-		writeFloat(event.getXmin());
+		writeInt(event.getWindowWidth());
+		writeInt(event.getWindowHeight());
+		/*writeFloat(event.getXmin());
 		writeFloat(event.getYmin());
 		writeFloat(event.getXmax());
-		writeFloat(event.getYmax());
-		
-		
-		writeUInt(event.getMouseYOrientation());
+		writeFloat(event.getYmax());*/
+
+
+		//writeUInt(event.getMouseYOrientation());
 		writeUInt(event.getButtonMask());
-		writeUInt(event.getModKeyMask());
-		writeDouble(event.getTime());
+		//writeUInt(event.getModKeyMask());
+		//writeDouble(event.getTime());
 		//新增鼠标滚轮
 		writeUInt(event.getScrollingMotion());
 	}
@@ -319,26 +323,26 @@ public:
 		event.setY(readFloat());
 
 		event.setEventType((osgGA::GUIEventAdapter::EventType)readUInt());
-		event.setKey(readUInt());
+		//event.setKey(readUInt());
 		//event.setButton(readUInt());
 		
 		int x = readInt();
 		int y = readInt();
-		int width = readUInt();
-		int height = readUInt();
-		event.setWindowRectangle(x, y, width, height);
-		float xmin = readFloat();
+		int width = readInt();
+		int height1 = readInt();
+		event.setWindowRectangle(x, y, width, height1);
+		/*float xmin = readFloat();
 		float ymin = readFloat();
 		float xmax = readFloat();
 		float ymax = readFloat();
-		event.setInputRange(xmin, ymin, xmax, ymax);
-		
-		
-		
-		event.setMouseYOrientation((osgGA::GUIEventAdapter::MouseYOrientation)readUInt());
+		event.setInputRange(xmin, ymin, xmax, ymax);*/
+
+
+
+		//event.setMouseYOrientation((osgGA::GUIEventAdapter::MouseYOrientation)readUInt());
 		event.setButtonMask(readUInt());
-		event.setModKeyMask(readUInt());
-		event.setTime(readDouble());
+		//event.setModKeyMask(readUInt());
+		//event.setTime(readDouble());
 		//新增鼠标滚轮
 		event.setScrollingMotion((osgGA::GUIEventAdapter::ScrollingMotion)readUInt());
 
@@ -348,7 +352,15 @@ public:
 
 	void write(CameraPacket& cameraPacket)
 	{
-		
+		//新增
+		writeUInt(cameraPacket._operaType);
+		writeFloat(cameraPacket._lonLatAltX);
+		writeFloat(cameraPacket._lonLatAltY);
+		writeFloat(cameraPacket._oldScreenX);
+		writeFloat(cameraPacket._oldScreenY);
+		writeUInt(cameraPacket._buttonState);
+		writeUInt(cameraPacket._isPressed);
+
 
 		writeUInt(cameraPacket._byte_order);
 
@@ -365,15 +377,21 @@ public:
 			osgGA::GUIEventAdapter* event = (*itr)->asGUIEventAdapter();
 			if (event) write(*event);
 		}
-
-		//新增
-		writeUInt(cameraPacket._operaType);
-		writeFloat(cameraPacket._lonLatAltX);
-		writeFloat(cameraPacket._lonLatAltY);
+		
+		
 	}
 
 	void read(CameraPacket& cameraPacket)
 	{
+		//
+		cameraPacket._operaType = readUInt();
+		cameraPacket._lonLatAltX = readFloat();
+		cameraPacket._lonLatAltY = readFloat();
+		cameraPacket._oldScreenX = readFloat();
+		cameraPacket._oldScreenY = readFloat();
+		cameraPacket._buttonState = readUInt();
+		cameraPacket._isPressed = readUInt();
+
 		cameraPacket._byte_order = readUInt();
 		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
 		{
@@ -391,18 +409,52 @@ public:
 		{
 			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
 			read(*(event));
+			event->setX(cameraPacket._lonLatAltX);
+			event->setY(cameraPacket._lonLatAltY);
 			cameraPacket._events.push_back(event);
-			
-		}
 
+		}		
+	}
+
+
+	void read(CameraPacket& cameraPacket,bool ispicked)
+	{
 		//
 		cameraPacket._operaType = readUInt();
 		cameraPacket._lonLatAltX = readFloat();
 		cameraPacket._lonLatAltY = readFloat();
-		
-	}
+		cameraPacket._oldScreenX = readFloat();
+		cameraPacket._oldScreenY = readFloat();
+		cameraPacket._buttonState = readUInt();
+		cameraPacket._isPressed = readUInt();
 
-	
+		cameraPacket._byte_order = readUInt();
+		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
+		{
+			_swapBytes = !_swapBytes;
+		}
+
+		cameraPacket._masterKilled = readUInt() != 0;
+
+		//read(cameraPacket._matrix);
+		//read(cameraPacket._frameStamp);
+
+		cameraPacket._events.clear();
+		unsigned int numEvents = readUInt();
+		for (unsigned int i = 0; i < numEvents; ++i)
+		{
+			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
+			read(*(event));
+			/*if (ispicked)
+			{*/
+				event->setX(cameraPacket._lonLatAltX);
+				event->setY(cameraPacket._lonLatAltY);
+			/*}*/
+			
+			cameraPacket._events.push_back(event);
+
+		}
+	}
 };
 
 
