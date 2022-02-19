@@ -48,12 +48,9 @@ public:
 
 	//操作以及相关参数
 	unsigned int _operaType;
-	float _lonLatAltX;
-	float _lonLatAltY;
-	float _oldScreenX;
-	float _oldScreenY;
-	unsigned int _buttonState;
-	unsigned int _isPressed;
+	float _screenX;
+	float _screenY;
+	unsigned int _ispickededitor;
 	
 };
 
@@ -354,12 +351,9 @@ public:
 	{
 		//新增
 		writeUInt(cameraPacket._operaType);
-		writeFloat(cameraPacket._lonLatAltX);
-		writeFloat(cameraPacket._lonLatAltY);
-		writeFloat(cameraPacket._oldScreenX);
-		writeFloat(cameraPacket._oldScreenY);
-		writeUInt(cameraPacket._buttonState);
-		writeUInt(cameraPacket._isPressed);
+		writeFloat(cameraPacket._screenX);
+		writeFloat(cameraPacket._screenY);
+		writeUInt(cameraPacket._ispickededitor);
 
 
 		writeUInt(cameraPacket._byte_order);
@@ -385,12 +379,9 @@ public:
 	{
 		//
 		cameraPacket._operaType = readUInt();
-		cameraPacket._lonLatAltX = readFloat();
-		cameraPacket._lonLatAltY = readFloat();
-		cameraPacket._oldScreenX = readFloat();
-		cameraPacket._oldScreenY = readFloat();
-		cameraPacket._buttonState = readUInt();
-		cameraPacket._isPressed = readUInt();
+		cameraPacket._screenX = readFloat();
+		cameraPacket._screenY = readFloat();
+		cameraPacket._ispickededitor = readUInt();
 
 		cameraPacket._byte_order = readUInt();
 		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
@@ -409,10 +400,13 @@ public:
 		{
 			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
 			read(*(event));
-			event->setX(cameraPacket._lonLatAltX);
-			event->setY(cameraPacket._lonLatAltY);
-			cameraPacket._events.push_back(event);
+			if (cameraPacket._ispickededitor)
+			{
+				event->setX(cameraPacket._screenX);
+				event->setY(cameraPacket._screenY);				
+			}
 
+			cameraPacket._events.push_back(event);
 		}		
 	}
 
@@ -421,12 +415,9 @@ public:
 	{
 		//
 		cameraPacket._operaType = readUInt();
-		cameraPacket._lonLatAltX = readFloat();
-		cameraPacket._lonLatAltY = readFloat();
-		cameraPacket._oldScreenX = readFloat();
-		cameraPacket._oldScreenY = readFloat();
-		cameraPacket._buttonState = readUInt();
-		cameraPacket._isPressed = readUInt();
+		cameraPacket._screenX = readFloat();
+		cameraPacket._screenY = readFloat();
+		cameraPacket._ispickededitor = readUInt();
 
 		cameraPacket._byte_order = readUInt();
 		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
@@ -445,11 +436,11 @@ public:
 		{
 			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
 			read(*(event));
-			/*if (ispicked)
-			{*/
-				event->setX(cameraPacket._lonLatAltX);
-				event->setY(cameraPacket._lonLatAltY);
-			/*}*/
+			if (ispicked)
+			{
+				event->setX(cameraPacket._screenX);
+				event->setY(cameraPacket._screenY);
+			}
 			
 			cameraPacket._events.push_back(event);
 

@@ -294,19 +294,19 @@ void OsgContainer::paintGL() {
 			if (mOperaPacket._operaType == 0)
 			{
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
-				mCP->_lonLatAltY = mOperaPacket._lonLatAltY;
-				mCP->_buttonState = mOperaPacket._buttonState;
-				mCP->_isPressed = mOperaPacket._isPressed;
+				mCP->_screenX = mOperaPacket._screenX;
+				mCP->_screenY = mOperaPacket._screenY;
+				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+				
 				
 			}
 			if (mOperaPacket._operaType == 1)
 			{
 				
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_lonLatAltX = mOperaPacket._lonLatAltX;
-				mCP->_lonLatAltY = mOperaPacket._lonLatAltY;
-
+				mCP->_screenX = mOperaPacket._screenX;
+				mCP->_screenY = mOperaPacket._screenY;
+				mCP->_ispickededitor = mOperaPacket._ispickededitor;
 			}
 			
 			mOperaPacket._operaType = 0;
@@ -342,20 +342,24 @@ void OsgContainer::paintGL() {
 			unsigned int readsize = mRC.sync();
 
 			mScratchPad->reset();
-			//mCPickHandler->pick(mCP->_lonLatAltX, mCP->_lonLatAltY);
-			mScratchPad->read(*mCP/*,mCPickHandler->ispickededitor*/);
+			
+			mScratchPad->read(*mCP);
 
 			
 			mCP->writeEventQueue(*this);
-			
+
 			if (mCP->_operaType == 0)
 			{
-				
-				
+				if (mCP->_ispickededitor)
+				{
+					mCPickHandler->pick(mCP->_screenX, mCP->_screenY);
+				}
+
 			}
+			
 			if (mCP->_operaType == 1)
 			{
-				mCPickHandler->pick(mCP->_lonLatAltX, mCP->_lonLatAltY);
+				mCPickHandler->pick(mCP->_screenX, mCP->_screenY);
 				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());
 				
 			}

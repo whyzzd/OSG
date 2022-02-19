@@ -32,14 +32,10 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 				{
 					m_oc->mOperaPacket._operaType = 0;
-					m_oc->mOperaPacket._lonLatAltX = ea.getX();
-					m_oc->mOperaPacket._lonLatAltY = ea.getY();
+					m_oc->mOperaPacket._screenX = ea.getX();
+					m_oc->mOperaPacket._screenY = ea.getY();
+					m_oc->mOperaPacket._ispickededitor = ispickededitor;
 
-					m_oc->mOperaPacket._buttonState = 1;
-					m_oc->mOperaPacket._isPressed = 1;
-					
-					_oldSceenX = ea.getX();
-					_oldSceenY = ea.getY();
 
 				}
 			}
@@ -53,8 +49,9 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 					{
 						m_oc->mOperaPacket._operaType = 1;
-						m_oc->mOperaPacket._lonLatAltX = ea.getX();
-						m_oc->mOperaPacket._lonLatAltY = ea.getY();
+						m_oc->mOperaPacket._screenX = ea.getX();
+						m_oc->mOperaPacket._screenY = ea.getY();
+						m_oc->mOperaPacket._ispickededitor = ispickededitor;
 					}
 					
 				}
@@ -221,6 +218,18 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		}
 		return false;
 	}
+	case osgGA::GUIEventAdapter::MOVE:
+	{
+		if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+		{
+			
+			m_oc->mOperaPacket._screenX = ea.getX();
+			m_oc->mOperaPacket._screenY = ea.getY();
+			m_oc->mOperaPacket._ispickededitor = ispickededitor;
+
+
+		}
+	}
 	case osgGA::GUIEventAdapter::DRAG:
 	{
 		/*int button = ea.getButton();
@@ -228,7 +237,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		{*/
 			
 
-			if (!((abs(_oldSceenX - ea.getX()) <= 1.0) && (abs(_oldSceenY - ea.getY()) <= 1.0)))
+			/*if (!((abs(_oldSceenX - ea.getX()) <= 1.0) && (abs(_oldSceenY - ea.getY()) <= 1.0)))
 			{
 				m_oc->mOperaPacket._buttonState = 2;
 				m_oc->mOperaPacket._oldScreenX = _oldSceenX;
@@ -248,7 +257,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				m_oc->mOperaPacket._oldScreenY = ea.getY();
 				m_oc->mOperaPacket._lonLatAltX = ea.getX();
 				m_oc->mOperaPacket._lonLatAltY = ea.getY();
-			}
+			}*/
 		/*}*/
 			
 	}
@@ -257,12 +266,13 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		int button = ea.getButton();
 		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
 		{
-			m_oc->mOperaPacket._buttonState = 3;
-			m_oc->mOperaPacket._isPressed = 0;
-			m_oc->mOperaPacket._lonLatAltX = ea.getX();
-			m_oc->mOperaPacket._lonLatAltY = ea.getY();
+			
+			m_oc->mOperaPacket._screenX = ea.getX();
+			m_oc->mOperaPacket._screenY = ea.getY();
+			m_oc->mOperaPacket._ispickededitor = false;
+			
 		}
-		ispickededitor = false;
+		
 	}
 	default:
 		return false;
@@ -281,7 +291,7 @@ void CPickHandler::pick(float x, float y)
 		osg::NodePath getNodePath = hitr->nodePath;
 
 		//std::cout<<hitr->matrix.valid();
-
+		ispickededitor = false;
 		for (int i = getNodePath.size() - 1; i >=0; --i)
 		{
 			
@@ -296,6 +306,7 @@ void CPickHandler::pick(float x, float y)
 
 			if (mt == NULL)
 			{
+				
 				continue;
 			}
 			else
@@ -304,8 +315,7 @@ void CPickHandler::pick(float x, float y)
 				picked = mt;
 
 				ispickededitor = true;
-				//pickednode = mt2;
-				//break;
+				
 			}
 						
 		}
@@ -314,7 +324,7 @@ void CPickHandler::pick(float x, float y)
 		
 		//std::cout << "ÊÀ½ç×ø±ê:" << vec1.x() << " " << vec1.y() << " " << vec1.z() << std::endl;
 		mLonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
-		mLonLatAlt.z() = 900;
+		mLonLatAlt.z() = 0;
 		//emit signShowLonLatAlt(mLonLatAlt);
 		/*mLonLatAlt.x() = x;
 		mLonLatAlt.y() = y;*/

@@ -74,8 +74,6 @@ protected:
 public:
 	osg::Vec3 mLonLatAlt;
 
-	float _oldSceenX;
-	float _oldSceenY;
 
 signals:
 	void signShowLonLatAlt(const osg::Vec3 &lla);

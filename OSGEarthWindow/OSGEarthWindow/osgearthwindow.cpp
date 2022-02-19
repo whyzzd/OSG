@@ -19,6 +19,8 @@ OSGEarthWindow::OSGEarthWindow(osg::ArgumentParser ap, QWidget *parent)
 	ui.setupUi(this);
 	setWindowTitle("µØÇò");
 	resize(800, 500);
+	setMaximumSize(800, 500);
+	setMinimumSize(800, 500);
 
 	initOSGViewer(ap);
 	initMenuBar();
