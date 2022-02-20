@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     OSGEarthWindow w(arguments);
     w.show();
-	
+	std::cout << sizeof(osgGA::GUIEventAdapter);
 	//test´úÂë
 	//osg::ArgumentParser argument(&argc, argv);
 	//osgViewer::Viewer viewer(argument);

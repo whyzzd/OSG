@@ -5,7 +5,7 @@ void CameraPacket::readEventQueue(osgViewer::Viewer& viewer)
 
 	osgViewer::ViewerBase::Contexts contexts;
 	viewer.getContexts(contexts);
-
+	
 	for (osgViewer::ViewerBase::Contexts::iterator citr = contexts.begin(); citr != contexts.end(); ++citr)
 	{
 		osgGA::EventQueue::Events gw_events;
@@ -15,11 +15,12 @@ void CameraPacket::readEventQueue(osgViewer::Viewer& viewer)
 		{
 			gw->checkEvents();
 			gw->getEventQueue()->copyEvents(gw_events);
+		
 		}
 		_events.insert(_events.end(), gw_events.begin(), gw_events.end());
 	}
 
-	//viewer.getEventQueue()->copyEvents(_events);
+	viewer.getEventQueue()->copyEvents(_events);
 
 	osg::notify(osg::INFO) << "written events = " << _events.size() << std::endl;
 }
@@ -27,6 +28,7 @@ void CameraPacket::readEventQueue(osgViewer::Viewer& viewer)
 void CameraPacket::writeEventQueue(osgViewer::Viewer& viewer)
 {
 	osg::notify(osg::INFO) << "received events = " << _events.size() << std::endl;
-
+	
 	viewer.getEventQueue()->appendEvents(_events);
+	
 }

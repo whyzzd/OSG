@@ -78,6 +78,9 @@ public:
 
 	char* _currentPtr;
 
+	int n = sizeof(osgGA::GUIEventAdapter);
+
+
 	void reset()
 	{
 		_currentPtr = _startPtr;
@@ -197,6 +200,66 @@ public:
 		}
 	}
 
+	inline void writen(char* ptr)
+	{
+		if (_currentPtr + n >= _endPtr) return;
+
+		/**(_currentPtr++) = *(ptr++);
+		*(_currentPtr++) = *(ptr++);
+		*(_currentPtr++) = *(ptr++);
+		*(_currentPtr++) = *(ptr++);
+
+		*(_currentPtr++) = *(ptr++);
+		*(_currentPtr++) = *(ptr++);
+		*(_currentPtr++) = *(ptr++);
+		*(_currentPtr++) = *(ptr);*/
+		for (int i = 0; i < n - 1; i++)
+		{
+			*(_currentPtr++) = *(ptr++);
+		}
+		*(_currentPtr++) = *(ptr);
+	}
+
+	inline void readn(char* ptr)
+	{
+		char* endPtr = _currentPtr + n;
+		if (endPtr >= _endPtr) return;
+		if (_swapBytes)
+		{
+			/**(ptr + 7) = *(_currentPtr++);
+			*(ptr + 6) = *(_currentPtr++);
+			*(ptr + 5) = *(_currentPtr++);
+			*(ptr + 4) = *(_currentPtr++);
+
+			*(ptr + 3) = *(_currentPtr++);
+			*(ptr + 2) = *(_currentPtr++);
+			*(ptr + 1) = *(_currentPtr++);
+			*(ptr) = *(_currentPtr++);*/
+			
+			for (int i = n - 1; i >= 0; i--)
+			{
+				*(ptr + i) = *(_currentPtr++);
+			}
+		}
+		else
+		{
+			/**(ptr++) = *(_currentPtr++);
+			*(ptr++) = *(_currentPtr++);
+			*(ptr++) = *(_currentPtr++);
+			*(ptr++) = *(_currentPtr++);
+
+			*(ptr++) = *(_currentPtr++);
+			*(ptr++) = *(_currentPtr++);
+			*(ptr++) = *(_currentPtr++);
+			*(ptr) = *(_currentPtr++);*/
+
+			for (int i = 0; i < n-1; i++)
+			{
+				*(ptr++) = *(_currentPtr++);
+			}
+			*(ptr) = *(_currentPtr++);
+		}
+	}
 	
 
 	inline void writeChar(char c) { write1(&c); }
@@ -207,6 +270,7 @@ public:
 	inline void writeUInt(unsigned int c) { write4((char*)&c); }
 	inline void writeFloat(float c) { write4((char*)&c); }
 	inline void writeDouble(double c) { write8((char*)&c); }
+	inline void writeEvent(osgGA::GUIEventAdapter *c) { writen((char*)&(*c)); }
 
 	inline char readChar() { char c = 0; read1(&c); return c; }
 	inline unsigned char readUChar() { unsigned char c = 0; read1((char*)&c); return c; }
@@ -216,6 +280,7 @@ public:
 	inline unsigned int readUInt() { unsigned int c = 0; read4((char*)&c); return c; }
 	inline float readFloat() { float c = 0.0f; read4((char*)&c); return c; }
 	inline double readDouble() { double c = 0.0; read8((char*)&c); return c; }
+	inline void readEvent(osgGA::GUIEventAdapter *c) { readn((char*)&(*c)); }
 
 	void write(const osg::FrameStamp& fs)
 	{
@@ -292,9 +357,11 @@ public:
 		writeFloat(event.getX());
 		writeFloat(event.getY());
 
+
+
 		writeUInt(event.getEventType());
 		//writeUInt(event.getKey());
-		//writeUInt(event.getButton());
+		writeUInt(event.getButton());
 
 		writeInt(event.getWindowX());
 		writeInt(event.getWindowY());
@@ -321,7 +388,7 @@ public:
 
 		event.setEventType((osgGA::GUIEventAdapter::EventType)readUInt());
 		//event.setKey(readUInt());
-		//event.setButton(readUInt());
+		event.setButton(readUInt());
 		
 		int x = readInt();
 		int y = readInt();
@@ -342,7 +409,7 @@ public:
 		//event.setTime(readDouble());
 		//ÐÂÔöÊó±ê¹öÂÖ
 		event.setScrollingMotion((osgGA::GUIEventAdapter::ScrollingMotion)readUInt());
-
+		
 	}
 	
 
@@ -356,7 +423,7 @@ public:
 		writeUInt(cameraPacket._ispickededitor);
 
 
-		writeUInt(cameraPacket._byte_order);
+		//writeUInt(cameraPacket._byte_order);
 
 		writeUInt(cameraPacket._masterKilled);
 
@@ -369,7 +436,8 @@ public:
 			++itr)
 		{
 			osgGA::GUIEventAdapter* event = (*itr)->asGUIEventAdapter();
-			if (event) write(*event);
+			/*if (event) write(*event);*/
+			if (event) writeEvent(event);
 		}
 		
 		
@@ -383,11 +451,11 @@ public:
 		cameraPacket._screenY = readFloat();
 		cameraPacket._ispickededitor = readUInt();
 
-		cameraPacket._byte_order = readUInt();
-		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
+		//cameraPacket._byte_order = readUInt();
+		/*if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
 		{
 			_swapBytes = !_swapBytes;
-		}
+		}*/
 
 		cameraPacket._masterKilled = readUInt() != 0;
 
@@ -399,15 +467,17 @@ public:
 		for (unsigned int i = 0; i < numEvents; ++i)
 		{
 			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
-			read(*(event));
-			if (cameraPacket._ispickededitor)
+			//read(*(event));
+			readEvent(event);
+			/*if (cameraPacket._ispickededitor)
 			{
 				event->setX(cameraPacket._screenX);
 				event->setY(cameraPacket._screenY);				
-			}
+			}*/
 
 			cameraPacket._events.push_back(event);
-		}		
+		}	
+		osg::notify(osg::NOTICE) << "2222 " << sizeof(osgGA::GUIEventAdapter);
 	}
 
 
