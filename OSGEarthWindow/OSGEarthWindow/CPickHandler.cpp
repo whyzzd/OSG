@@ -34,6 +34,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					m_oc->mOperaPacket._operaType = 0;
 					m_oc->mOperaPacket._screenX = ea.getX();
 					m_oc->mOperaPacket._screenY = ea.getY();
+					
 					m_oc->mOperaPacket._ispickededitor = ispickededitor;
 
 
@@ -49,8 +50,10 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 					{
 						m_oc->mOperaPacket._operaType = 1;
-						m_oc->mOperaPacket._screenX = ea.getX();
-						m_oc->mOperaPacket._screenY = ea.getY();
+						/*m_oc->mOperaPacket._screenX = ea.getX();
+						m_oc->mOperaPacket._screenY = ea.getY();*/
+						m_oc->mOperaPacket._screenX = mLonLatAlt.x();
+						m_oc->mOperaPacket._screenY = mLonLatAlt.y();
 						m_oc->mOperaPacket._ispickededitor = ispickededitor;
 					}
 					
@@ -220,7 +223,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	}
 	case osgGA::GUIEventAdapter::MOVE:
 	{
-		if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+		/*if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 		{
 			
 			m_oc->mOperaPacket._screenX = ea.getX();
@@ -228,7 +231,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			m_oc->mOperaPacket._ispickededitor = ispickededitor;
 
 
-		}
+		}*/
 	}
 	case osgGA::GUIEventAdapter::DRAG:
 	{
@@ -380,6 +383,46 @@ void CPickHandler::pick1(float x, float y)
 		}
 
 	}
+}
+osg::Vec3  CPickHandler::pick2(float x, float y)
+{
+	osgUtil::LineSegmentIntersector::Intersections intersections;
+
+	if (mViewer->computeIntersections(x, y, intersections))
+	{
+		osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin();
+		osg::NodePath getNodePath = hitr->nodePath;
+
+		for (int i = getNodePath.size() - 1; i >= 0; --i)
+		{
+			osgEarth::Annotation::FeatureEditor *mt = dynamic_cast<osgEarth::Annotation::FeatureEditor*>(getNodePath[i]);
+			osg::MatrixTransform* mt1 = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
+			osgEarth::Annotation::FeatureNode *mt2 = dynamic_cast<osgEarth::Annotation::FeatureNode*>(getNodePath[i]);
+			if (mt1 != NULL || mt != NULL || mt2 != NULL)
+			{
+				mIsPickObject = true;
+			}
+			if (mt == NULL)
+			{
+				continue;
+			}
+			else
+			{
+				picked = mt;
+
+			}
+		}
+
+		osg::Vec3 World;
+		World = hitr->getWorldIntersectPoint();
+
+		osg::Vec3 LonLatAlt;
+		LonLatAlt = mMyConv.WorldToLonLatAlt(mWorld);
+		//mLonLatAlt.z() = 0;
+		
+		return LonLatAlt;
+	}
+	return osg::Vec3();
 }
 void CPickHandler::reDrawXXX()
 {

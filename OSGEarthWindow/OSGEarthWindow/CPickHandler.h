@@ -34,6 +34,7 @@ public:
 	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 	void pick(float x, float y);
 	void pick1(float x, float y);
+	osg::Vec3  pick2(float x, float y);
 	void reDrawXXX();
 
 	void drawDot(float x,float y);

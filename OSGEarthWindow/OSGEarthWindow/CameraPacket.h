@@ -357,11 +357,11 @@ public:
 		writeFloat(event.getX());
 		writeFloat(event.getY());
 
-
+		
 
 		writeUInt(event.getEventType());
 		//writeUInt(event.getKey());
-		writeUInt(event.getButton());
+		//writeUInt(event.getButton());
 
 		writeInt(event.getWindowX());
 		writeInt(event.getWindowY());
@@ -374,6 +374,7 @@ public:
 
 
 		//writeUInt(event.getMouseYOrientation());
+		//if (event.getButtonMask() != osgGA::GUIEventAdapter::MouseButtonMask::RIGHT_MOUSE_BUTTON)
 		writeUInt(event.getButtonMask());
 		//writeUInt(event.getModKeyMask());
 		//writeDouble(event.getTime());
@@ -383,12 +384,16 @@ public:
 
 	void read(osgGA::GUIEventAdapter& event)
 	{
-		event.setX(readFloat());
-		event.setY(readFloat());
+		float x0, y0;
+		x0 = readFloat();
+		y0 = readFloat();
+		event.setX(x0);
+		event.setY(y0);
+		//printf("read:%f,%f\n", x0, y0);
 
 		event.setEventType((osgGA::GUIEventAdapter::EventType)readUInt());
 		//event.setKey(readUInt());
-		event.setButton(readUInt());
+		//event.setButton(readUInt());//注释掉之后可以解决两边选择功能不同仍可以互相影响画点
 		
 		int x = readInt();
 		int y = readInt();
@@ -403,8 +408,10 @@ public:
 
 
 
-		//event.setMouseYOrientation((osgGA::GUIEventAdapter::MouseYOrientation)readUInt());
-		event.setButtonMask(readUInt());
+		//event.setMouseYOrientation((osgGA::GUIEventAdapter::MouseYOrientation)(1-readUInt()));
+		unsigned int mask = readUInt();
+		//if (mask != osgGA::GUIEventAdapter::MouseButtonMask::RIGHT_MOUSE_BUTTON)
+		event.setButtonMask(mask);
 		//event.setModKeyMask(readUInt());
 		//event.setTime(readDouble());
 		//新增鼠标滚轮
@@ -436,9 +443,15 @@ public:
 			++itr)
 		{
 			osgGA::GUIEventAdapter* event = (*itr)->asGUIEventAdapter();
-			/*if (event) write(*event);*/
-			if (event) writeEvent(event);
+			
+			
+			if (event)
+				//if (!(event->getEventType() == osgGA::GUIEventAdapter::EventType::PUSH&&event->getButtonMask()== osgGA::GUIEventAdapter::MouseButtonMask::RIGHT_MOUSE_BUTTON))				
+					write(*event);
+			//printf("write:%f,%f\n", event->getX(), event->getY());
+			//if (event) writeEvent(event);
 		}
+		
 		
 		
 	}
@@ -467,17 +480,18 @@ public:
 		for (unsigned int i = 0; i < numEvents; ++i)
 		{
 			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
-			//read(*(event));
-			readEvent(event);
+			read(*(event));
+			
+			//readEvent(event);
 			/*if (cameraPacket._ispickededitor)
 			{
 				event->setX(cameraPacket._screenX);
 				event->setY(cameraPacket._screenY);				
 			}*/
-
+			//printf("write:%f,%f\n", event->getX(), event->getY());
 			cameraPacket._events.push_back(event);
 		}	
-		osg::notify(osg::NOTICE) << "2222 " << sizeof(osgGA::GUIEventAdapter);
+		
 	}
 
 
