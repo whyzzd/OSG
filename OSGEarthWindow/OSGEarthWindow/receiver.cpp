@@ -53,14 +53,7 @@ Receiver::~Receiver( void )
     close( _so );
 #endif
 }
-//******************设置为非阻塞
-static void setnonblocking(int sockfd) {
-	unsigned long on = 1;
-	if (0 != ioctlsocket(sockfd, FIONBIO, &on))
-	{
-		/* Handle failure. */
-	}
-}
+
 bool Receiver::init( void )
 {
 #if defined(WIN32) && !defined(__CYGWIN__)
@@ -156,9 +149,9 @@ unsigned int Receiver::sync( void )
 	int err = WSAGetLastError();
 	if (err != 0) fprintf(stderr, "Receiver::sync() - error %d\n", err);
 
-	while (select(static_cast<int>(_so) + 1, &fdset, 0L, 0L, &tv))
+	while (select(static_cast<int>(_so) + 1, &fdset, 0L, 0L, &tv))//selecdt对那些可读可写异常的不动,其余置0,返回fd的总数
 	{
-		if (FD_ISSET(_so, &fdset))
+		if (FD_ISSET(_so, &fdset))//检查对应fd是否仍为1
 		{
 			recvfrom(_so, (char *)_buffer, _buffer_size, 0, (sockaddr*)&saddr, &size);
 		}
