@@ -62,6 +62,7 @@ OsgContainer::OsgContainer(osg::ArgumentParser argument, QWidget *parent)
 {
 	while (argument.read("-m"))mViewerMode = MASTER;
 	while (argument.read("-s")) mViewerMode = SLAVE;
+	while (argument.read("-d"))mViewerMode = SLAVE1;
 	initInteraction();
 	//initEarth1();
 	initEarth2();
@@ -287,9 +288,7 @@ void OsgContainer::paintGL() {
 
 		if(mViewerMode==MASTER)
 		{ 
-			/*osg::Matrix modelview(getCamera()->getViewMatrix());
-			mCP->setPacket(modelview, getFrameStamp());*/
-			
+						
 			mCP->readEventQueue(*this);
 			if (mOperaPacket._operaType == 0)
 			{
@@ -316,32 +315,33 @@ void OsgContainer::paintGL() {
 			mCP->_operaType = 0;
 			mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 			mBC.sync();
+			static int i = 0;
+			//printf("count:%d\n", i++);
 
-			//mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
-			//
-			//unsigned int readsize = mRC2.sync();
-			//
-			//mScratchPad2->reset();
-			//mScratchPad2->read(*mCP2);
-			//mCP2->writeEventQueue(*this);
+			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
 
-			//if (mCP2->_operaType == 1)
-			//{
-			//	/*mCPickHandler->pick(mCP2->_screenX, mCP2->_screenY);
-			//	mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
+			unsigned int readsize = mRC2.sync();
 
-			//	mCPickHandler->drawDot(mCP2->_screenX, mCP2->_screenY);
+			mScratchPad2->reset();
+			mScratchPad2->read(*mCP2);
+			mCP2->writeEventQueue(*this);
 
-			//}
-			//mCP2->_operaType = 0;
+			if (mCP2->_operaType == 1)
+			{
+				/*mCPickHandler->pick(mCP2->_screenX, mCP2->_screenY);
+				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
+
+				mCPickHandler->drawDot(mCP2->_screenX, mCP2->_screenY);
+
+			}
+			mCP2->_operaType = 0;
 			
 		}
 		else if(mViewerMode==SLAVE)
 		{
-			/*osg::Matrix modelview(getCamera()->getViewMatrix());
-			mCP2->setPacket(modelview, getFrameStamp());*/
 
-			/*mCP2->readEventQueue(*this);
+
+			mCP2->readEventQueue(*this);
 
 			if (mOperaPacket._operaType == 0)
 			{
@@ -354,7 +354,7 @@ void OsgContainer::paintGL() {
 			}
 			else if (mOperaPacket._operaType == 1)
 			{
-				
+
 				mCP2->_operaType = mOperaPacket._operaType;
 				mCP2->_screenX = mOperaPacket._screenX;
 				mCP2->_screenY = mOperaPacket._screenY;
@@ -366,7 +366,7 @@ void OsgContainer::paintGL() {
 			mScratchPad2->write(*mCP2);
 			mCP2->_operaType = 0;
 			mBC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
-			mBC2.sync();*/
+			mBC2.sync();
 
 			mRC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 
@@ -395,6 +395,60 @@ void OsgContainer::paintGL() {
 			}
 			mCP->_operaType = 0;
 		}
+		else if (mViewerMode == SLAVE1)
+		{
+		
+			mCP->readEventQueue(*this);
+			if (mOperaPacket._operaType == 0)
+			{
+				mCP->_operaType = mOperaPacket._operaType;
+				mCP->_screenX = mOperaPacket._screenX;
+				mCP->_screenY = mOperaPacket._screenY;
+				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+
+			}
+			else if (mOperaPacket._operaType == 1)
+			{
+
+				mCP->_operaType = mOperaPacket._operaType;
+				mCP->_screenX = mOperaPacket._screenX;
+				mCP->_screenY = mOperaPacket._screenY;
+				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+			}
+			mOperaPacket._operaType = 0;
+
+
+			mScratchPad->reset();
+			mScratchPad->write(*mCP);
+
+			mCP->_operaType = 0;
+			mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+			mBC.sync();
+			static int i = 0;
+			//printf("count:%d\n", i++);
+
+			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
+
+			unsigned int readsize = mRC2.sync();
+
+			mScratchPad2->reset();
+			mScratchPad2->read(*mCP2);
+			mCP2->writeEventQueue(*this);
+
+			//if (mCP2->_operaType == 1)
+			//{
+			//	/*mCPickHandler->pick(mCP2->_screenX, mCP2->_screenY);
+			//	mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
+
+			//	mCPickHandler->drawDot(mCP2->_screenX, mCP2->_screenY);
+
+			//}
+			//mCP2->_operaType = 0;			
+		}
+		else
+		{
+
+		}
 
 		frame();
 	}
@@ -407,7 +461,7 @@ void OsgContainer::initInteraction()
 
 	mBC2.setPort(static_cast<short int>(mSocketNumber + 1));
 	mRC2.setPort(static_cast<short int>(mSocketNumber + 1));
-
+	
 	mCP = new CameraPacket();
 	mCP2 = new CameraPacket();
 

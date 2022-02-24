@@ -38,7 +38,8 @@ public:
 	{
 		STAND_ALONE,
 		MASTER,
-		SLAVE		
+		SLAVE,
+		SLAVE1
 	};
 	int mViewerMode;
 
@@ -116,6 +117,7 @@ private:
 	Receiver        mRC;
 	Broadcaster     mBC2;
 	Receiver        mRC2;
+	Receiver		mRC3;
 
 	int mSocketNumber = 8100;
 
