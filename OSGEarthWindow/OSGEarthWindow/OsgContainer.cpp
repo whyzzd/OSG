@@ -293,18 +293,18 @@ void OsgContainer::paintGL() {
 			if (mOperaPacket._operaType == 0)
 			{
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_screenX = mOperaPacket._screenX;
-				mCP->_screenY = mOperaPacket._screenY;
-				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+				mCP->_llaX = mOperaPacket._llaX;
+				mCP->_llaY = mOperaPacket._llaY;
+				
 							
 			}
 			else if (mOperaPacket._operaType == 1)
 			{
 				
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_screenX = mOperaPacket._screenX;
-				mCP->_screenY = mOperaPacket._screenY;
-				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+				mCP->_llaX = mOperaPacket._llaX;
+				mCP->_llaY = mOperaPacket._llaY;
+				
 			}			
 			mOperaPacket._operaType = 0;
 
@@ -328,10 +328,10 @@ void OsgContainer::paintGL() {
 
 			if (mCP2->_operaType == 1)
 			{
-				/*mCPickHandler->pick(mCP2->_screenX, mCP2->_screenY);
+				/*mCPickHandler->pick(mCP2->_llaX, mCP2->_llaY);
 				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
 
-				mCPickHandler->drawDot(mCP2->_screenX, mCP2->_screenY);
+				mCPickHandler->drawDot(mCP2->_llaX, mCP2->_llaY);
 
 			}
 			mCP2->_operaType = 0;
@@ -346,19 +346,17 @@ void OsgContainer::paintGL() {
 			if (mOperaPacket._operaType == 0)
 			{
 				mCP2->_operaType = mOperaPacket._operaType;
-				mCP2->_screenX = mOperaPacket._screenX;
-				mCP2->_screenY = mOperaPacket._screenY;
-				mCP2->_ispickededitor = mOperaPacket._ispickededitor;
-
-
+				mCP2->_llaX = mOperaPacket._llaX;
+				mCP2->_llaY = mOperaPacket._llaY;
+				
 			}
 			else if (mOperaPacket._operaType == 1)
 			{
 
 				mCP2->_operaType = mOperaPacket._operaType;
-				mCP2->_screenX = mOperaPacket._screenX;
-				mCP2->_screenY = mOperaPacket._screenY;
-				mCP2->_ispickededitor = mOperaPacket._ispickededitor;
+				mCP2->_llaX = mOperaPacket._llaX;
+				mCP2->_llaY = mOperaPacket._llaY;
+				
 			}
 			mOperaPacket._operaType = 0;
 
@@ -381,16 +379,16 @@ void OsgContainer::paintGL() {
 			if (mCP->_operaType == 1)
 			{
 
-				/*osg::Vec3 v=mCPickHandler->pick2(mCP->_screenX, mCP->_screenY);				
+				/*osg::Vec3 v=mCPickHandler->pick2(mCP->_llaX, mCP->_llaY);				
 				mCPickHandler->drawDot(v.x(), v.y());
 				std::cout << "(" << v.x() << ":" << v.y() << ")";*/
 
-				/*mCPickHandler->pick(mCP->_screenX, mCP->_screenY);
+				/*mCPickHandler->pick(mCP->_llaX, mCP->_llaY);
 
 				std::cout << "(" << mCPickHandler->mLonLatAlt.x() << ":" << mCPickHandler->mLonLatAlt.y() << ")";
 				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
 
-				mCPickHandler->drawDot(mCP->_screenX, mCP->_screenY);
+				mCPickHandler->drawDot(mCP->_llaX, mCP->_llaY);
 				
 			}
 			mCP->_operaType = 0;
@@ -402,18 +400,18 @@ void OsgContainer::paintGL() {
 			if (mOperaPacket._operaType == 0)
 			{
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_screenX = mOperaPacket._screenX;
-				mCP->_screenY = mOperaPacket._screenY;
-				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+				mCP->_llaX = mOperaPacket._llaX;
+				mCP->_llaY = mOperaPacket._llaY;
+				
 
 			}
 			else if (mOperaPacket._operaType == 1)
 			{
 
 				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_screenX = mOperaPacket._screenX;
-				mCP->_screenY = mOperaPacket._screenY;
-				mCP->_ispickededitor = mOperaPacket._ispickededitor;
+				mCP->_llaX = mOperaPacket._llaX;
+				mCP->_llaY = mOperaPacket._llaY;
+				
 			}
 			mOperaPacket._operaType = 0;
 
@@ -437,10 +435,10 @@ void OsgContainer::paintGL() {
 
 			//if (mCP2->_operaType == 1)
 			//{
-			//	/*mCPickHandler->pick(mCP2->_screenX, mCP2->_screenY);
+			//	/*mCPickHandler->pick(mCP2->_llaX, mCP2->_llaY);
 			//	mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
 
-			//	mCPickHandler->drawDot(mCP2->_screenX, mCP2->_screenY);
+			//	mCPickHandler->drawDot(mCP2->_llaX, mCP2->_llaY);
 
 			//}
 			//mCP2->_operaType = 0;			

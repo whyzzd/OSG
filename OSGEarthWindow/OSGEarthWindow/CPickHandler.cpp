@@ -32,10 +32,10 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 				{
 					m_oc->mOperaPacket._operaType = 0;
-					m_oc->mOperaPacket._screenX = ea.getX();
-					m_oc->mOperaPacket._screenY = ea.getY();
+					m_oc->mOperaPacket._llaX = ea.getX();
+					m_oc->mOperaPacket._llaY = ea.getY();
 					
-					m_oc->mOperaPacket._ispickededitor = ispickededitor;
+					
 
 
 				}
@@ -50,11 +50,10 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 					{
 						m_oc->mOperaPacket._operaType = 1;
-						/*m_oc->mOperaPacket._screenX = ea.getX();
-						m_oc->mOperaPacket._screenY = ea.getY();*/
-						m_oc->mOperaPacket._screenX = mLonLatAlt.x();
-						m_oc->mOperaPacket._screenY = mLonLatAlt.y();
-						m_oc->mOperaPacket._ispickededitor = ispickededitor;
+						
+						m_oc->mOperaPacket._llaX = mLonLatAlt.x();
+						m_oc->mOperaPacket._llaY = mLonLatAlt.y();
+						
 					}
 					
 				}
@@ -66,40 +65,9 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				if (mIsPickObject)
 				{
 					//oldDrawLine();
-
 					if (mLineN >= 2)
-					{
-						mLineN = 1;
-						mLineVec->push_back(mLonLatAlt);
-						
-						Geometry* geom = new osgEarth::Annotation::Polygon();
-						for (int i = 0; i < mLineVec->size(); i++)
-						{
-							geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
-						}
-						mLineVec->clear();
-
-						Style geomStyle;
-
-						osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
-						//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
-
-						geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
-						geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 7.0f;
-						geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
-
-						geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
-						//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
-
-						osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
-
-						osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
-
-						m_oc->getMapNode()->addChild(editor);
-						m_oc->getMapNode()->addChild(gnode);
-						m_kv.insert(editor, gnode);
-						m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor,gnode));
-	
+					{					
+						drawLine();	
 					}
 					else
 					{
@@ -118,35 +86,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 
 					if (mLineN>=3)
 					{
-						mLineN = 1;
-						mLineVec->push_back(mLonLatAlt);
-
-						Geometry* geom = new osgEarth::Annotation::Polygon();
-						for (int i = 0; i < mLineVec->size(); i++)
-						{
-							geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
-						}
-						mLineVec->clear();
-
-						Style geomStyle;
-						osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
-						//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
-
-						geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
-						geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 3.0f;
-						geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
-						geomStyle.getOrCreate<PolygonSymbol>()->fill()->color() = Color(Color::Red);
-						geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
-						//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
-
-						osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
-
-						osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
-
-						m_oc->getMapNode()->addChild(editor);
-						m_oc->getMapNode()->addChild(gnode);
-						m_kv.insert(editor, gnode);
-						m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor, gnode));
+						drawTriangles();
 				
 					}
 					else
@@ -165,36 +105,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					//oldDrawParallelogram();
 					if (mLineN >= 4)
 					{
-						mLineN = 1;
-						mLineVec->push_back(mLonLatAlt);
-
-						Geometry* geom = new osgEarth::Annotation::Polygon();
-						for (int i = 0; i < mLineVec->size(); i++)
-						{
-							geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
-						}
-						mLineVec->clear();
-
-						Style geomStyle;
-						osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
-						//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
-
-						geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
-						geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 3.0f;
-						geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
-						geomStyle.getOrCreate<PolygonSymbol>()->fill()->color() = Color(Color::Red);
-						geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
-						//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
-
-						osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
-
-						osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
-
-						m_oc->getMapNode()->addChild(editor);
-						m_oc->getMapNode()->addChild(gnode);
-						m_kv.insert(editor, gnode);
-						m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor, gnode));
-
+						drawParallelogram();
 					}
 					else
 					{
@@ -226,8 +137,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		/*if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
 		{
 			
-			m_oc->mOperaPacket._screenX = ea.getX();
-			m_oc->mOperaPacket._screenY = ea.getY();
+			m_oc->mOperaPacket._llaX = ea.getX();
+			m_oc->mOperaPacket._llaY = ea.getY();
 			m_oc->mOperaPacket._ispickededitor = ispickededitor;
 
 
@@ -235,34 +146,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	}
 	case osgGA::GUIEventAdapter::DRAG:
 	{
-		/*int button = ea.getButton();
-		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-		{*/
-			
-
-			/*if (!((abs(_oldSceenX - ea.getX()) <= 1.0) && (abs(_oldSceenY - ea.getY()) <= 1.0)))
-			{
-				m_oc->mOperaPacket._buttonState = 2;
-				m_oc->mOperaPacket._oldScreenX = _oldSceenX;
-				m_oc->mOperaPacket._oldScreenY = _oldSceenY;
-
-				m_oc->mOperaPacket._lonLatAltX = ea.getX();
-				m_oc->mOperaPacket._lonLatAltY = ea.getY();
-
-				_oldSceenX = ea.getX();
-				_oldSceenY = ea.getY();
-			}
-			else
-			{
-
-				m_oc->mOperaPacket._buttonState = 0;
-				m_oc->mOperaPacket._oldScreenX = ea.getX();
-				m_oc->mOperaPacket._oldScreenY = ea.getY();
-				m_oc->mOperaPacket._lonLatAltX = ea.getX();
-				m_oc->mOperaPacket._lonLatAltY = ea.getY();
-			}*/
-		/*}*/
-			
+		
 	}
 	case osgGA::GUIEventAdapter::RELEASE:
 	{
@@ -270,9 +154,9 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
 		{
 			
-			m_oc->mOperaPacket._screenX = ea.getX();
-			m_oc->mOperaPacket._screenY = ea.getY();
-			m_oc->mOperaPacket._ispickededitor = false;
+			m_oc->mOperaPacket._llaX = ea.getX();
+			m_oc->mOperaPacket._llaY = ea.getY();
+			
 			
 		}
 		
@@ -451,6 +335,103 @@ void CPickHandler::drawDot(float x, float y)
 	osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(featureNode);
 	m_oc->getMapNode()->addChild(editor);
 	m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor));
+}
+void CPickHandler::drawLine()
+{
+	mLineN = 1;
+	mLineVec->push_back(mLonLatAlt);
+	Geometry* geom = new osgEarth::Annotation::Polygon();
+	for (int i = 0; i < mLineVec->size(); i++)
+	{
+		geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
+	}
+	mLineVec->clear();
+
+	Style geomStyle;
+
+	osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
+	//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
+
+	geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
+	geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 7.0f;
+	geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
+
+	geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
+	//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
+
+	osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+
+	osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
+
+	m_oc->getMapNode()->addChild(editor);
+	m_oc->getMapNode()->addChild(gnode);
+	m_kv.insert(editor, gnode);
+	m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor, gnode));
+}
+
+void CPickHandler::drawTriangles()
+{
+	mLineN = 1;
+	mLineVec->push_back(mLonLatAlt);
+
+	Geometry* geom = new osgEarth::Annotation::Polygon();
+	for (int i = 0; i < mLineVec->size(); i++)
+	{
+		geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
+	}
+	mLineVec->clear();
+
+	Style geomStyle;
+	osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
+	//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
+
+	geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
+	geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 3.0f;
+	geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
+	geomStyle.getOrCreate<PolygonSymbol>()->fill()->color() = Color(Color::Red);
+	geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
+	//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
+
+	osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+
+	osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
+
+	m_oc->getMapNode()->addChild(editor);
+	m_oc->getMapNode()->addChild(gnode);
+	m_kv.insert(editor, gnode);
+	m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor, gnode));
+}
+void CPickHandler::drawParallelogram()
+{
+	mLineN = 1;
+	mLineVec->push_back(mLonLatAlt);
+
+	Geometry* geom = new osgEarth::Annotation::Polygon();
+	for (int i = 0; i < mLineVec->size(); i++)
+	{
+		geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
+	}
+	mLineVec->clear();
+
+	Style geomStyle;
+	osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
+	//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
+
+	geomStyle.getOrCreate<LineSymbol>()->stroke()->color() = Color::Lime;
+	geomStyle.getOrCreate<LineSymbol>()->stroke()->width() = 3.0f;
+	geomStyle.getOrCreate<LineSymbol>()->tessellationSize() = 75000;
+	geomStyle.getOrCreate<PolygonSymbol>()->fill()->color() = Color(Color::Red);
+	geomStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
+	//geomStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_GPU;
+
+	osgEarth::Annotation::FeatureNode* gnode = new osgEarth::Annotation::FeatureNode(feature, geomStyle);
+
+	osgEarth::Annotation::FeatureEditor* editor = new osgEarth::Annotation::FeatureEditor(gnode);
+
+	m_oc->getMapNode()->addChild(editor);
+	m_oc->getMapNode()->addChild(gnode);
+	m_kv.insert(editor, gnode);
+	m_oc->getUndoStack()->push(new AddNodeCommand(&m_oc, editor, gnode));
 }
 void CPickHandler::oldDrawLine()
 {

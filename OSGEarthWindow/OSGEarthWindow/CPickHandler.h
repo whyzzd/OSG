@@ -38,6 +38,7 @@ public:
 	void reDrawXXX();
 
 	void drawDot(float x,float y);
+	void drawLine();
 	void drawTriangles();
 	void drawParallelogram();
 

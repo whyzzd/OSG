@@ -48,9 +48,9 @@ public:
 
 	//操作以及相关参数
 	unsigned int _operaType;
-	float _screenX;
-	float _screenY;
-	unsigned int _ispickededitor;
+	float _llaX;
+	float _llaY;
+	
 	
 };
 
@@ -425,9 +425,9 @@ public:
 	{
 		//新增
 		writeUInt(cameraPacket._operaType);
-		writeFloat(cameraPacket._screenX);
-		writeFloat(cameraPacket._screenY);
-		writeUInt(cameraPacket._ispickededitor);
+		writeFloat(cameraPacket._llaX);
+		writeFloat(cameraPacket._llaY);
+		
 
 
 		//writeUInt(cameraPacket._byte_order);
@@ -460,9 +460,9 @@ public:
 	{
 		//
 		cameraPacket._operaType = readUInt();
-		cameraPacket._screenX = readFloat();
-		cameraPacket._screenY = readFloat();
-		cameraPacket._ispickededitor = readUInt();
+		cameraPacket._llaX = readFloat();
+		cameraPacket._llaY = readFloat();
+		
 
 		//cameraPacket._byte_order = readUInt();
 		/*if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
@@ -485,8 +485,8 @@ public:
 			//readEvent(event);
 			/*if (cameraPacket._ispickededitor)
 			{
-				event->setX(cameraPacket._screenX);
-				event->setY(cameraPacket._screenY);				
+				event->setX(cameraPacket._llaX);
+				event->setY(cameraPacket._llaY);				
 			}*/
 			//printf("write:%f,%f\n", event->getX(), event->getY());
 			cameraPacket._events.push_back(event);
@@ -499,9 +499,8 @@ public:
 	{
 		//
 		cameraPacket._operaType = readUInt();
-		cameraPacket._screenX = readFloat();
-		cameraPacket._screenY = readFloat();
-		cameraPacket._ispickededitor = readUInt();
+		cameraPacket._llaX = readFloat();
+		cameraPacket._llaY = readFloat();		
 
 		cameraPacket._byte_order = readUInt();
 		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
@@ -522,8 +521,8 @@ public:
 			read(*(event));
 			if (ispicked)
 			{
-				event->setX(cameraPacket._screenX);
-				event->setY(cameraPacket._screenY);
+				event->setX(cameraPacket._llaX);
+				event->setY(cameraPacket._llaY);
 			}
 			
 			cameraPacket._events.push_back(event);

@@ -135,17 +135,14 @@ private:
 	struct OperaPacket
 	{
 		unsigned int _operaType;
-
-		float _screenX;
-		float _screenY;
-		bool _ispickededitor;
-
-		
-		OperaPacket():_operaType(0), _screenX(0.0f), _screenY(0.0f) {};
+		float _llaX;
+		float _llaY;
+				
+		OperaPacket():_operaType(0), _llaX(0.0f), _llaY(0.0f) {};
 		OperaPacket(unsigned int operaType, float screenX, float screenY)
 			:_operaType(operaType),
-			_screenX(screenX),
-			_screenY(screenY)
+			_llaX(screenX),
+			_llaY(screenY)
 		{}
 	};
 public:
