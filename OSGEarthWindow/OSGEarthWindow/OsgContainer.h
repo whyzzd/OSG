@@ -137,6 +137,10 @@ private:
 		unsigned int _operaType;
 		float _llaX;
 		float _llaY;
+
+		float _llaXArr[5];
+		float _llaYArr[5];
+		unsigned int _llaSize;
 				
 		OperaPacket():_operaType(0), _llaX(0.0f), _llaY(0.0f) {};
 		OperaPacket(unsigned int operaType, float screenX, float screenY)

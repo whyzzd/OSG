@@ -305,7 +305,29 @@ void OsgContainer::paintGL() {
 				mCP->_llaX = mOperaPacket._llaX;
 				mCP->_llaY = mOperaPacket._llaY;
 				
-			}			
+			}
+			else if (mOperaPacket._operaType == 2)
+			{
+				mCP->_operaType = mOperaPacket._operaType;
+
+				for (int i = 0; i < 2; i++)
+				{
+					mCP->_llaXArr[i] = mOperaPacket._llaXArr[i];
+					mCP->_llaYArr[i] = mOperaPacket._llaYArr[i];
+				}
+				mCP->_llaSize = mOperaPacket._llaSize;
+				
+			}
+			else if (mOperaPacket._operaType == 3)
+			{
+				mCP->_operaType = mOperaPacket._operaType;
+				for (int i = 0; i < 3; i++)
+				{
+					mCP->_llaXArr[i] = mOperaPacket._llaXArr[i];
+					mCP->_llaYArr[i] = mOperaPacket._llaYArr[i];
+				}
+				mCP->_llaSize = mOperaPacket._llaSize;
+			}
 			mOperaPacket._operaType = 0;
 
 
@@ -328,10 +350,12 @@ void OsgContainer::paintGL() {
 
 			if (mCP2->_operaType == 1)
 			{
-				/*mCPickHandler->pick(mCP2->_llaX, mCP2->_llaY);
-				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
 
 				mCPickHandler->drawDot(mCP2->_llaX, mCP2->_llaY);
+
+			}
+			else if (mCP2->_operaType == 2)
+			{
 
 			}
 			mCP2->_operaType = 0;
@@ -358,6 +382,10 @@ void OsgContainer::paintGL() {
 				mCP2->_llaY = mOperaPacket._llaY;
 				
 			}
+			else if (mOperaPacket._operaType == 2)
+			{
+
+			}
 			mOperaPacket._operaType = 0;
 
 			mScratchPad2->reset();
@@ -379,69 +407,35 @@ void OsgContainer::paintGL() {
 			if (mCP->_operaType == 1)
 			{
 
-				/*osg::Vec3 v=mCPickHandler->pick2(mCP->_llaX, mCP->_llaY);				
-				mCPickHandler->drawDot(v.x(), v.y());
-				std::cout << "(" << v.x() << ":" << v.y() << ")";*/
-
-				/*mCPickHandler->pick(mCP->_llaX, mCP->_llaY);
-
-				std::cout << "(" << mCPickHandler->mLonLatAlt.x() << ":" << mCPickHandler->mLonLatAlt.y() << ")";
-				mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
 
 				mCPickHandler->drawDot(mCP->_llaX, mCP->_llaY);
 				
 			}
-			mCP->_operaType = 0;
-		}
-		else if (mViewerMode == SLAVE1)
-		{
-		
-			mCP->readEventQueue(*this);
-			if (mOperaPacket._operaType == 0)
+			else if (mCP->_operaType == 2)
 			{
-				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_llaX = mOperaPacket._llaX;
-				mCP->_llaY = mOperaPacket._llaY;
-				
-
-			}
-			else if (mOperaPacket._operaType == 1)
-			{
-
-				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_llaX = mOperaPacket._llaX;
-				mCP->_llaY = mOperaPacket._llaY;
+				mCPickHandler->mLineVec->clear();
+				for (int i = 0; i < mCP->_llaSize; i++)
+				{
+					osg::Vec3 a(mCP->_llaXArr[i], mCP->_llaYArr[i],0.0);
+					mCPickHandler->mLineVec->push_back(a);
+				}
+				mCPickHandler->drawLine();
 				
 			}
-			mOperaPacket._operaType = 0;
-
-
-			mScratchPad->reset();
-			mScratchPad->write(*mCP);
+			else if (mCP->_operaType == 3)
+			{
+				mCPickHandler->mLineVec->clear();
+				for (int i = 0; i < mCP->_llaSize; i++)
+				{
+					osg::Vec3 a(mCP->_llaXArr[i], mCP->_llaYArr[i], 0.0);
+					mCPickHandler->mLineVec->push_back(a);
+					//std::cout << mCP->_llaXArr[i] << "=" << mCP->_llaXArr[i] << std::endl;
+				}
+				mCPickHandler->drawTriangles();
+				
+			}
 
 			mCP->_operaType = 0;
-			mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
-			mBC.sync();
-			static int i = 0;
-			//printf("count:%d\n", i++);
-
-			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
-
-			unsigned int readsize = mRC2.sync();
-
-			mScratchPad2->reset();
-			mScratchPad2->read(*mCP2);
-			mCP2->writeEventQueue(*this);
-
-			//if (mCP2->_operaType == 1)
-			//{
-			//	/*mCPickHandler->pick(mCP2->_llaX, mCP2->_llaY);
-			//	mCPickHandler->drawDot(mCPickHandler->mLonLatAlt.x(), mCPickHandler->mLonLatAlt.y());*/
-
-			//	mCPickHandler->drawDot(mCP2->_llaX, mCP2->_llaY);
-
-			//}
-			//mCP2->_operaType = 0;			
 		}
 		else
 		{

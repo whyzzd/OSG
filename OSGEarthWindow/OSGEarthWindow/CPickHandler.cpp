@@ -34,9 +34,6 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					m_oc->mOperaPacket._operaType = 0;
 					m_oc->mOperaPacket._llaX = ea.getX();
 					m_oc->mOperaPacket._llaY = ea.getY();
-					
-					
-
 
 				}
 			}
@@ -64,16 +61,38 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (mIsPickObject)
 				{
-					//oldDrawLine();
+				
 					if (mLineN >= 2)
-					{					
+					{		
+						
+						mLineVec->push_back(mLonLatAlt);
 						drawLine();	
+
+						mLineXArr[1] = mLonLatAlt.x();
+						mLineYArr[1] = mLonLatAlt.y();
+
+						if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+						{
+							m_oc->mOperaPacket._operaType = 2;
+
+							for (int i = 0; i < 2; i++)
+							{
+								m_oc->mOperaPacket._llaXArr[i] = mLineXArr[i];
+								m_oc->mOperaPacket._llaYArr[i] = mLineYArr[i];
+							}
+							m_oc->mOperaPacket._llaSize = 2;
+						}
 					}
 					else
 					{
 						mLineVec->push_back(mLonLatAlt);
 						mLineN++;
+
+						mLineXArr[0] = mLonLatAlt.x();
+						mLineYArr[0] = mLonLatAlt.y();
 					}
+
+					
 				}
 			}
 			else if(mSelected == SelectedDraw::TRIANGLES)
@@ -81,18 +100,36 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (mIsPickObject)
 				{
-					//oldDrawTriangles();
-
 
 					if (mLineN>=3)
 					{
+						mLineVec->push_back(mLonLatAlt);
 						drawTriangles();
+
+						mLineXArr[2] = mLonLatAlt.x();
+						mLineYArr[2] = mLonLatAlt.y();
+
+						if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+						{
+							m_oc->mOperaPacket._operaType = 3;
+
+							for (int i = 0; i < 3; i++)
+							{
+								m_oc->mOperaPacket._llaXArr[i] = mLineXArr[i];
+								m_oc->mOperaPacket._llaYArr[i] = mLineYArr[i];
+							}
+							m_oc->mOperaPacket._llaSize = 3;
+						}
 				
 					}
 					else
 					{
 						mLineVec->push_back(mLonLatAlt);
 						mLineN++;
+
+						int n = mLineN - 2;
+						mLineXArr[n] = mLonLatAlt.x();
+						mLineYArr[n] = mLonLatAlt.y();
 					}
 					
 				}
@@ -102,7 +139,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				pick(ea.getX(), ea.getY());
 				if (mIsPickObject)
 				{
-					//oldDrawParallelogram();
+				
 					if (mLineN >= 4)
 					{
 						drawParallelogram();
@@ -126,7 +163,6 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 			reDrawXXX();
 			pick(ea.getX(), ea.getY());
 
-			//pick1(ea.getX(), ea.getY());
 			
 			
 		}
@@ -134,15 +170,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	}
 	case osgGA::GUIEventAdapter::MOVE:
 	{
-		/*if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
-		{
-			
-			m_oc->mOperaPacket._llaX = ea.getX();
-			m_oc->mOperaPacket._llaY = ea.getY();
-			m_oc->mOperaPacket._ispickededitor = ispickededitor;
 
-
-		}*/
 	}
 	case osgGA::GUIEventAdapter::DRAG:
 	{
@@ -178,11 +206,9 @@ void CPickHandler::pick(float x, float y)
 		osg::NodePath getNodePath = hitr->nodePath;
 
 		//std::cout<<hitr->matrix.valid();
-		ispickededitor = false;
+		
 		for (int i = getNodePath.size() - 1; i >=0; --i)
-		{
-			
-			
+		{						
 			osgEarth::Annotation::FeatureEditor *mt = dynamic_cast<osgEarth::Annotation::FeatureEditor*>(getNodePath[i]);
 			osg::MatrixTransform* mt1 = dynamic_cast<osg::MatrixTransform*>(getNodePath[i]);
 			osgEarth::Annotation::FeatureNode *mt2= dynamic_cast<osgEarth::Annotation::FeatureNode*>(getNodePath[i]);
@@ -192,17 +218,13 @@ void CPickHandler::pick(float x, float y)
 			}
 
 			if (mt == NULL)
-			{
-				
+			{				
 				continue;
 			}
 			else
-			{
-				
+			{				
 				picked = mt;
-
-				ispickededitor = true;
-				
+							
 			}
 						
 		}
@@ -316,7 +338,7 @@ void CPickHandler::reDrawXXX()
 	mParallelogramN = 1;
 	mLineVec->clear();
 	mTrinangleVec->clear();
-	mTrinangleVec->clear();
+	mParallelogramVec->clear();
 	emit signReDefault();
 }
 void CPickHandler::drawDot(float x, float y)
@@ -339,7 +361,6 @@ void CPickHandler::drawDot(float x, float y)
 void CPickHandler::drawLine()
 {
 	mLineN = 1;
-	mLineVec->push_back(mLonLatAlt);
 	Geometry* geom = new osgEarth::Annotation::Polygon();
 	for (int i = 0; i < mLineVec->size(); i++)
 	{
@@ -372,7 +393,7 @@ void CPickHandler::drawLine()
 void CPickHandler::drawTriangles()
 {
 	mLineN = 1;
-	mLineVec->push_back(mLonLatAlt);
+	
 
 	Geometry* geom = new osgEarth::Annotation::Polygon();
 	for (int i = 0; i < mLineVec->size(); i++)
@@ -380,7 +401,7 @@ void CPickHandler::drawTriangles()
 		geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
 	}
 	mLineVec->clear();
-
+	std::cout << "xzzz";
 	Style geomStyle;
 	osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
 	//feature->geoInterp() = GEOINTERP_RHUMB_LINE;

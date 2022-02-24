@@ -56,9 +56,13 @@ public:
 	QHash<osgEarth::Annotation::FeatureEditor*, osgEarth::Annotation::FeatureNode*>m_kv;
 	
 
+	int mLineN = 1;
+	float mLineXArr[5];
+	float mLineYArr[5];
 	//存放点击坐标以及点击次数
 	osg::ref_ptr<osg::Vec3Array> mLineVec=new osg::Vec3Array;
-	int mLineN =1;
+	
+
 	osg::ref_ptr<osg::Vec3Array> mTrinangleVec = new osg::Vec3Array;
 	int mTrinangleN=1;
 	
@@ -76,7 +80,7 @@ protected:
 public:
 	osg::Vec3 mLonLatAlt;
 
-
+	
 signals:
 	void signShowLonLatAlt(const osg::Vec3 &lla);
 	void signReDefault();

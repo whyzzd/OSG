@@ -50,6 +50,12 @@ public:
 	unsigned int _operaType;
 	float _llaX;
 	float _llaY;
+
+	//存储线面的点
+	float _llaXArr[5];
+	float _llaYArr[5];
+
+	unsigned int _llaSize;
 	
 	
 };
@@ -423,12 +429,6 @@ public:
 
 	void write(CameraPacket& cameraPacket)
 	{
-		//新增
-		writeUInt(cameraPacket._operaType);
-		writeFloat(cameraPacket._llaX);
-		writeFloat(cameraPacket._llaY);
-		
-
 
 		//writeUInt(cameraPacket._byte_order);
 
@@ -452,16 +452,24 @@ public:
 			//if (event) writeEvent(event);
 		}
 		
-		
+
+		//新增
+		writeUInt(cameraPacket._operaType);
+		writeFloat(cameraPacket._llaX);
+		writeFloat(cameraPacket._llaY);
+
+		writeUInt(cameraPacket._llaSize);
+		for (int i = 0; i < cameraPacket._llaSize; i++)
+		{
+			writeFloat(cameraPacket._llaXArr[i]);
+			writeFloat(cameraPacket._llaYArr[i]);
+		}
 		
 	}
 
 	void read(CameraPacket& cameraPacket)
 	{
-		//
-		cameraPacket._operaType = readUInt();
-		cameraPacket._llaX = readFloat();
-		cameraPacket._llaY = readFloat();
+		
 		
 
 		//cameraPacket._byte_order = readUInt();
@@ -491,44 +499,24 @@ public:
 			//printf("write:%f,%f\n", event->getX(), event->getY());
 			cameraPacket._events.push_back(event);
 		}	
+
+		//
+		cameraPacket._operaType = readUInt();
+		cameraPacket._llaX = readFloat();
+		cameraPacket._llaY = readFloat();
+
+		cameraPacket._llaSize = readUInt();
+		for (int i = 0; i < cameraPacket._llaSize; i++)
+		{
+			cameraPacket._llaXArr[i] = readFloat();
+			cameraPacket._llaYArr[i] = readFloat();
+
+		}
 		
 	}
 
 
-	void read(CameraPacket& cameraPacket,bool ispicked)
-	{
-		//
-		cameraPacket._operaType = readUInt();
-		cameraPacket._llaX = readFloat();
-		cameraPacket._llaY = readFloat();		
-
-		cameraPacket._byte_order = readUInt();
-		if (cameraPacket._byte_order != SWAP_BYTES_COMPARE)
-		{
-			_swapBytes = !_swapBytes;
-		}
-
-		cameraPacket._masterKilled = readUInt() != 0;
-
-		//read(cameraPacket._matrix);
-		//read(cameraPacket._frameStamp);
-
-		cameraPacket._events.clear();
-		unsigned int numEvents = readUInt();
-		for (unsigned int i = 0; i < numEvents; ++i)
-		{
-			osgGA::GUIEventAdapter* event = new osgGA::GUIEventAdapter;
-			read(*(event));
-			if (ispicked)
-			{
-				event->setX(cameraPacket._llaX);
-				event->setY(cameraPacket._llaY);
-			}
-			
-			cameraPacket._events.push_back(event);
-
-		}
-	}
+	
 };
 
 
