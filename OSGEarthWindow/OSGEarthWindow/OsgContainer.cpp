@@ -295,8 +295,7 @@ void OsgContainer::paintGL() {
 				mCP->_operaType = mOperaPacket._operaType;
 				mCP->_llaX = mOperaPacket._llaX;
 				mCP->_llaY = mOperaPacket._llaY;
-				
-							
+											
 			}
 			else if (mOperaPacket._operaType == 1)
 			{
@@ -328,6 +327,10 @@ void OsgContainer::paintGL() {
 				}
 				mCP->_llaSize = mOperaPacket._llaSize;
 			}
+			else if (mOperaPacket._operaType == 11)
+			{
+				mCP->_operaType = mOperaPacket._operaType;				
+			}
 			mOperaPacket._operaType = 0;
 
 
@@ -356,6 +359,28 @@ void OsgContainer::paintGL() {
 			}
 			else if (mCP2->_operaType == 2)
 			{
+				mCPickHandler->mLineVec->clear();
+				for (int i = 0; i < mCP2->_llaSize; i++)
+				{
+					osg::Vec3 a(mCP2->_llaXArr[i], mCP2->_llaYArr[i], 0.0);
+					mCPickHandler->mLineVec->push_back(a);
+				}
+				mCPickHandler->drawLine();
+			}
+			else if (mCP2->_operaType == 3)
+			{
+				mCPickHandler->mLineVec->clear();
+				for (int i = 0; i < mCP2->_llaSize; i++)
+				{
+					osg::Vec3 a(mCP2->_llaXArr[i], mCP2->_llaYArr[i], 0.0);
+					mCPickHandler->mLineVec->push_back(a);
+					//std::cout << mCP->_llaXArr[i] << "=" << mCP->_llaXArr[i] << std::endl;
+				}
+				mCPickHandler->drawTriangles();
+			}
+			else if (mCP2->_operaType == 11)
+			{
+				mCPickHandler->slotNetDel();
 
 			}
 			mCP2->_operaType = 0;
@@ -384,8 +409,31 @@ void OsgContainer::paintGL() {
 			}
 			else if (mOperaPacket._operaType == 2)
 			{
+				mCP2->_operaType = mOperaPacket._operaType;
+
+				for (int i = 0; i < 2; i++)
+				{
+					mCP2->_llaXArr[i] = mOperaPacket._llaXArr[i];
+					mCP2->_llaYArr[i] = mOperaPacket._llaYArr[i];
+				}
+				mCP2->_llaSize = mOperaPacket._llaSize;
 
 			}
+			else if (mOperaPacket._operaType == 3)
+			{
+				mCP2->_operaType = mOperaPacket._operaType;
+				for (int i = 0; i < 3; i++)
+				{
+					mCP2->_llaXArr[i] = mOperaPacket._llaXArr[i];
+					mCP2->_llaYArr[i] = mOperaPacket._llaYArr[i];
+				}
+				mCP2->_llaSize = mOperaPacket._llaSize;
+			}
+			else if (mOperaPacket._operaType == 11)
+			{
+				mCP2->_operaType = mOperaPacket._operaType;
+				
+			}			
 			mOperaPacket._operaType = 0;
 
 			mScratchPad2->reset();
@@ -403,13 +451,13 @@ void OsgContainer::paintGL() {
 			mScratchPad->read(*mCP);
 			
 			mCP->writeEventQueue(*this);
-			
-			if (mCP->_operaType == 1)
+			if (mCP->_operaType == 0)
 			{
-
-
-				mCPickHandler->drawDot(mCP->_llaX, mCP->_llaY);
 				
+			}
+			else if (mCP->_operaType == 1)
+			{
+				mCPickHandler->drawDot(mCP->_llaX, mCP->_llaY);				
 			}
 			else if (mCP->_operaType == 2)
 			{
@@ -419,8 +467,7 @@ void OsgContainer::paintGL() {
 					osg::Vec3 a(mCP->_llaXArr[i], mCP->_llaYArr[i],0.0);
 					mCPickHandler->mLineVec->push_back(a);
 				}
-				mCPickHandler->drawLine();
-				
+				mCPickHandler->drawLine();				
 			}
 			else if (mCP->_operaType == 3)
 			{
@@ -431,7 +478,13 @@ void OsgContainer::paintGL() {
 					mCPickHandler->mLineVec->push_back(a);
 					//std::cout << mCP->_llaXArr[i] << "=" << mCP->_llaXArr[i] << std::endl;
 				}
-				mCPickHandler->drawTriangles();
+				mCPickHandler->drawTriangles();				
+			}
+			else if (mCP->_operaType == 11)
+			{
+				mCPickHandler->pick(mCP->_llaX, mCP->_llaY);
+				std::cout << mCPickHandler->picked;
+				mCPickHandler->slotNetDel();
 				
 			}
 

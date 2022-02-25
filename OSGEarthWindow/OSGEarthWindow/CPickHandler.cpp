@@ -34,7 +34,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					m_oc->mOperaPacket._operaType = 0;
 					m_oc->mOperaPacket._llaX = ea.getX();
 					m_oc->mOperaPacket._llaY = ea.getY();
-
+					
 				}
 			}
 			else if (mSelected == SelectedDraw::DOT)
@@ -553,5 +553,24 @@ void CPickHandler::slotActionDel(bool checked )
 		m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked, m_kv.value(picked)));
 	}
 	
+	if (m_oc->mViewerMode != OsgContainer::ViewerMode::STAND_ALONE)
+	{
+		m_oc->mOperaPacket._operaType = 11;
+	}
 
+}
+void CPickHandler::slotNetDel()
+{
+	if (m_oc->getMapNode()->findMapNode(picked))
+	{
+		//picked->setNodeMask(0);
+		m_oc->getMapNode()->removeChild(picked);
+		m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked));
+
+		m_oc->getMapNode()->removeChild(m_kv.value(picked));
+
+		m_oc->getUndoStack()->push(new DelNodeCommand(&m_oc, picked, m_kv.value(picked)));
+				
+	}
+	
 }

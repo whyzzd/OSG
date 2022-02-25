@@ -363,8 +363,6 @@ public:
 		writeFloat(event.getX());
 		writeFloat(event.getY());
 
-		
-
 		writeUInt(event.getEventType());
 		//writeUInt(event.getKey());
 		//writeUInt(event.getButton());
@@ -378,9 +376,6 @@ public:
 		writeFloat(event.getXmax());
 		writeFloat(event.getYmax());*/
 
-
-		//writeUInt(event.getMouseYOrientation());
-		//if (event.getButtonMask() != osgGA::GUIEventAdapter::MouseButtonMask::RIGHT_MOUSE_BUTTON)
 		writeUInt(event.getButtonMask());
 		//writeUInt(event.getModKeyMask());
 		//writeDouble(event.getTime());
@@ -414,7 +409,7 @@ public:
 
 
 
-		//event.setMouseYOrientation((osgGA::GUIEventAdapter::MouseYOrientation)(1-readUInt()));
+		
 		unsigned int mask = readUInt();
 		//if (mask != osgGA::GUIEventAdapter::MouseButtonMask::RIGHT_MOUSE_BUTTON)
 		event.setButtonMask(mask);

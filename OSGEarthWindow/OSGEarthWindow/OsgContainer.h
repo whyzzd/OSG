@@ -126,7 +126,7 @@ private:
 	CameraPacket *mCP2;
 
 	bool mMasterKilled = false;
-	unsigned int mMessageSize = 1024;
+	unsigned int mMessageSize = 2048;
 
 	DataConverter *mScratchPad;
 	DataConverter *mScratchPad2;
@@ -135,6 +135,8 @@ private:
 	struct OperaPacket
 	{
 		unsigned int _operaType;
+		float _screenX;
+		float _screenY;
 		float _llaX;
 		float _llaY;
 
@@ -143,10 +145,10 @@ private:
 		unsigned int _llaSize;
 				
 		OperaPacket():_operaType(0), _llaX(0.0f), _llaY(0.0f) {};
-		OperaPacket(unsigned int operaType, float screenX, float screenY)
+		OperaPacket(unsigned int operaType, float llaX, float llaY)
 			:_operaType(operaType),
-			_llaX(screenX),
-			_llaY(screenY)
+			_llaX(llaX),
+			_llaY(llaY)
 		{}
 	};
 public:

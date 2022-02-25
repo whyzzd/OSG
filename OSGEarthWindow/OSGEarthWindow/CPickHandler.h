@@ -91,6 +91,6 @@ public slots:
 	void slotActionUndo(bool checked=false);
 	void slotActionRedo(bool checked = false);
 	void slotActionDel(bool checked = false);
-
+	void slotNetDel();
 };
 #endif
