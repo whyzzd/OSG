@@ -111,43 +111,7 @@ OsgContainer::~OsgContainer()
 	workerThread.wait();
 }
 
-bool OsgContainer::event(QEvent *event) {
-	switch (event->type()) {
-	case QEvent::TouchBegin:
-	case QEvent::TouchEnd:
-	case QEvent::TouchUpdate: {
-		QList<QTouchEvent::TouchPoint> touchPoints = static_cast<QTouchEvent *>(event)->touchPoints();
-		unsigned int id = 0;
-		unsigned int tapCount = touchPoints.size();
-
-		osg::ref_ptr<osgGA::GUIEventAdapter> osgEvent(NULL);
-		osgGA::GUIEventAdapter::TouchPhase phase = osgGA::GUIEventAdapter::TOUCH_UNKNOWN;
-		foreach(const QTouchEvent::TouchPoint &touchPoint, touchPoints) {
-			if (!osgEvent) {
-				if (event->type() == QEvent::TouchBegin) {
-					phase = osgGA::GUIEventAdapter::TOUCH_BEGAN;
-					osgEvent = window->getEventQueue()->touchBegan(id, osgGA::GUIEventAdapter::TOUCH_BEGAN, touchPoint.pos().x(), touchPoint.pos().y());
-				}
-				else if (event->type() == QEvent::TouchEnd) {
-					phase = osgGA::GUIEventAdapter::TOUCH_ENDED;
-					osgEvent = window->getEventQueue()->touchEnded(id, osgGA::GUIEventAdapter::TOUCH_ENDED, touchPoint.pos().x(), touchPoint.pos().y(), tapCount);
-				}
-				else if (event->type() == QEvent::TouchUpdate) {
-					phase = osgGA::GUIEventAdapter::TOUCH_MOVED;
-					osgEvent = window->getEventQueue()->touchMoved(id, osgGA::GUIEventAdapter::TOUCH_MOVED, touchPoint.pos().x(), touchPoint.pos().y());
-				}
-			}
-			else {
-				osgEvent->addTouchPoint(id, osgGA::GUIEventAdapter::TOUCH_ENDED, touchPoint.pos().x(), touchPoint.pos().y());
-				osgEvent->addTouchPoint(id, phase, touchPoint.pos().x(), touchPoint.pos().y());
-			}
-			id++;
-		}
-		break;
-	}
-	default:
-		break;
-	}
+bool OsgContainer::event(QEvent *event) {	
 	return QOpenGLWidget::event(event);
 }
 void OsgContainer::setKeyboardModifiers(QInputEvent *event) {
@@ -482,8 +446,7 @@ void OsgContainer::paintGL() {
 			}
 			else if (mCP->_operaType == 11)
 			{
-				mCPickHandler->pick(mCP->_llaX, mCP->_llaY);
-				std::cout << mCPickHandler->picked;
+				mCPickHandler->pick(mCP->_llaX, mCP->_llaY);				
 				mCPickHandler->slotNetDel();
 				
 			}
@@ -1131,12 +1094,3 @@ void OsgContainer::slotPlayVideo()
 
 }
 
-//void OsgContainer::slotUndo()
-//{
-//	m_undoStack->undo();
-//	
-//}
-//void OsgContainer::slotRedo()
-//{
-//	m_undoStack->redo();
-//}
