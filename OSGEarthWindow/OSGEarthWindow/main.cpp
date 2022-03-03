@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	arguments.getApplicationUsage()->addCommandLineOption("-m", "Set viewer to MASTER mode, sending view via packets.");
 	arguments.getApplicationUsage()->addCommandLineOption("-s", "Set viewer to SLAVE mode, receiving view via packets.");
     QApplication a(argc, argv);
-
+	a.setQuitOnLastWindowClosed(false);
     OSGEarthWindow w(arguments);
     w.show();
 	

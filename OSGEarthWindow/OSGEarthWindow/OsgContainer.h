@@ -43,6 +43,7 @@ public:
 	};
 	int mViewerMode;
 
+	bool isPressed = false;
 	bool event(QEvent *event);
 	
 	void setKeyboardModifiers(QInputEvent *event);
@@ -126,7 +127,7 @@ private:
 	CameraPacket *mCP2;
 
 	bool mMasterKilled = false;
-	unsigned int mMessageSize = 2048;
+	unsigned int mMessageSize = 1024;
 
 	DataConverter *mScratchPad;
 	DataConverter *mScratchPad2;

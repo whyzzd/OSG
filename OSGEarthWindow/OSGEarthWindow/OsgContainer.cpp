@@ -111,9 +111,78 @@ OsgContainer::~OsgContainer()
 	workerThread.wait();
 }
 
-bool OsgContainer::event(QEvent *event) {	
+bool OsgContainer::event(QEvent *event) {
+
+	
 	return QOpenGLWidget::event(event);
 }
+void OsgContainer::mousePressEvent(QMouseEvent *event)
+{
+	isPressed = true;
+	mScratchPad->reset();
+	mScratchPad->write(event);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+	
+	QOpenGLWidget::mousePressEvent(event);
+	update();
+}
+void OsgContainer::mouseReleaseEvent(QMouseEvent *event)
+{
+	isPressed = false;
+	mScratchPad->reset();
+	mScratchPad->write(event);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+
+	QOpenGLWidget::mouseReleaseEvent(event);
+	update();
+}
+void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	mScratchPad->reset();
+	mScratchPad->write(event);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+
+	QOpenGLWidget::mouseDoubleClickEvent(event);
+	update();
+}
+void OsgContainer::mouseMoveEvent(QMouseEvent *event)
+{
+	if (isPressed)
+	{
+		mScratchPad->reset();
+		mScratchPad->write(event);
+
+		mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+		mBC.sync();
+		memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+	}
+	
+
+	QOpenGLWidget::mouseMoveEvent(event);
+	update();
+}
+void OsgContainer::wheelEvent(QWheelEvent *event)
+{
+	mScratchPad->reset();
+	mScratchPad->write(event);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+
+	QOpenGLWidget::wheelEvent(event);
+	update();
+}
+
 void OsgContainer::setKeyboardModifiers(QInputEvent *event) {
 	int modkey = event->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier);
 	unsigned int mask = 0;
@@ -135,12 +204,6 @@ void OsgContainer::keyPressEvent(QKeyEvent *event) {
 	setKeyboardModifiers(event);
 	//window->getEventQueue()->keyPress(event->key());
 	window->getEventQueue()->keyPress((osgGA::GUIEventAdapter::KeySymbol)*(event->text().toLatin1().data()));
-
-	if (event->key() == Qt::Key_H)
-	{
-		qDebug() << "H¼ü";
-		return;
-	}
 	
 	QOpenGLWidget::keyPressEvent(event);
 	update();
@@ -151,79 +214,81 @@ void OsgContainer::keyReleaseEvent(QKeyEvent *event) {
 	QOpenGLWidget::keyReleaseEvent(event);
 	update();
 }
-void OsgContainer::mousePressEvent(QMouseEvent *event) {
-	int button = 0;
-	switch (event->button()) {
-	case Qt::LeftButton:
-		{
-			button = 1; 
-			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(1);
-			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
-			qDebug() << button;*/
-			break; 
-
-		}
-	case Qt::MidButton: button = 2; break;
-	case Qt::RightButton:
-		{ 
-			button = 3;
-			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(0); 
-			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
-			qDebug() << button;*/
-			break;
-		}
-	case Qt::NoButton: button = 0; break;
-	default: button = 0; break;
-	}
-	setKeyboardModifiers(event);
-	window->getEventQueue()->mouseButtonPress(event->x(), event->y(), button);
-	update();
-}
-void OsgContainer::mouseReleaseEvent(QMouseEvent *event) {
-	int button = 0;
-	switch (event->button()) {
-	case Qt::LeftButton: button = 1; break;
-	case Qt::MidButton: button = 2; break;
-	case Qt::RightButton: button = 3; break;
-	case Qt::NoButton: button = 0; break;
-	default: button = 0; break;
-	}
-	setKeyboardModifiers(event);
-	window->getEventQueue()->mouseButtonRelease(event->x(), event->y(), button);
-
-	QOpenGLWidget::mouseReleaseEvent(event);
-	update();
-}
-void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event) {
-	int button = 0;
-	switch (event->button()) {
-	case Qt::LeftButton: button = 1; break;
-	case Qt::MidButton: button = 2; break;
-	case Qt::RightButton: button = 3; break;
-	case Qt::NoButton: button = 0; break;
-	default: button = 0; break;
-	}
-	setKeyboardModifiers(event);
-	window->getEventQueue()->mouseDoubleButtonPress(event->x(), event->y(), button);
-
-	QOpenGLWidget::mouseDoubleClickEvent(event);
-	update();
-}
-void OsgContainer::mouseMoveEvent(QMouseEvent *event) {
-	setKeyboardModifiers(event);
-	window->getEventQueue()->mouseMotion(event->x(), event->y());
-	QOpenGLWidget::mouseMoveEvent(event);
-	update();
-}
-void OsgContainer::wheelEvent(QWheelEvent *event) {
-	setKeyboardModifiers(event);
-	window->getEventQueue()->mouseScroll(
-		event->orientation() == Qt::Vertical ?
-		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_UP : osgGA::GUIEventAdapter::SCROLL_DOWN) :
-		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_LEFT : osgGA::GUIEventAdapter::SCROLL_RIGHT));
-	QOpenGLWidget::wheelEvent(event);
-	update();
-}
+//void OsgContainer::mousePressEvent(QMouseEvent *event) {
+//	int button = 0;
+//	switch (event->button()) {
+//	case Qt::LeftButton:
+//		{
+//			button = 1; 
+//			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(1);
+//			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
+//			qDebug() << button;*/
+//			break; 
+//
+//		}
+//	case Qt::MidButton: button = 2; break;
+//	case Qt::RightButton:
+//		{ 
+//			button = 3;
+//			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(0); 
+//			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
+//			qDebug() << button;*/
+//			break;
+//		}
+//	case Qt::NoButton: button = 0; break;
+//	default: button = 0; break;
+//	}
+//	
+//	setKeyboardModifiers(event);
+//	window->getEventQueue()->mouseButtonPress(event->x(), event->y(), button);
+//	update();
+//}
+//void OsgContainer::mouseReleaseEvent(QMouseEvent *event) {
+//	int button = 0;
+//	switch (event->button()) {
+//	case Qt::LeftButton: button = 1; break;
+//	case Qt::MidButton: button = 2; break;
+//	case Qt::RightButton: button = 3; break;
+//	case Qt::NoButton: button = 0; break;
+//	default: button = 0; break;
+//	}
+//	setKeyboardModifiers(event);
+//	window->getEventQueue()->mouseButtonRelease(event->x(), event->y(), button);
+//	
+//	
+//	QOpenGLWidget::mouseReleaseEvent(event);
+//	update();
+//}
+//void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event) {
+//	int button = 0;
+//	switch (event->button()) {
+//	case Qt::LeftButton: button = 1; break;
+//	case Qt::MidButton: button = 2; break;
+//	case Qt::RightButton: button = 3; break;
+//	case Qt::NoButton: button = 0; break;
+//	default: button = 0; break;
+//	}
+//	setKeyboardModifiers(event);
+//	window->getEventQueue()->mouseDoubleButtonPress(event->x(), event->y(), button);
+//
+//	QOpenGLWidget::mouseDoubleClickEvent(event);
+//	update();
+//}
+//void OsgContainer::mouseMoveEvent(QMouseEvent *event) {
+//	setKeyboardModifiers(event);
+//	window->getEventQueue()->mouseMotion(event->x(), event->y());
+//	QOpenGLWidget::mouseMoveEvent(event);
+//	update();
+//}
+//void OsgContainer::wheelEvent(QWheelEvent *event) {
+//	setKeyboardModifiers(event);
+//	window->getEventQueue()->mouseScroll(
+//		event->orientation() == Qt::Vertical ?
+//		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_UP : osgGA::GUIEventAdapter::SCROLL_DOWN) :
+//		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_LEFT : osgGA::GUIEventAdapter::SCROLL_RIGHT));
+//	QOpenGLWidget::wheelEvent(event);
+//	update();
+//}
 void OsgContainer::resizeEvent(QResizeEvent *event) {
 	const QSize &size = event->size();
 	window->resized(x(), y(), size.width(), size.height());
@@ -248,9 +313,60 @@ void OsgContainer::contextMenuEvent(QContextMenuEvent *event)
 }
 
 void OsgContainer::paintGL() {
-	if (isVisibleTo(QApplication::activeWindow())) {
+	if (isVisibleTo(QApplication::activeWindow())) 
+	{
+		
+		
+		
+		if (mViewerMode==STAND_ALONE)
+		{
+			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
 
-		if(mViewerMode==MASTER)
+			int readsize = mRC2.sync();
+
+			if (readsize != -1)
+			{
+				//std::cout << "readsize:" << readsize << std::endl;
+
+				mScratchPad2->reset();
+				unsigned int type = 0;
+				int btn = 0, x = 0, y = 0,wheel=0;
+				mScratchPad2->read(type,btn, x, y,wheel);
+
+				//std::cout << "mouseEvent:" << ":" << x << ":" << y << std::endl;
+				if (type == QEvent::Type::MouseButtonPress)
+				{
+					window->getEventQueue()->mouseButtonPress(x, y, btn);
+					
+				}
+				else if (type == QEvent::Type::MouseButtonRelease)
+				{
+					window->getEventQueue()->mouseButtonRelease(x, y, btn);
+				}
+				else if (type == QEvent::Type::MouseButtonDblClick)
+				{
+					window->getEventQueue()->mouseDoubleButtonPress(x, y, btn);
+				}
+				else if (type == QEvent::Type::MouseMove)
+				{
+					window->getEventQueue()->mouseMotion(x, y);
+				}
+				else if (type == QEvent::Type::Wheel)
+				{
+					if (wheel > 0)
+					{
+						window->getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP);
+					}
+					else
+					{
+						window->getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN);
+					}					
+				}
+				
+			}
+			
+		}
+		else if(mViewerMode==MASTER)
 		{ 
 						
 			mCP->readEventQueue(*this);
@@ -306,15 +422,15 @@ void OsgContainer::paintGL() {
 			mBC.sync();
 			static int i = 0;
 			//printf("count:%d\n", i++);
-
+			
 			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
-
+			
 			unsigned int readsize = mRC2.sync();
-
+			
 			mScratchPad2->reset();
 			mScratchPad2->read(*mCP2);
 			mCP2->writeEventQueue(*this);
-
+			
 			if (mCP2->_operaType == 1)
 			{
 
@@ -405,11 +521,11 @@ void OsgContainer::paintGL() {
 			mCP2->_operaType = 0;
 			mBC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
 			mBC2.sync();
-
+			
 			mRC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
-
+			
 			unsigned int readsize = mRC.sync();
-
+			
 			mScratchPad->reset();
 			
 			mScratchPad->read(*mCP);
@@ -457,7 +573,7 @@ void OsgContainer::paintGL() {
 		{
 
 		}
-
+		
 		frame();
 	}
 	

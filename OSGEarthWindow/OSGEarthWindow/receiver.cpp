@@ -78,12 +78,15 @@ bool Receiver::init( void )
 	
 	
 #if defined (WIN32) && !defined(__CYGWIN__)
-    /*const BOOL on = TRUE;
-    setsockopt( _so, SOL_SOCKET, SO_REUSEADDR, (const char*) &on, sizeof(int));*/
+    const BOOL on = TRUE;
+    setsockopt( _so, SOL_SOCKET, SO_REUSEADDR, (const char*) &on, sizeof(int));
 #else
     int on = 1;
     setsockopt( _so, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 #endif
+
+	int imode = 1;
+	ioctlsocket(_so, FIONBIO, (u_long *)&imode);
 
 //    struct sockaddr_in saddr;
     saddr.sin_family = AF_INET;
@@ -142,8 +145,8 @@ unsigned int Receiver::sync( void )
     tv.tv_usec = 0;
 
 #if defined (WIN32) && !defined(__CYGWIN__)
-
-    recvfrom( _so, (char *)_buffer, _buffer_size, 0, (sockaddr*)&saddr, &size );
+	
+    int ret=recvfrom( _so, (char *)_buffer, _buffer_size, 0, (sockaddr*)&saddr, &size );
 	
 
 	//int err = WSAGetLastError();
@@ -166,6 +169,7 @@ unsigned int Receiver::sync( void )
         }
     }
 #endif
-    return static_cast<unsigned int>(_buffer_size);
+	return ret;
+    //return static_cast<unsigned int>(_buffer_size);
 }
 

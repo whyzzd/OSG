@@ -2,6 +2,9 @@
 #include <osgViewer/Viewer>
 #include <osg/io_utils>
 #include "CameraPacket.h"
+#include<QEvent>
+#include<QMouseEvent>
+#include<iostream>
 const unsigned int SWAP_BYTES_COMPARE = 0x12345678;
 class CameraPacket {
 public:
@@ -288,7 +291,7 @@ public:
 	inline double readDouble() { double c = 0.0; read8((char*)&c); return c; }
 	inline void readEvent(osgGA::GUIEventAdapter *c) { readn((char*)&(*c)); }
 
-	void write(const osg::FrameStamp& fs)
+	/*void write(const osg::FrameStamp& fs)
 	{
 		osg::notify(osg::NOTICE) << "writeFramestamp = " << fs.getFrameNumber() << " " << fs.getReferenceTime() << std::endl;
 
@@ -304,7 +307,7 @@ public:
 		fs.setSimulationTime(readDouble());
 
 		osg::notify(osg::NOTICE) << "readFramestamp = " << fs.getFrameNumber() << " " << fs.getReferenceTime() << std::endl;
-	}
+	}*/
 
 	void write(const osg::Matrix& matrix)
 	{
@@ -510,6 +513,131 @@ public:
 		
 	}
 
+	void write( QMouseEvent *&e)
+	{		
+		writeUInt(e->type());
+		switch (e->type())
+		{
+		case QMouseEvent::MouseButtonPress:
+		{
+			int button = 0;
+			if (e->button() == Qt::LeftButton)
+			{
+				button = 1;
+			}
+			else if (e->button() == Qt::MidButton)
+			{
+				button = 2;
+			}
+			else if (e->button() == Qt::RightButton)
+			{
+				button = 3;
+			}
+			else if (e->button() == Qt::NoButton)
+			{
+				button = 0;
+			}
+
+			writeInt(button);
+			writeInt(e->x());
+			writeInt(e->y());
+		}
+		break;
+		case QMouseEvent::MouseButtonRelease:
+		{
+			int button = 0;
+			if (e->button() == Qt::LeftButton)
+			{
+				button = 1;
+			}
+			else if (e->button() == Qt::MidButton)
+			{
+				button = 2;
+			}
+			else if (e->button() == Qt::RightButton)
+			{
+				button = 3;
+			}
+			else if (e->button() == Qt::NoButton)
+			{
+				button = 0;
+			}
+			writeInt(button);
+			writeInt(e->x());
+			writeInt(e->y());
+		}
+		break;
+		case QMouseEvent::MouseButtonDblClick:
+		{
+			int button = 0;
+			if (e->button() == Qt::LeftButton)
+			{
+				button = 1;
+			}
+			else if (e->button() == Qt::MidButton)
+			{
+				button = 2;
+			}
+			else if (e->button() == Qt::RightButton)
+			{
+				button = 3;
+			}
+			else if (e->button() == Qt::NoButton)
+			{
+				button = 0;
+			}
+			writeInt(button);
+			writeInt(e->x());
+			writeInt(e->y());
+		}
+		break;
+		case QMouseEvent::MouseMove:
+		{
+			writeInt(e->x());
+			writeInt(e->y());
+		}
+		break;
+		default:
+			break;
+		}					
+	}
+	void write(QWheelEvent  *&e)
+	{
+		writeUInt(e->type());
+		writeInt(e->delta());
+	}
+	void read(unsigned int &type,int &btn,int &x,int &y,int &wheel)
+	{
+		type = readUInt();
+		if (type == QMouseEvent::Type::MouseButtonPress)
+		{
+			btn = readInt();
+			x = readInt();
+			y = readInt();
+		}
+		else if (type == QMouseEvent::Type::MouseButtonRelease)
+		{
+			btn = readInt();
+			x = readInt();
+			y = readInt();
+		}
+		else if (type == QMouseEvent::Type::MouseButtonDblClick)
+		{
+			btn = readInt();
+			x = readInt();
+			y = readInt();
+		}
+		else if (type == QMouseEvent::Type::MouseMove)
+		{
+			x = readInt();
+			y = readInt();
+		}
+		else if (type == QEvent::Type::Wheel)
+		{
+			wheel = readInt();
+		}
+									
+	}
 
 	
 };

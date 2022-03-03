@@ -21,10 +21,19 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	{
 	case osgGA::GUIEventAdapter::PUSH:
 	{
+		//std::cout << "handle:"<<ea.getX() << ":"<<ea.getY()<<std::endl;;
+		//pick(ea.getX(), ea.getY());
 		
+		//drawDot(mLonLatAlt.x(), mLonLatAlt.y());
+		//std::cout << "ml" << mLonLatAlt.x() << ":" << mLonLatAlt.y()<<std::endl;
+		
+		//std::cout << "button:" << ea.getButton()<<std::endl;
+
 		int button = ea.getButton();
+		
 		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
 		{
+			
 			//判断选择绘制类型
 			if (mSelected==SelectedDraw::NONE)
 			{
@@ -36,6 +45,8 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					m_oc->mOperaPacket._llaY = ea.getY();
 					
 				}
+				
+				
 			}
 			else if (mSelected == SelectedDraw::DOT)
 			{
