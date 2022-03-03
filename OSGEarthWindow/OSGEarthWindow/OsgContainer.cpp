@@ -90,13 +90,14 @@ OsgContainer::OsgContainer(osg::ArgumentParser argument, QWidget *parent)
 	m_contextMenu->addAction(m_redoAction);
 	m_contextMenu->addAction(m_delAction);
 	m_undoStack = new QUndoStack(this);
-	/*connect(this->m_undoAction, &QAction::triggered, this, &OsgContainer::slotUndo);
-	connect(this->m_redoAction, &QAction::triggered, this, &OsgContainer::slotRedo);*/
-	connect(this->m_undoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionUndo);
-	connect(this->m_redoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionRedo);
-	connect(this->m_delAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionDel);
 	
+	//connect(this->m_undoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionUndo);
+	//connect(this->m_redoAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionRedo);
+	//connect(this->m_delAction, &QAction::triggered, mCPickHandler, &CPickHandler::slotActionDel);
 
+	connect(this->m_delAction, &QAction::triggered, this, &OsgContainer::slotDel);
+	connect(this->m_undoAction, &QAction::triggered, this, &OsgContainer::slotUndo);
+	connect(this->m_redoAction, &QAction::triggered, this, &OsgContainer::slotRedo);
 }
 
 OsgContainer::~OsgContainer()
@@ -119,7 +120,8 @@ void OsgContainer::mousePressEvent(QMouseEvent *event)
 {
 	isPressed = true;
 	mScratchPad->reset();
-	mScratchPad->write(event,mSelectedDraw);
+	mScratchPad->write(event,mSelectedDraw,mRhtClkOpt);
+	
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -132,7 +134,8 @@ void OsgContainer::mouseReleaseEvent(QMouseEvent *event)
 {
 	isPressed = false;
 	mScratchPad->reset();
-	mScratchPad->write(event, mSelectedDraw);
+	mScratchPad->write(event, mSelectedDraw, mRhtClkOpt);
+
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -144,7 +147,8 @@ void OsgContainer::mouseReleaseEvent(QMouseEvent *event)
 void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	mScratchPad->reset();
-	mScratchPad->write(event, mSelectedDraw);
+	mScratchPad->write(event, mSelectedDraw, mRhtClkOpt);
+	
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -158,7 +162,8 @@ void OsgContainer::mouseMoveEvent(QMouseEvent *event)
 	if (isPressed)
 	{
 		mScratchPad->reset();
-		mScratchPad->write(event, mSelectedDraw);
+		mScratchPad->write(event, mSelectedDraw, mRhtClkOpt);
+	
 
 		mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 		mBC.sync();
@@ -172,7 +177,8 @@ void OsgContainer::mouseMoveEvent(QMouseEvent *event)
 void OsgContainer::wheelEvent(QWheelEvent *event)
 {
 	mScratchPad->reset();
-	mScratchPad->write(event, mSelectedDraw);
+	mScratchPad->write(event, mRhtClkOpt);
+
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -213,81 +219,7 @@ void OsgContainer::keyReleaseEvent(QKeyEvent *event) {
 	QOpenGLWidget::keyReleaseEvent(event);
 	update();
 }
-//void OsgContainer::mousePressEvent(QMouseEvent *event) {
-//	int button = 0;
-//	switch (event->button()) {
-//	case Qt::LeftButton:
-//		{
-//			button = 1; 
-//			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(1);
-//			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
-//			qDebug() << button;*/
-//			break; 
-//
-//		}
-//	case Qt::MidButton: button = 2; break;
-//	case Qt::RightButton:
-//		{ 
-//			button = 3;
-//			/*this->getSceneData()->asGroup()->getChild(0)->setNodeMask(0); 
-//			this->getSceneData()->asGroup()->getChild(1)->setNodeMask(1);
-//			qDebug() << button;*/
-//			break;
-//		}
-//	case Qt::NoButton: button = 0; break;
-//	default: button = 0; break;
-//	}
-//	
-//	setKeyboardModifiers(event);
-//	window->getEventQueue()->mouseButtonPress(event->x(), event->y(), button);
-//	update();
-//}
-//void OsgContainer::mouseReleaseEvent(QMouseEvent *event) {
-//	int button = 0;
-//	switch (event->button()) {
-//	case Qt::LeftButton: button = 1; break;
-//	case Qt::MidButton: button = 2; break;
-//	case Qt::RightButton: button = 3; break;
-//	case Qt::NoButton: button = 0; break;
-//	default: button = 0; break;
-//	}
-//	setKeyboardModifiers(event);
-//	window->getEventQueue()->mouseButtonRelease(event->x(), event->y(), button);
-//	
-//	
-//	QOpenGLWidget::mouseReleaseEvent(event);
-//	update();
-//}
-//void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event) {
-//	int button = 0;
-//	switch (event->button()) {
-//	case Qt::LeftButton: button = 1; break;
-//	case Qt::MidButton: button = 2; break;
-//	case Qt::RightButton: button = 3; break;
-//	case Qt::NoButton: button = 0; break;
-//	default: button = 0; break;
-//	}
-//	setKeyboardModifiers(event);
-//	window->getEventQueue()->mouseDoubleButtonPress(event->x(), event->y(), button);
-//
-//	QOpenGLWidget::mouseDoubleClickEvent(event);
-//	update();
-//}
-//void OsgContainer::mouseMoveEvent(QMouseEvent *event) {
-//	setKeyboardModifiers(event);
-//	window->getEventQueue()->mouseMotion(event->x(), event->y());
-//	QOpenGLWidget::mouseMoveEvent(event);
-//	update();
-//}
-//void OsgContainer::wheelEvent(QWheelEvent *event) {
-//	setKeyboardModifiers(event);
-//	window->getEventQueue()->mouseScroll(
-//		event->orientation() == Qt::Vertical ?
-//		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_UP : osgGA::GUIEventAdapter::SCROLL_DOWN) :
-//		(event->delta() > 0 ? osgGA::GUIEventAdapter::SCROLL_LEFT : osgGA::GUIEventAdapter::SCROLL_RIGHT));
-//	QOpenGLWidget::wheelEvent(event);
-//	update();
-//}
+
 void OsgContainer::resizeEvent(QResizeEvent *event) {
 	const QSize &size = event->size();
 	window->resized(x(), y(), size.width(), size.height());
@@ -312,29 +244,48 @@ void OsgContainer::contextMenuEvent(QContextMenuEvent *event)
 }
 
 void OsgContainer::paintGL() {
+
+
 	if (isVisibleTo(QApplication::activeWindow())) 
 	{
-		
-		
+	
 		
 		if (mViewerMode==STAND_ALONE)
 		{
 			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
 
 			int readsize = mRC2.sync();
+			
 
+			
 			if (readsize != -1)
 			{
 				//std::cout << "readsize:" << readsize << std::endl;
 
 				mScratchPad2->reset();
 				unsigned int type = 0;
-				int btn = 0, x = 0, y = 0,wheel=0,dwslt=0;
-				mScratchPad2->read(type,btn, x, y,wheel,dwslt);
+				int btn = 0, x = 0, y = 0,wheel=0,dwslt=0,rhtopt = 0;
+				mScratchPad2->read(type,btn, x, y,wheel,dwslt,rhtopt);
 
 				mCPickHandler->mSelected = dwslt;
-				//std::cout << "mouseEvent:" << ":" << x << ":" << y << std::endl;
-				if (type == QEvent::Type::MouseButtonPress)
+	
+				
+				if (type == 0)
+				{
+					if (rhtopt == 1)
+					{
+						mCPickHandler->slotActionUndo(false);
+					}
+					else if (rhtopt == 2)
+					{
+						mCPickHandler->slotActionRedo(false);
+					}
+					else if (rhtopt == 3)
+					{
+						mCPickHandler->slotActionDel(false);
+					}
+				}
+				else if (type == QEvent::Type::MouseButtonPress)
 				{
 					window->getEventQueue()->mouseButtonPress(x, y, btn);
 					
@@ -364,216 +315,11 @@ void OsgContainer::paintGL() {
 				}
 				
 			}
+
+			
 			
 		}
-		else if(mViewerMode==MASTER)
-		{ 
-						
-			mCP->readEventQueue(*this);
-			if (mOperaPacket._operaType == 0)
-			{
-				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_llaX = mOperaPacket._llaX;
-				mCP->_llaY = mOperaPacket._llaY;
-											
-			}
-			else if (mOperaPacket._operaType == 1)
-			{
 				
-				mCP->_operaType = mOperaPacket._operaType;
-				mCP->_llaX = mOperaPacket._llaX;
-				mCP->_llaY = mOperaPacket._llaY;
-				
-			}
-			else if (mOperaPacket._operaType == 2)
-			{
-				mCP->_operaType = mOperaPacket._operaType;
-
-				for (int i = 0; i < 2; i++)
-				{
-					mCP->_llaXArr[i] = mOperaPacket._llaXArr[i];
-					mCP->_llaYArr[i] = mOperaPacket._llaYArr[i];
-				}
-				mCP->_llaSize = mOperaPacket._llaSize;
-				
-			}
-			else if (mOperaPacket._operaType == 3)
-			{
-				mCP->_operaType = mOperaPacket._operaType;
-				for (int i = 0; i < 3; i++)
-				{
-					mCP->_llaXArr[i] = mOperaPacket._llaXArr[i];
-					mCP->_llaYArr[i] = mOperaPacket._llaYArr[i];
-				}
-				mCP->_llaSize = mOperaPacket._llaSize;
-			}
-			else if (mOperaPacket._operaType == 11)
-			{
-				mCP->_operaType = mOperaPacket._operaType;				
-			}
-			mOperaPacket._operaType = 0;
-
-
-			mScratchPad->reset();
-			mScratchPad->write(*mCP);
-
-			mCP->_operaType = 0;
-			mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
-			mBC.sync();
-			static int i = 0;
-			//printf("count:%d\n", i++);
-			
-			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
-			
-			unsigned int readsize = mRC2.sync();
-			
-			mScratchPad2->reset();
-			mScratchPad2->read(*mCP2);
-			mCP2->writeEventQueue(*this);
-			
-			if (mCP2->_operaType == 1)
-			{
-
-				mCPickHandler->drawDot(mCP2->_llaX, mCP2->_llaY);
-
-			}
-			else if (mCP2->_operaType == 2)
-			{
-				mCPickHandler->mLineVec->clear();
-				for (int i = 0; i < mCP2->_llaSize; i++)
-				{
-					osg::Vec3 a(mCP2->_llaXArr[i], mCP2->_llaYArr[i], 0.0);
-					mCPickHandler->mLineVec->push_back(a);
-				}
-				mCPickHandler->drawLine();
-			}
-			else if (mCP2->_operaType == 3)
-			{
-				mCPickHandler->mLineVec->clear();
-				for (int i = 0; i < mCP2->_llaSize; i++)
-				{
-					osg::Vec3 a(mCP2->_llaXArr[i], mCP2->_llaYArr[i], 0.0);
-					mCPickHandler->mLineVec->push_back(a);
-					//std::cout << mCP->_llaXArr[i] << "=" << mCP->_llaXArr[i] << std::endl;
-				}
-				mCPickHandler->drawTriangles();
-			}
-			else if (mCP2->_operaType == 11)
-			{
-				mCPickHandler->slotNetDel();
-
-			}
-			mCP2->_operaType = 0;
-			
-		}
-		else if(mViewerMode==SLAVE)
-		{
-
-
-			mCP2->readEventQueue(*this);
-
-			if (mOperaPacket._operaType == 0)
-			{
-				mCP2->_operaType = mOperaPacket._operaType;
-				mCP2->_llaX = mOperaPacket._llaX;
-				mCP2->_llaY = mOperaPacket._llaY;
-				
-			}
-			else if (mOperaPacket._operaType == 1)
-			{
-
-				mCP2->_operaType = mOperaPacket._operaType;
-				mCP2->_llaX = mOperaPacket._llaX;
-				mCP2->_llaY = mOperaPacket._llaY;
-				
-			}
-			else if (mOperaPacket._operaType == 2)
-			{
-				mCP2->_operaType = mOperaPacket._operaType;
-
-				for (int i = 0; i < 2; i++)
-				{
-					mCP2->_llaXArr[i] = mOperaPacket._llaXArr[i];
-					mCP2->_llaYArr[i] = mOperaPacket._llaYArr[i];
-				}
-				mCP2->_llaSize = mOperaPacket._llaSize;
-
-			}
-			else if (mOperaPacket._operaType == 3)
-			{
-				mCP2->_operaType = mOperaPacket._operaType;
-				for (int i = 0; i < 3; i++)
-				{
-					mCP2->_llaXArr[i] = mOperaPacket._llaXArr[i];
-					mCP2->_llaYArr[i] = mOperaPacket._llaYArr[i];
-				}
-				mCP2->_llaSize = mOperaPacket._llaSize;
-			}
-			else if (mOperaPacket._operaType == 11)
-			{
-				mCP2->_operaType = mOperaPacket._operaType;
-				
-			}			
-			mOperaPacket._operaType = 0;
-
-			mScratchPad2->reset();
-			mScratchPad2->write(*mCP2);
-			mCP2->_operaType = 0;
-			mBC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
-			mBC2.sync();
-			
-			mRC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
-			
-			unsigned int readsize = mRC.sync();
-			
-			mScratchPad->reset();
-			
-			mScratchPad->read(*mCP);
-			
-			mCP->writeEventQueue(*this);
-			if (mCP->_operaType == 0)
-			{
-				
-			}
-			else if (mCP->_operaType == 1)
-			{
-				mCPickHandler->drawDot(mCP->_llaX, mCP->_llaY);				
-			}
-			else if (mCP->_operaType == 2)
-			{
-				mCPickHandler->mLineVec->clear();
-				for (int i = 0; i < mCP->_llaSize; i++)
-				{
-					osg::Vec3 a(mCP->_llaXArr[i], mCP->_llaYArr[i],0.0);
-					mCPickHandler->mLineVec->push_back(a);
-				}
-				mCPickHandler->drawLine();				
-			}
-			else if (mCP->_operaType == 3)
-			{
-				mCPickHandler->mLineVec->clear();
-				for (int i = 0; i < mCP->_llaSize; i++)
-				{
-					osg::Vec3 a(mCP->_llaXArr[i], mCP->_llaYArr[i], 0.0);
-					mCPickHandler->mLineVec->push_back(a);
-					//std::cout << mCP->_llaXArr[i] << "=" << mCP->_llaXArr[i] << std::endl;
-				}
-				mCPickHandler->drawTriangles();				
-			}
-			else if (mCP->_operaType == 11)
-			{
-				mCPickHandler->pick(mCP->_llaX, mCP->_llaY);				
-				mCPickHandler->slotNetDel();
-				
-			}
-
-			mCP->_operaType = 0;
-		}
-		else
-		{
-
-		}
-		
 		frame();
 	}
 	
@@ -682,129 +428,7 @@ void OsgContainer::initEarth2()
 	trans->addChild(osgDB::readNodeFile("cow.osg"));
 	root->addChild(trans);
 
-	/*osg::Node *n = createTrinangle1();
-	osgEarth::Registry::objectIndex()->tagNode(n,root);
-	root->addChild(n);*/
 
-	//尝试使用api加载本地shp(疑惑:为啥加载不出来?)
-	/*osgEarth::Drivers::OGRFeatureOptions ogrData;
-	ogrData.url() = "D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp";
-	FeatureSourceLayerOptions ogrLayer;
-	ogrLayer.name() = "vector-data";
-	ogrLayer.featureSource() = ogrData;
-	m_pMap->addLayer(new osgEarth::Features::FeatureSourceLayer(ogrData));*/
-
-	//使用api加载网络数据
-	//osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
-	//netImageLayerOpt.url() = osgEarth::URI("https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer");
-	////netImageLayerOpt.url() = osgEarth::URI("http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer");
-	//std::string netImageLayerName = "worldimage1";
-	///*osg::ref_ptr<osgEarth::ImageLayer>*/netImageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(netImageLayerName, netImageLayerOpt));
-	//m_pMap->addLayer(netImageLayer);
-
-	//加载xyz格式文件
-	osgEarth::Drivers::XYZOptions tileOptions;
-	//高德卫星
-	//tileOptions.url() = osgEarth::URI("https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}");
-	//高德路线
-	//tileOptions.url() = osgEarth::URI("https://wprd01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=2&style=8&ltype=11");
-	
-	/*tileOptions.url() = "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
-	tileOptions.profile()->namedProfile() = ("spherical-mercator");
-	osgEarth::ImageLayerOptions options = osgEarth::ImageLayerOptions("debug", tileOptions);
-	osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer(options);
-	m_pMap->addLayer(layer);*/
-
-	//mapbox高程图(只能显示为图像,无法转换为高程)
-	//osgEarth::Drivers::XYZOptions exyz;
-	//exyz.url() = "http://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=pk.eyJ1IjoicXd1c2VyIiwiYSI6ImNreTN0YmhtZTAwdncyb2xtdWZ3ZWZodXEifQ.23yUvHmVWIQ8sRwy68EDlA";
-	//exyz.profile()->namedProfile() = "spherical-mercator";
-	///*XYZExSource *source = new XYZExSource(exyz);
-	//auto estatus = source->open();*/
-	//osgEarth::ImageLayerOptions options1 = osgEarth::ImageLayerOptions("mapboxEle", exyz);
-	//m_pMap->addLayer(new osgEarth::ImageLayer(options1));
-	
-
-	//------------------------测试第二种方式画图(测试官方例子1)--------------------------------------
-	//const osgEarth::SpatialReference* mapSRS = m_mapNode->getMapSRS();
-	////osg::Group*geometryGroup = new osg::Group;
-	//osgEarth::Symbology::Style geomStyle;
-	///*geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->color() = osgEarth::Symbology::Color::Cyan;
-	//geomStyle.getOrCreate<osgEarth::LineSymbol>()->stroke()->width() = 5.0f;
-	//geomStyle.getOrCreate<osgEarth::LineSymbol>()->tessellationSize() = 75000;*/
-	///*geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->clamping() = osgEarth::AltitudeSymbol::CLAMP_TO_TERRAIN;
-	//geomStyle.getOrCreate<osgEarth::AltitudeSymbol>()->technique() = osgEarth::AltitudeSymbol::TECHNIQUE_DRAPE;*/
-
-	//osg::ref_ptr<osgEarth::Symbology::Polygon> polygon = new osgEarth::Symbology::Polygon();
-	//polygon->push_back(osg::Vec3d(0, 40, 0));
-	//polygon->push_back(osg::Vec3d(-60, 40, 0));
-	//polygon->push_back(osg::Vec3d(-60, 60, 0));
-	////polygon->push_back(osg::Vec3d(0, 60, 0));
-
-	//
-	//osg::ref_ptr<osgEarth::Features::Feature> feature = new osgEarth::Features::Feature(polygon, mapSRS);
-	//osg::ref_ptr<osgEarth::Annotation::FeatureNode> featureNode = new osgEarth::Annotation::FeatureNode(feature/*, geomStyle*/);
-	////geometryGroup->addChild(featureNode);
-	//osg::ref_ptr<osgEarth::Annotation::FeatureEditor> editor = new osgEarth::Annotation::FeatureEditor(featureNode);
-	//m_mapNode->addChild(editor);
-	////m_mapNode->addChild(featureNode);
-	
-	//-----------------------------------------------------------
-	
-	
-
-	//----------------官方例子2(加载本地自带矢量)---------------------------------------------------
-	//std::string filePath = "D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.shp";
-	//osgEarth::Drivers::OGRFeatureOptions featureData;
-	//featureData.url() = filePath;
-
-	//// Make a feature source layer and add it to the Map:
-	//osgEarth::Features::FeatureSourceLayerOptions ogrLayer;
-	//ogrLayer.name() = filePath + "_source";
-	//ogrLayer.featureSource() = featureData;
-	//osgEarth::Features::FeatureSourceLayer*  featureSourceLayer = new osgEarth::Features::FeatureSourceLayer(ogrLayer);
-	//m_pMap->addLayer(featureSourceLayer);
-	//osgEarth::Features::FeatureSource *features = featureSourceLayer->getFeatureSource();
-	//if (!features)
-	//{
-	//	printf(("无法打开该矢量文件！"));
-	//	qDebug() << "------------";
-	//	return;
-	//}
-	//
-	////设置样式
-	//osgEarth::Symbology::Style style;
-
-	////可见性
-	//osgEarth::Symbology::RenderSymbol* rs = style.getOrCreate<osgEarth::Symbology::RenderSymbol>();
-	//rs->depthTest() = true;
-
-	////贴地设置
-	////osgEarth::Symbology::AltitudeSymbol* alt = style.getOrCreate<osgEarth::Symbology::AltitudeSymbol>();
-	////alt->clamping() = alt->CLAMP_TO_TERRAIN;
-	////alt->technique() = alt->TECHNIQUE_DRAPE;
-	//
-	////设置矢量面样式（包括边界线）
-	//osgEarth::Symbology::LineSymbol* ls = style.getOrCreateSymbol<osgEarth::Symbology::LineSymbol>();
-	//ls->stroke()->color() = osgEarth::Symbology::Color("#FA8072");
-	//ls->stroke()->width() = 1.0;
-	//ls->tessellationSize()->set(100, osgEarth::Units::KILOMETERS);
-
-	//osgEarth::Symbology::PolygonSymbol *polygonSymbol = style.getOrCreateSymbol<osgEarth::Symbology::PolygonSymbol>();
-	//polygonSymbol->fill()->color() = osgEarth::Symbology::Color(152.0f / 255, 251.0f / 255, 152.0f / 255, 0.8f); //238 230 133
-	//polygonSymbol->outline() = true;
-
-	////将矢量当成模型来加载才能显示
-	//osgEarth::Features::FeatureModelLayerOptions fmlOpt;
-	//fmlOpt.name() = filePath;
-	//fmlOpt.featureSourceLayer() = filePath + "_source";
-	//fmlOpt.enableLighting() = false;
-	//fmlOpt.styles() = new osgEarth::Symbology::StyleSheet();
-	//fmlOpt.styles()->addStyle(style);
-
-	//osg::ref_ptr<osgEarth::Features::FeatureModelLayer> fml = new osgEarth::Features::FeatureModelLayer(fmlOpt);
-	//m_pMap->addLayer(fml);
-	//------------------------2 end--------------------------------------------
 
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
@@ -1208,6 +832,35 @@ void OsgContainer::slotPlayVideo()
 	}
 	m_EM->setViewpoint(osgEarth::Viewpoint("视点", 110.0, 30.0, 300.0, -23.0, -90.0, 0.5e3));
 
+}
+
+void OsgContainer::slotUndo(bool checked)
+{
+	mScratchPad->reset();
+	mScratchPad->write(0, 1);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+}
+void OsgContainer::slotRedo(bool checked)
+{
+	mScratchPad->reset();
+	mScratchPad->write(0, 2);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
+}
+void OsgContainer::slotDel(bool checked)
+{
+
+	mScratchPad->reset();
+	mScratchPad->write(0, 3);
+
+	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
+	mBC.sync();
+	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
 }
 void OsgContainer::slotGetDrawIndex(int n)
 {

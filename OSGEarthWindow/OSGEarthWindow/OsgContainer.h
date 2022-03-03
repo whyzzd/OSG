@@ -43,7 +43,9 @@ public:
 	};
 	int mViewerMode;
 
-	int mSelectedDraw=0;
+	int mSelectedDraw=0;//选择画的内容
+	int mRhtClkOpt = 0;//右键操作
+	
 	bool isPressed = false;
 	bool event(QEvent *event);
 	
@@ -219,8 +221,11 @@ public slots:
 	//播放视频槽函数
 	void slotPlayVideo();
 
-	/*void slotUndo();
-	void slotRedo();*/
+	
+	
+	void slotUndo(bool checked = false);
+	void slotRedo(bool checked = false);
+	void slotDel(bool checked = false);
 
 	void slotGetDrawIndex(int n);
 signals:

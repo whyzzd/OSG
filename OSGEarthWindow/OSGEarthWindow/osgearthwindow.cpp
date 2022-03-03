@@ -37,27 +37,6 @@ void OSGEarthWindow::initOSGViewer(osg::ArgumentParser ap)
 	mOSGViewer->setParent(this);
 	this->setCentralWidget(mOSGViewer);
 
-	//Broadcaster     bc;
-	//Receiver        rc;
-	//Broadcaster     bc2;
-	//Receiver        rc2;
-
-	//int socketNumber = 8100;
-	//bc.setPort(static_cast<short int>(socketNumber));
-	//rc.setPort(static_cast<short int>(socketNumber));
-
-	//bc2.setPort(static_cast<short int>(socketNumber + 1));
-	//rc2.setPort(static_cast<short int>(socketNumber + 1));
-
-	//CameraPacket *cp = new CameraPacket;
-	//CameraPacket *cp2 = new CameraPacket;
-
-	//bool masterKilled = false;
-	//unsigned int messageSize = 1024;
-	//DataConverter scratchPad(messageSize);
-	//DataConverter scratchPad2(messageSize);
-
-
 
 }
 
