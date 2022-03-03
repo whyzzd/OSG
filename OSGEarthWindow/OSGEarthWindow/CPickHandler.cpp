@@ -412,7 +412,7 @@ void CPickHandler::drawTriangles()
 		geom->push_back(mLineVec->at(i).x(), mLineVec->at(i).y());
 	}
 	mLineVec->clear();
-	std::cout << "xzzz";
+	
 	Style geomStyle;
 	osgEarth::Annotation::Feature* feature = new osgEarth::Annotation::Feature(geom, m_oc->getMapNode()->getMapSRS());
 	//feature->geoInterp() = GEOINTERP_RHUMB_LINE;
