@@ -43,6 +43,7 @@ public:
 	};
 	int mViewerMode;
 
+	int mSelectedDraw=0;
 	bool isPressed = false;
 	bool event(QEvent *event);
 	
@@ -220,6 +221,8 @@ public slots:
 
 	/*void slotUndo();
 	void slotRedo();*/
+
+	void slotGetDrawIndex(int n);
 signals:
 	void startWork();
 };

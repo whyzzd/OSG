@@ -79,7 +79,8 @@ void OSGEarthWindow::initComboBox()
 {
 	//下拉框
 	void(QComboBox::*activatedInt)(int) = &QComboBox::activated;//区分重载版本
-	connect(ui.comboBox, activatedInt, mOSGViewer->mCPickHandler, &CPickHandler::slotGetDrawIndex);
+	//connect(ui.comboBox, activatedInt, mOSGViewer->mCPickHandler, &CPickHandler::slotGetDrawIndex);
+	connect(ui.comboBox, activatedInt, mOSGViewer, &OsgContainer::slotGetDrawIndex);
 	connect(mOSGViewer->mCPickHandler, &CPickHandler::signReDefault, this, &OSGEarthWindow::slotReDefaultCombo);
 	emit ui.comboBox->activated(0);//让其默认就有活跃选项
 }

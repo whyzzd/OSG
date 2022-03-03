@@ -513,8 +513,9 @@ public:
 		
 	}
 
-	void write( QMouseEvent *&e)
-	{		
+	void write( QMouseEvent *&e,int dwslt)
+	{	
+
 		writeUInt(e->type());
 		switch (e->type())
 		{
@@ -599,14 +600,16 @@ public:
 		break;
 		default:
 			break;
-		}					
+		}	
+		writeInt(dwslt);//选择的绘画方式
 	}
-	void write(QWheelEvent  *&e)
+	void write(QWheelEvent  *&e, int dwslt)
 	{
 		writeUInt(e->type());
 		writeInt(e->delta());
+		writeInt(dwslt);//选择的绘画方式
 	}
-	void read(unsigned int &type,int &btn,int &x,int &y,int &wheel)
+	void read(unsigned int &type,int &btn,int &x,int &y,int &wheel,int &dwslt)
 	{
 		type = readUInt();
 		if (type == QMouseEvent::Type::MouseButtonPress)
@@ -636,7 +639,7 @@ public:
 		{
 			wheel = readInt();
 		}
-									
+		dwslt = readInt();
 	}
 
 	

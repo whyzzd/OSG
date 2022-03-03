@@ -31,7 +31,6 @@
 #include<osgEarthDrivers/agglite/AGGLiteOptions>
 #include<osgEarthDrivers/engine_rex/RexTerrainEngineOptions>
 #include<osgEarth/Map>
-#include"XYZExSource.h"
 #include<osgEarthDrivers/feature_ogr/OGRFeatureOptions>
 #include<osgEarthFeatures/FeatureModelLayer>
 #include <osgEarth/GLUtils>
@@ -120,7 +119,7 @@ void OsgContainer::mousePressEvent(QMouseEvent *event)
 {
 	isPressed = true;
 	mScratchPad->reset();
-	mScratchPad->write(event);
+	mScratchPad->write(event,mSelectedDraw);
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -133,7 +132,7 @@ void OsgContainer::mouseReleaseEvent(QMouseEvent *event)
 {
 	isPressed = false;
 	mScratchPad->reset();
-	mScratchPad->write(event);
+	mScratchPad->write(event, mSelectedDraw);
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -145,7 +144,7 @@ void OsgContainer::mouseReleaseEvent(QMouseEvent *event)
 void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	mScratchPad->reset();
-	mScratchPad->write(event);
+	mScratchPad->write(event, mSelectedDraw);
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -159,7 +158,7 @@ void OsgContainer::mouseMoveEvent(QMouseEvent *event)
 	if (isPressed)
 	{
 		mScratchPad->reset();
-		mScratchPad->write(event);
+		mScratchPad->write(event, mSelectedDraw);
 
 		mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 		mBC.sync();
@@ -173,7 +172,7 @@ void OsgContainer::mouseMoveEvent(QMouseEvent *event)
 void OsgContainer::wheelEvent(QWheelEvent *event)
 {
 	mScratchPad->reset();
-	mScratchPad->write(event);
+	mScratchPad->write(event, mSelectedDraw);
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -330,9 +329,10 @@ void OsgContainer::paintGL() {
 
 				mScratchPad2->reset();
 				unsigned int type = 0;
-				int btn = 0, x = 0, y = 0,wheel=0;
-				mScratchPad2->read(type,btn, x, y,wheel);
+				int btn = 0, x = 0, y = 0,wheel=0,dwslt=0;
+				mScratchPad2->read(type,btn, x, y,wheel,dwslt);
 
+				mCPickHandler->mSelected = dwslt;
 				//std::cout << "mouseEvent:" << ":" << x << ":" << y << std::endl;
 				if (type == QEvent::Type::MouseButtonPress)
 				{
@@ -1209,4 +1209,7 @@ void OsgContainer::slotPlayVideo()
 	m_EM->setViewpoint(osgEarth::Viewpoint("йс╣Ц", 110.0, 30.0, 300.0, -23.0, -90.0, 0.5e3));
 
 }
-
+void OsgContainer::slotGetDrawIndex(int n)
+{
+	mSelectedDraw = n;
+}
