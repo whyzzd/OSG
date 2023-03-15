@@ -413,7 +413,7 @@ void OsgContainer::initEarth2()
 	
 	//使用api加载本地数据
 	osgEarth::Drivers::GDALOptions imageLayerOpt;
-	imageLayerOpt.url() = osgEarth::URI("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\world.tif");
+	imageLayerOpt.url() = osgEarth::URI("world.tif");
 
 	std::string imageLayerName = "worldimage";
 	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
@@ -425,7 +425,7 @@ void OsgContainer::initEarth2()
 	//平移操作
 	osg::ref_ptr<osg::MatrixTransform>trans = new osg::MatrixTransform();
 	trans->setMatrix(osg::Matrix::scale(50000, 50000, 50000)*osg::Matrix::translate(FirstPoint.x(), FirstPoint.y(), FirstPoint.z()));
-	trans->addChild(osgDB::readNodeFile("cow.osg"));
+	//trans->addChild(osgDB::readNodeFile("cow.osg"));
 	root->addChild(trans);
 
 
