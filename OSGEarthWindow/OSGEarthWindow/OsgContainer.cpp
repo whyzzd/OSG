@@ -413,7 +413,9 @@ void OsgContainer::initEarth2()
 	
 	//使用api加载本地数据
 	osgEarth::Drivers::GDALOptions imageLayerOpt;
-	imageLayerOpt.url() = osgEarth::URI("world.tif");
+	QString applicationDirPath = QApplication::applicationDirPath();
+	applicationDirPath += "/world.tif";
+	imageLayerOpt.url() = osgEarth::URI(applicationDirPath.toStdString());
 
 	std::string imageLayerName = "worldimage";
 	osg::ref_ptr<osgEarth::ImageLayer>imageLayer = new osgEarth::ImageLayer(osgEarth::ImageLayerOptions(imageLayerName, imageLayerOpt));
@@ -793,12 +795,15 @@ void OsgContainer::slotPlayVideo()
 		em->convertLatLongHeightToXYZ(osg::DegreesToRadians(30.0f), osg::DegreesToRadians(110.0f), 300.0f, p.x(), p.y(), p.z());
 
 		//注册插件
-		osgDB::Registry::instance()->addFileExtensionAlias("avi", "ffmpeg");
-
+		//osgDB::Registry::instance()->addFileExtensionAlias("avi", "ffmpeg");
+		osgDB::Registry::instance()->addFileExtensionAlias("mp4", "ffmpeg");
 		osg::ref_ptr<osg::Image> image;
 
 		//本地视频(自己选择视频路径)
-		image = osgDB::readImageFile("D:\\OSGCore\\Build\\OpenSceneGraph-Data\\mp4\\test.avi");
+		QString applicationDirPath = QApplication::applicationDirPath();
+		applicationDirPath += "/test.mp4";
+
+		image = osgDB::readImageFile(applicationDirPath.toStdString());
 
 		osg::ImageStream* imageStream = dynamic_cast<osg::ImageStream*>(image.get());
 		if (imageStream)
