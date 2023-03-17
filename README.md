@@ -21,22 +21,22 @@
  - **主要(核心)功能**
 
  	1.同步旋转
-![请添加图片描述](https://img-blog.csdnimg.cn/17856f204a914c9f83f9f9eb2f46bce2.gif#pic_center =720x480)
+![同步旋转](https://cdn.jsdelivr.net/gh/whyzzd/pic-Bed/images/2023/20230318010605.gif)
 
 	2.同步绘制点线面
-![请添加图片描述](https://img-blog.csdnimg.cn/c95047d61d8548e6898981f6ecf3bb0c.gif#pic_center =720x480)
+![绘制点线面](https://cdn.jsdelivr.net/gh/whyzzd/pic-Bed/images/2023/20230318010658.gif)
 
 	3.删除撤销重做
-![请添加图片描述](https://img-blog.csdnimg.cn/128f354f43ab4c1dabc8389fd50d3c23.gif#pic_center =720x480)
+![删除、撤销、重做](https://cdn.jsdelivr.net/gh/whyzzd/pic-Bed/images/2023/20230318010722.gif)
  - **其它功能**
 
 	 1.播放视频
-![请添加图片描述](https://img-blog.csdnimg.cn/3b93a340fc4b4ec588f6b48a1583e03f.gif#pic_center =720x480)
+![播放视频](https://cdn.jsdelivr.net/gh/whyzzd/pic-Bed/images/2023/20230318010739.gif)
 	2.几个特效显示特效
-![请添加图片描述](https://img-blog.csdnimg.cn/1a06e5dcb65047779b81d0fa9cb2098e.gif#pic_center =720x480)
+![几个特效](https://cdn.jsdelivr.net/gh/whyzzd/pic-Bed/images/2023/20230318010756.gif)
 
 	3.连接网络数据
-![请添加图片描述](https://img-blog.csdnimg.cn/08149250f66149ac91fc08af36c9d40a.gif#pic_center =720x480)
+![连接网络数据](https://cdn.jsdelivr.net/gh/whyzzd/pic-Bed/images/2023/20230318010836.gif)
 
 # 地址
 ## 1.CSDN地址
