@@ -23,7 +23,6 @@ public:
 	void initSlider();
 	void initButton();
 	void initStatusBar();
-
 	
 private:
     Ui::OSGEarthWindowClass ui;

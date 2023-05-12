@@ -110,7 +110,6 @@ public:
 public:
 	CPickHandler *mCPickHandler;
 
-
 protected:
 	virtual void paintGL();
 	void initInteraction();
@@ -124,7 +123,6 @@ private:
 	Receiver		mRC3;
 
 	int mSocketNumber = 8100;
-
 
 	CameraPacket *mCP;
 	CameraPacket *mCP2;
@@ -164,7 +162,6 @@ private:
 	//以api的形式加载
 	void initEarth2();
 	void initCowTest();
-
 
 private:
 	osg::ref_ptr<osg::Camera>createCamera(int x, int y, int w, int h);
@@ -220,8 +217,6 @@ public slots:
 
 	//播放视频槽函数
 	void slotPlayVideo();
-
-	
 	
 	void slotUndo(bool checked = false);
 	void slotRedo(bool checked = false);

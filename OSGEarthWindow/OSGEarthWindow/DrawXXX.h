@@ -14,13 +14,7 @@ public:
 	osg::Node* createTrinangle(osg::ref_ptr<osg::Vec3Array> vec);
 	//»æÖÆ¾ØÐÎ
 	osg::Node* createParallelogram(osg::ref_ptr<osg::Vec3Array> vec);
-	
-	
-	/*osg::Node* createTest(){
-		return new osg::Node;
-	}
-*/
-	
+		
 	float mLineWidth;
 protected:
 

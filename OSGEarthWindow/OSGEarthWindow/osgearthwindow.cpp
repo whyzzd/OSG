@@ -37,7 +37,6 @@ void OSGEarthWindow::initOSGViewer(osg::ArgumentParser ap)
 	mOSGViewer->setParent(this);
 	this->setCentralWidget(mOSGViewer);
 
-
 }
 
 void OSGEarthWindow::initMenuBar()

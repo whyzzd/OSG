@@ -13,7 +13,6 @@ private:
 	osgEarth::ImageLayer* m_imageLayer;
 public slots:
 void doWork();
-
 	
 signals:
 	void resultReady(osgEarth::ImageLayer *layer);

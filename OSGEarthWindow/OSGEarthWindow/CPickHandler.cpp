@@ -13,7 +13,6 @@ CPickHandler::CPickHandler(osgViewer::Viewer *viewer) : mViewer(viewer)
 	m_oc = dynamic_cast<OsgContainer*>(mViewer);
 	
 	//connect(m_oc->m_undoAction, &QAction::triggered, this, &CPickHandler::slotMenuAction);
-	
 }
 bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
@@ -45,8 +44,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 					m_oc->mOperaPacket._llaY = ea.getY();
 					
 				}
-				
-				
+								
 			}
 			else if (mSelected == SelectedDraw::DOT)
 			{
@@ -173,9 +171,7 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	
 			reDrawXXX();
 			pick(ea.getX(), ea.getY());
-
-			
-			
+						
 		}
 		return false;
 	}
@@ -191,12 +187,9 @@ bool CPickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 	{
 		int button = ea.getButton();
 		if (button == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-		{
-			
+		{			
 			m_oc->mOperaPacket._llaX = ea.getX();
-			m_oc->mOperaPacket._llaY = ea.getY();
-			
-			
+			m_oc->mOperaPacket._llaY = ea.getY();						
 		}
 		
 	}
@@ -476,7 +469,6 @@ void CPickHandler::oldDrawLine()
 		mLineVec->push_back(mLonLatAlt);
 
 		DrawXXX drawline(mDrawLineWid);
-
 
 		m_oc->getMapNode()->addChild(drawline.createLine(mLineVec));
 		//oc->getRoot()->addChild(drawline.createLine(mLineVec));

@@ -81,7 +81,6 @@ OsgContainer::OsgContainer(osg::ArgumentParser argument, QWidget *parent)
 	});
 	workerThread.start();
 	
-
 	m_contextMenu = new QMenu;
 	m_undoAction = new QAction("撤销", this);
 	m_redoAction = new QAction("重做", this);
@@ -112,7 +111,6 @@ OsgContainer::~OsgContainer()
 }
 
 bool OsgContainer::event(QEvent *event) {
-
 	
 	return QOpenGLWidget::event(event);
 }
@@ -122,7 +120,6 @@ void OsgContainer::mousePressEvent(QMouseEvent *event)
 	mScratchPad->reset();
 	mScratchPad->write(event,mSelectedDraw,mRhtClkOpt);
 	
-
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
 	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
@@ -136,7 +133,6 @@ void OsgContainer::mouseReleaseEvent(QMouseEvent *event)
 	mScratchPad->reset();
 	mScratchPad->write(event, mSelectedDraw, mRhtClkOpt);
 
-
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
 	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
@@ -149,7 +145,6 @@ void OsgContainer::mouseDoubleClickEvent(QMouseEvent *event)
 	mScratchPad->reset();
 	mScratchPad->write(event, mSelectedDraw, mRhtClkOpt);
 	
-
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
 	memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
@@ -164,13 +159,11 @@ void OsgContainer::mouseMoveEvent(QMouseEvent *event)
 		mScratchPad->reset();
 		mScratchPad->write(event, mSelectedDraw, mRhtClkOpt);
 	
-
 		mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 		mBC.sync();
 		memset(mScratchPad->_startPtr, 0, mScratchPad->_numBytes);
 	}
 	
-
 	QOpenGLWidget::mouseMoveEvent(event);
 	update();
 }
@@ -178,7 +171,6 @@ void OsgContainer::wheelEvent(QWheelEvent *event)
 {
 	mScratchPad->reset();
 	mScratchPad->write(event, mRhtClkOpt);
-
 
 	mBC.setBuffer(mScratchPad->_startPtr, mScratchPad->_numBytes);
 	mBC.sync();
@@ -248,16 +240,13 @@ void OsgContainer::paintGL() {
 
 	if (isVisibleTo(QApplication::activeWindow())) 
 	{
-	
-		
+			
 		if (mViewerMode==STAND_ALONE)
 		{
 			mRC2.setBuffer(mScratchPad2->_startPtr, mScratchPad2->_numBytes);
 
 			int readsize = mRC2.sync();
-			
-
-			
+						
 			if (readsize != -1)
 			{
 				//std::cout << "readsize:" << readsize << std::endl;
@@ -268,8 +257,7 @@ void OsgContainer::paintGL() {
 				mScratchPad2->read(type,btn, x, y,wheel,dwslt,rhtopt);
 
 				mCPickHandler->mSelected = dwslt;
-	
-				
+					
 				if (type == 0)
 				{
 					if (rhtopt == 1)
@@ -315,9 +303,7 @@ void OsgContainer::paintGL() {
 				}
 				
 			}
-
-			
-			
+						
 		}
 				
 		frame();
@@ -394,7 +380,6 @@ osg::Node* createTrinangle1()
 	//n->push_back(osg::Vec3(-2.f, -1.f, 10.f));
 	n->push_back(osg::Vec3(0.f, -1.f, 0.f));
 
-
 	//灯光
 	//geom->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.0), osg::StateAttribute::OFF);
 	geom->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
@@ -430,23 +415,18 @@ void OsgContainer::initEarth2()
 	//trans->addChild(osgDB::readNodeFile("cow.osg"));
 	root->addChild(trans);
 
-
-
 	setCamera(createCamera(0, 0, width(), height()));
 	//设置地球操作器
 	m_EM = new osgEarth::Util::EarthManipulator;
 	m_EM->setNode(m_mapNode);
 	setCameraManipulator(m_EM);
-	
-	
+		
 	mCPickHandler = new CPickHandler(this);//两个类重复包含了
 	addEventHandler(mCPickHandler);
 	addEventHandler(new osgViewer::ThreadingHandler);
 	addEventHandler(new osgGA::StateSetManipulator(this->getCamera()->getOrCreateStateSet()));
 	addEventHandler(new osgViewer::WindowSizeHandler());//响应f
 	addEventHandler(new osgViewer::StatsHandler);//响应s,w
-
-	
 
 	//优化场景数据
 	osgUtil::Optimizer optimzier;
@@ -492,7 +472,6 @@ void OsgContainer::initCowTest()
 	
 	//root->addChild(m_earthNode);
 	
-
 	setCamera(createCamera(0, 0, width(), height()));
 
 	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator;
@@ -576,7 +555,6 @@ bool OsgContainer::createSnow()
 
 	return root->addChild(mSnowNode);
 	
-
 }
 bool OsgContainer::createRain()
 {
@@ -759,7 +737,6 @@ void OsgContainer::slotAddNetArcgis()
 	m_netIsOpen = true;	
 	emit startWork();
 	
-
 	//代码,经测试可以使用
 	//m_pMap->addLayer(m_netImageLayer);
 	//osgEarth::Drivers::ArcGISOptions netImageLayerOpt;
@@ -829,7 +806,6 @@ void OsgContainer::slotPlayVideo()
 		pat->setPosition(p);
 
 		pat->addChild(geode);
-
 
 		root->addChild(pat);
 

@@ -18,14 +18,12 @@ class CPickHandler :public QObject, public osgGA::GUIEventHandler {
 	Q_OBJECT
 	
 public:
-
 	enum SelectedDraw {
 		NONE=0,
 		DOT=1,
 		LINE = 2 ,
 		TRIANGLES = 3,
-		PARALLELOGRAM = 4,
-		
+		PARALLELOGRAM = 4,		
 	};
 	int mSelected;
 
@@ -55,14 +53,12 @@ public:
 	osg::ref_ptr < osgEarth::Annotation::FeatureNode> pickednode;
 	QHash<osgEarth::Annotation::FeatureEditor*, osgEarth::Annotation::FeatureNode*>m_kv;
 	
-
 	int mLineN = 1;
 	float mLineXArr[5];
 	float mLineYArr[5];
 	//存放点击坐标以及点击次数
 	osg::ref_ptr<osg::Vec3Array> mLineVec=new osg::Vec3Array;
 	
-
 	osg::ref_ptr<osg::Vec3Array> mTrinangleVec = new osg::Vec3Array;
 	int mTrinangleN=1;
 	
@@ -79,7 +75,6 @@ protected:
 	MyConvert mMyConv;
 public:
 	osg::Vec3 mLonLatAlt;
-
 	
 signals:
 	void signShowLonLatAlt(const osg::Vec3 &lla);

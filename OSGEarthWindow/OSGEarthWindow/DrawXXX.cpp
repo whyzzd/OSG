@@ -80,7 +80,6 @@ osg::Node* DrawXXX::createTrinangle(osg::ref_ptr<osg::Vec3Array> vec)
 	//n->push_back(osg::Vec3(-2.f, -1.f, 10.f));
 	n->push_back(osg::Vec3(0.f, -1.f, 0.f));
 
-
 	//ตฦนโ
 	//geom->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.0), osg::StateAttribute::OFF);
 	geom->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);

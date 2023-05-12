@@ -55,8 +55,6 @@ namespace osgQt
 		return _adapter->sendKeyEvent(key, keyDown);
 	}
 
-
-
 }
 
 

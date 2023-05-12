@@ -72,9 +72,7 @@ int main(int argc, char *argv[])
 	//root->addChild(m_earthNode);
 	//viewer.setSceneData(root);
 	//viewer.realize();
-	//viewer.run();
-	
-	
+	//viewer.run();		
     return a.exec();
 }
 
